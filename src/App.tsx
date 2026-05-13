@@ -300,9 +300,9 @@ const WRITING_DATA: WritingQuestion[] = [
   { 
     id: 1, 
     prefix: "I",
-    scrambled: ["have", "been", "feeling"], 
-    suffix: "sad lately, so I feel so unhealthy that I need to change.",
-    correct: "have been feeling", 
+    scrambled: ["have", "been", "feeling", "sad", "lately"], 
+    suffix: ", so I feel so unhealthy that I need to change.",
+    correct: "have been feeling sad lately", 
     translation: "나는 최근에 슬픔을 느껴오고 있어서, 너무 건강하지 않다고 느껴 변화가 필요하다.", 
     hint: "have been + V-ing (현재완료 진행형)",
     grammarNote: "상태를 나타내는 동사 feel은 진행형으로 잘 쓰이지 않지만, 최근의 일시적인 감정이나 변화를 강조할 때는 현재완료 진행형(have been feeling)으로 활발하게 사용됩니다. feel의 경우, '감정의 변화 과정'을 강조하고 싶을 때는 현재완료진행형 사용 가능합니다."
@@ -310,18 +310,18 @@ const WRITING_DATA: WritingQuestion[] = [
   { 
     id: 2, 
     prefix: "I",
-    scrambled: ["have", "been", "writing"], 
-    suffix: "in this diary for six months to remember the good moments.",
-    correct: "have been writing", 
+    scrambled: ["have", "been", "writing", "in", "this", "diary"], 
+    suffix: "for six months to remember the good moments.",
+    correct: "have been writing in this diary", 
     translation: "나는 좋은 순간들을 기억하기 위해 6개월 동안 이 일기를 써오고 있다.", 
     hint: "have been + V-ing (현재완료 진행형)" 
   },
   { 
     id: 3, 
     prefix: "Lately, I",
-    scrambled: ["have", "been", "painting"], 
-    suffix: "bright yellow sunflowers because they remind me of happy memories.",
-    correct: "have been painting", 
+    scrambled: ["have", "been", "painting", "bright", "yellow", "sunflowers"], 
+    suffix: "because they remind me of happy memories.",
+    correct: "have been painting bright yellow sunflowers", 
     translation: "최근에 나는 행복한 기억들을 떠올리게 해주기 때문에 밝은 노란색 해바라기를 그려오고 있다.", 
     hint: "have been + V-ing (현재완료 진행형)" 
   },
