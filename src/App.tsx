@@ -135,7 +135,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
       "She has being exercise regularly."
     ],
     answer: "I have been feeling sad lately.",
-    explanation: "현재완료 진행형은 'have/has + been + V-ing' 형태입니다. 특히 feel과 같은 감각/상태 동사는 주로 진행형으로 쓰지 않지만, '최근의 일시적인 상태나 변화'를 강조할 때는 현재완료 진행형으로도 즐겨 사용합니다."
+    explanation: "현재완료 진행형은 'have/has + been + V-ing' 형태입니다. 특히 feel과 같은 감각/상태 동사는 주로 진행형으로 쓰지 않지만, '최근의 일시적인 상태나 변화'를 강조할 때는 현재완료 진행형으로도 즐겨 사용합니다. feel의 경우, '감정의 변화 과정'을 강조하고 싶을 때는 현재완료진행형 사용 가능합니다."
   },
   {
     id: 2, type: 'subjective', section: 'ppc',
@@ -148,7 +148,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
       question: "문맥상 알맞은 표현을 고르세요: Somi _______ art for years.",
       options: ["has been loving", "has loved", "is loving", "loves"],
       answer: "has loved",
-      explanation: "love, know, like와 같은 감정이나 인지의 상태를 나타내는 대다수의 '상태 동사'는 진행의 의미를 포함하지 않으므로, 현재완료 진행형보다는 현재완료(has loved) 시제로 써야 합니다. 반면 feel, stay 등은 진행형으로 써서 일시적인 상태를 강조할 수 있습니다."
+      explanation: "love, know, like와 같은 감정이나 인지의 상태를 나타내는 대다수의 '상태 동사'는 진행의 의미를 포함하지 않으므로, 현재완료 진행형보다는 현재완료(has loved) 시제로 써야 합니다. 반면 feel, stay 등은 진행형으로 써서 일시적인 상태를 강조할 수 있습니다. (feel의 경우, '감정의 변화 과정'을 강조하고 싶을 때는 현재완료진행형 사용 가능)"
   },
   {
       id: 4, type: 'subjective', section: 'ppc',
@@ -178,8 +178,8 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   },
   {
     id: 7, type: 'subjective', section: 'so_that',
-    question: "괄호 안의 단어를 배열하여 완성하세요: I was (stressed / so / out / that / it / took / hours / to / sleep).",
-    answer: "so stressed out that it took hours to sleep",
+    question: "괄호 안의 단어를 배열하여 완성하세요: I was (that / hours / sleep / out / stressed / it / to / so / took).",
+    answer: "so stressed out that it took hours to sleep | so stressed out that it tool hours to sleep",
     explanation: "so + 형용사 + that 구문을 사용하여 인과 관계를 만듭니다."
   },
   {
@@ -209,7 +209,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   },
   {
       id: 11, type: 'subjective', section: 'so_that',
-      question: "의미가 같도록 빈칸을 채우세요: The problem was so hard that I couldn't solve it. = The problem was ____ hard ____ ____ solve.",
+      question: "의미가 같도록 빈칸을 채우세요: The problem was so hard that I couldn't solve it. = The problem was ____ ____ ____ solve.",
       answer: "too hard to",
       explanation: "so ~ that ... can't 구문은 too ~ to (+ 동사원형) 구문으로 바꾸어 쓸 수 있습니다. '너무 ~해서 ...할 수 없다'는 뜻입니다."
   },
@@ -228,7 +228,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   {
       id: 13, type: 'subjective', section: 'so_that',
       question: "다음 문장을 so~that 구문을 사용하여 다시 쓰세요 (can/could 활용): He is strong enough to carry the box.",
-      answer: "He is so strong that he can carry the box",
+      answer: "He is so strong that he can carry the box | He is so strong that he could carry the box",
       explanation: "enough to 구문을 so ~ that ... can 구문으로 바꾼 사례입니다. 주어와 시제에 주의하세요."
   },
   {
@@ -257,13 +257,13 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   },
   {
     id: 16, type: 'subjective', section: 'so_that',
-    question: "너무 피곤해서 나는 공부를 할 수 없었다. (so ~ that 사용): I was ____ tired ____ I ____ study.",
-    answer: "so, that, couldn't",
-    explanation: "과거 시제(was)에 맞춰 Can의 과거형인 couldn't를 써야 합니다."
+    question: "너무 피곤해서 나는 공부를 할 수 없다. (so ~ that 사용): I am ____ tired ____ I ____ study.",
+    answer: "so, that, can't",
+    explanation: "현재 시제(am)에 맞춰 can't를 써야 합니다."
   },
   {
     id: 17, type: 'choice', section: 'so_that',
-    question: "'too ~ to' 구문을 활용해 바르게 바꾼 것은? 'He is so smart that he can solve the riddle.'",
+    question: "'enough ~ to부정사' 구문을 활용해 바르게 바꾼 것은? 'He is so smart that he can solve the riddle.'",
     options: [
       "He is too smart to solve the riddle.",
       "He is smart enough to solve the riddle.",
@@ -276,7 +276,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   {
     id: 18, type: 'subjective', section: 'so_that',
     question: "빈칸을 채워 의미가 같은 문장을 만드세요: 'The soup is too salty to eat.' = The soup is ____ salty ____ I ____ eat it.",
-    answer: "so, that, can't",
+    answer: "so, that, can't | so, that, can not",
     explanation: "too ~ to는 부정적인 의미를 내포하므로 so ~ that ... can't로 전환됩니다."
   },
   {
@@ -303,7 +303,7 @@ const WRITING_DATA: WritingQuestion[] = [
     correct: "have been feeling", 
     translation: "나는 최근에 슬픔을 느껴오고 있어서, 너무 건강하지 않다고 느껴 변화가 필요하다.", 
     hint: "have been + V-ing (현재완료 진행형)",
-    grammarNote: "상태를 나타내는 동사 feel은 진행형으로 잘 쓰이지 않지만, 최근의 일시적인 감정이나 변화를 강조할 때는 현재완료 진행형(have been feeling)으로 활발하게 사용됩니다."
+    grammarNote: "상태를 나타내는 동사 feel은 진행형으로 잘 쓰이지 않지만, 최근의 일시적인 감정이나 변화를 강조할 때는 현재완료 진행형(have been feeling)으로 활발하게 사용됩니다. feel의 경우, '감정의 변화 과정'을 강조하고 싶을 때는 현재완료진행형 사용 가능합니다."
   },
   { 
     id: 2, 
@@ -661,72 +661,17 @@ const READING_DATA: ReadingQuestion[] = [
     id: 43, section: 'p2_jiho', type: 'choice',
     question: "How does Jiho feel now compared to before starting the journal?",
     question_ko: "일기를 시작하기 전과 비교하여 지호는 현재 어떻게 느끼나요?",
-    options: ["More stressed", "Less confident", "Happier and more relaxed", "Tired"],
-    answer: "Happier and more relaxed",
-    explanation: "일기 쓰기 습관 덕분에 더 행복하고 편안해졌다고 말합니다."
-  },
-  {
-    id: 44, section: 'p2_jiho', type: 'subjective',
-    question: "Jiho _______ (write) his journal for more than a year. (Use PPC)",
-    question_ko: "지호는 1년 넘게 일기를 써오고 있다. (현재완료 진행형 사용)",
-    answer: "has been writing",
-    explanation: "has been writing은 과거부터 지금까지의 지속을 의미합니다."
-  },
-  {
-    id: 45, section: 'p2_jiho', type: 'choice',
-    question: "What is Jiho's tip for someone who finds it hard to be grateful?",
-    question_ko: "감사해하는 것이 어렵다고 느끼는 사람을 위한 지호의 팁은 무엇인가요?",
-    options: ["Stop writing", "Start with very small things", "Watch more TV", "Sleep more"],
-    answer: "Start with very small things",
-    explanation: "작은 일부터 찾아 시작하라는 것이 지호의 조언입니다."
-  },
-
-  // Additional Somi's Case Questions (IDs 46-50)
-  {
-    id: 46, section: 'p2_somi', type: 'choice',
-    question: "Why does Somi say she doesn't need to be professional?",
-    question_ko: "소미는 왜 자신이 전문가가 될 필요가 없다고 말하나요?",
-    options: ["Because she is lazy", "Because the purpose is her own healing", "Because she doesn't have talent", "Because pencils are expensive"],
-    answer: "Because the purpose is her own healing",
-    explanation: "목표가 자신의 치유(healing)와 즐거움이기 때문에 전문성보다는 과정이 중요합니다."
-  },
-  {
-    id: 47, section: 'p2_somi', type: 'subjective',
-    question: "Somi uses colors to _______ her inner world. (One word starting with 'e')",
-    question_ko: "소미는 자신의 내면 세계를 ______하기 위해 색채를 사용합니다. ('e'로 시작하는 한 단어)",
-    answer: "express",
-    explanation: "색깔은 감정을 표현(express)하는 중요한 도구입니다."
-  },
-  {
-    id: 48, section: 'p2_somi', type: 'choice',
-    question: "What is the result of Somi's healing art activity?",
-    question_ko: "소미의 힐링 아트 활동의 결과는 무엇인가요?",
-    options: ["She won a prize", "Her stress level decreased", "She sold her paintings", "She became a teacher"],
-    answer: "Her stress level decreased",
-    explanation: "그림을 통해 스트레스가 줄어들고 마음이 평온해졌습니다."
-  },
-  {
-    id: 49, section: 'p2_somi', type: 'subjective',
-    question: "Somi is so happy _______ she wants to share her hobby with others. (One word)",
-    question_ko: "소미는 너무 행복해서 자신의 취미를 다른 이들과 공유하고 싶어 한다. (한 단어)",
-    answer: "that",
-    explanation: "so ~ that 구문의 'that'이 결과를 연결합니다."
-  },
-  {
-    id: 50, section: 'p2_somi', type: 'choice',
-    question: "What can we learn from Somi's case?",
-    question_ko: "소미의 사례에서 우리가 배울 수 있는 점은 무엇인가요?",
-    options: ["Art is only for talented people", "Expressing yourself can be a way to manage stress", "Buying art is better than making it", "Teachers are always right"],
-    answer: "Expressing yourself can be a way to manage stress",
-    explanation: "자기 표현(그림 등)이 스트레스 관리의 훌륭한 수단이 될 수 있음을 시사합니다."
+    options: ["More negative", "More positive", "More tired", "More angry"],
+    answer: "More positive",
+    explanation: "지호는 일기를 쓴 후 더 긍정적인(positive) 기분을 갖게 되었다고 했습니다."
   }
 ];
 
 const READING_TEXTS = {
   p1: {
-    title: "How to Protect Your Emotional Health: From Tips to Real-Life Stories (Page 1)",
-    text: "Have you been feeling sad? Are you so stressed out that it takes hours to fall asleep? Then you may be emotionally unhealthy. There are many ways to improve your emotional health. Notice what makes you sad and let your friends know how you feel. Keeping negative feelings inside can cause problems in your relationships. Also, think before you act. Try to be calm before you say or do something you might regret. Take care of your physical health, too, because it can affect your emotional health. Exercise regularly, eat healthy meals, and get enough sleep. In addition, connect with others. We are social animals and need positive connections with others. Spend time with healthy, positive people. Make new friends and join a club.",
-    translation: "슬픔을 느껴본 적이 있나요? 너무 스트레스를 받아서 잠이 드는 데 몇 시간씩 걸리나요? 그렇다면 당신은 정서적으로 건강하지 않을 수 있습니다. 정서적 건강을 향상시키는 데는 많은 방법이 있습니다. 무엇이 당신을 슬프게 하는지 알아차리고 당신이 어떻게 느끼는지 친구들이 알게 하세요. 부정적인 감정을 내면에 담아두는 것은 관계에 문제를 일으킬 수 있습니다. 또한, 행동하기 전에 생각하세요. 후회할지도 모르는 말이나 행동을 하기 전에 침착해지려고 노력하세요. 당신의 신체적 건강도 챙기세요. 그것이 정서적 건강에 영향을 줄 수 있기 때문입니다. 규칙적으로 운동하고, 건강한 식사를 하고, 충분한 잠을 자세요. 게다가, 다른 사람들과 연결되세요. 우리는 사회적 동물이며 다른 사람들과의 긍정적인 관계를 필요로 합니다. 건강하고 긍정적인 사람들과 시간을 보내세요. 새로운 친구를 사겨고 동아리에 가입하세요."
+    title: "How to Protect Your Emotional Health (Page 1)",
+    text: "Emotional health is as important as physical health. It starts with noticing what makes you feel sad or happy. When you notice these feelings, you should talk about them with someone you trust. Some people keep their feelings inside, but this can cause problems in your relationships later. To be emotionally healthy, it is also essential to maintain your physical health by exercising regularly and getting enough sleep. Lastly, remember that humans are social animals by nature. Connecting with other people is a necessary part of staying happy and strong.",
+    translation: "정서적 건강은 신체적 건강만큼이나 중요합니다. 그것은 무엇이 당신을 슬프게 하거나 기쁘게 만드는지 알아차리는 것에서부터 시작됩니다. 이러한 감정들을 알아차렸을 때, 당신이 신뢰하는 사람과 그것들에 대해 이야기해야 합니다. 어떤 사람들은 자신의 감정을 내면에 담아두지만, 이것은 나중에 당신의 관계에 문제를 일으킬 수 있습니다. 정서적으로 건강해지기 위해서는 정기적으로 운동하고 충분한 수면을 취함으로써 신체적 건강을 유지하는 것도 필수적입니다. 마지막으로, 인간은 본래 사회적 동물이라는 것을 기억하세요. 다른 사람들과 연결되는 것은 행복하고 강하게 지내기 위한 필수적인 부분입니다."
   },
   p2_jiho: {
     title: "Jiho, The Power of a Gratitude Diary (Page 2)",
@@ -740,10 +685,48 @@ const READING_TEXTS = {
   }
 };
 
+const normalizeStr = (str: string) => {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[.?!, ]+$/, '') // Remove trailing punctuation and spaces
+    .replace(/\s+/g, ' '); // Standardize internal spaces
+};
+
+const checkSubjectiveAnswer = (userInput: string, expectedAnswer: string, questionText?: string) => {
+  const normUser = normalizeStr(userInput);
+  const possibleAnswers = expectedAnswer.split('|').map(s => s.trim());
+  
+  for (const exp of possibleAnswers) {
+    const normExpected = normalizeStr(exp);
+    if (normUser === normExpected) return true;
+    
+    // Try comma-less version of expected answer (e.g. "so, that" -> "so that")
+    const normExpectedNoComma = normalizeStr(exp.replace(/,/g, ' '));
+    if (normUser === normExpectedNoComma) return true;
+
+    // Try reconstruction from question if placeholders exist
+    if (questionText) {
+      const targetPart = questionText.includes('=') ? questionText.split('=')[1] : null;
+      if (targetPart) {
+        const answerParts = exp.split(/[,/ ]+/).filter(s => s.trim().length > 0);
+        let reconstructed = targetPart.trim();
+        answerParts.forEach(p => {
+          reconstructed = reconstructed.replace(/_{2,}/, p);
+        });
+        if (normalizeStr(reconstructed) === normUser) return true;
+      }
+    }
+  }
+  
+  return false;
+};
+
 export default function App() {
   const [activeSection, setActiveSection] = useState<Section>('dashboard');
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [vocabQuizConfig, setVocabQuizConfig] = useState<{ section: 'all' | 'p1' | 'p2_jiho' | 'p2_somi', count: number }>({ section: 'all', count: 10 });
 
   const handleSpeak = (text: string) => {
     if ('speechSynthesis' in window) {
@@ -763,114 +746,346 @@ export default function App() {
 
   // --- Views ---
 
-  const VocabView = () => {
-    const [selectedTab, setSelectedTab] = useState<'all' | 'p1' | 'p2_jiho' | 'p2_somi'>('all');
-
-    const filteredData = useMemo(() => {
-      if (selectedTab === 'all') return VOCAB_DATA;
-      return VOCAB_DATA.filter(word => word.section === selectedTab);
-    }, [selectedTab]);
-
-    const tabs = [
-      { id: 'all', label: '전체 어휘', icon: <BookOpen size={18} /> },
-      { id: 'p1', label: '1페이지 (Tips)', icon: <Smile size={18} /> },
-      { id: 'p2_jiho', label: '2페이지 (Jiho)', icon: <FileText size={18} /> },
-      { id: 'p2_somi', label: '2페이지 (Somi)', icon: <PenTool size={18} /> },
-    ];
-
-    return (
-      <div className="space-y-12 pb-20">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+  // Views moved outside App component to prevent unmount/remount on state changes
+  return (
+    <div className="flex h-screen bg-[#2D3748] font-sans selection:bg-indigo-200 selection:text-indigo-900 overflow-hidden">
+      {/* Sidebar */}
+      <aside className="w-96 bg-[#2D3748] p-10 flex flex-col h-full border-r border-white/5 relative z-20">
+        <div className="flex items-center space-x-4 mb-16 pl-2">
+          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl shadow-white/10">
+            <Award className="text-[#4C51BF]" size={30} fill="currentColor" />
+          </div>
           <div>
-            <h2 className="text-5xl font-black text-slate-800 tracking-tighter mb-2">VOCABULARY MASTER</h2>
-            <p className="text-slate-500 font-bold text-xl uppercase tracking-widest pl-1">핵심 어휘 50가지 완벽 정복</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-             <button 
-              onClick={() => navTo('vocabQuiz')}
-              className="bg-[#4C51BF] hover:bg-[#3C366B] text-white px-8 py-4 rounded-3xl font-black text-lg shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center gap-3 mr-4"
-            >
-              QUIZ START <Zap size={20} fill="currentColor" />
-            </button>
+            <h1 className="text-2xl font-black text-white tracking-widest leading-none">GRACE's</h1>
+            <p className="text-sm font-black text-indigo-400 uppercase tracking-[0.4em] mt-1">English Class</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-100 p-2 rounded-[32px] w-fit overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setSelectedTab(tab.id as any)}
-              className={`flex items-center gap-2 px-6 py-3 rounded-[24px] font-bold transition-all whitespace-nowrap ${
-                selectedTab === tab.id 
-                  ? 'bg-white text-indigo-600 shadow-sm' 
-                  : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-          {filteredData.map((item) => (
-            <motion.div 
-              key={item.id}
-              layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ y: -8, rotate: 1 }}
-              className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-2xl transition-all group relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 w-12 h-12 bg-slate-50 rounded-bl-2xl flex items-center justify-center text-slate-200 text-[10px] font-black">
-                #{String(item.id).padStart(2, '0')}
-              </div>
-              <div className="relative z-10 font-black">
-                <p className={`text-[10px] uppercase tracking-widest mb-2 italic ${
-                  item.section === 'p1' ? 'text-emerald-500' :
-                  item.section === 'p2_jiho' ? 'text-amber-500' : 'text-indigo-500'
-                }`}>
-                  {item.section === 'p1' ? 'Emotional Health' :
-                   item.section === 'p2_jiho' ? 'Jiho\'s Case' : 'Somi\'s Case'}
-                </p>
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <h3 className="text-3xl text-slate-800 truncate group-hover:text-indigo-600 transition-colors tracking-tighter">
-                    {item.word}
-                  </h3>
-                  <button 
-                    onClick={() => handleSpeak(item.word)}
-                    className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-slate-50 rounded-full transition-all active:scale-90"
-                    title="발음 듣기"
-                  >
-                    <Volume2 size={20} />
-                  </button>
-                </div>
-                <p className="text-xl text-slate-500 font-bold mb-6 underline decoration-indigo-100 underline-offset-4">{item.meaning}</p>
+        <nav className="flex-1 space-y-3">
+          <SidebarBtn icon={<Zap size={20} />} label="대시보드" active={activeSection === 'dashboard'} onClick={() => navTo('dashboard')} />
+          <SidebarBtn icon={<Brain size={20} />} label="어휘마스터" active={activeSection === 'vocab' || activeSection === 'vocabQuiz'} onClick={() => navTo('vocab')} />
+          <div className="pt-6 pb-2">
+             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] pl-6 mb-4">Core Training</p>
+             <div className="space-y-2">
                 <button 
-                  onClick={() => handleSpeak(item.example)}
-                  className="w-full text-left bg-slate-50/80 p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors group/example"
+                  onClick={() => navTo('grammar_ppc')}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'grammar_ppc' ? "bg-indigo-500/20 text-white" : "text-white/40 hover:text-white"}`}
                 >
-                  <div className="flex gap-2">
-                    <p className="text-sm italic text-slate-400 font-medium leading-relaxed group-hover/example:text-slate-600 transition-colors flex-1">"{item.example}"</p>
-                    <Volume2 size={12} className="text-slate-300 group-hover/example:text-indigo-400 mt-1 shrink-0" />
-                  </div>
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_ppc' ? "bg-indigo-400" : "bg-white/10"}`}></div>
+                   현재완료 진행형
                 </button>
-              </div>
-            </motion.div>
-          ))}
+                <button 
+                  onClick={() => navTo('grammar_so_that')}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'grammar_so_that' ? "bg-indigo-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                >
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_so_that' ? "bg-indigo-400" : "bg-white/10"}`}></div>
+                   SO ~ THAT 구문
+                </button>
+             </div>
+          </div>
+          <SidebarBtn icon={<PenTool size={20} />} label="영작 트레이닝" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
+          <div className="pt-6 pb-2">
+             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] pl-6 mb-4">Text Analysis</p>
+             <div className="space-y-2">
+                <button 
+                  onClick={() => navTo('reading_p1')}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p1' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                >
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p1' ? "bg-emerald-400" : "bg-white/10"}`}></div>
+                   Emotional Health (Page 1)
+                </button>
+                <button 
+                  onClick={() => navTo('reading_p2_jiho')}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p2_jiho' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                >
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_jiho' ? "bg-emerald-400" : "bg-white/10"}`}></div>
+                   Jiho: Gratitude (Page 2)
+                </button>
+                <button 
+                  onClick={() => navTo('reading_p2_somi')}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p2_somi' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                >
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_somi' ? "bg-emerald-400" : "bg-white/10"}`}></div>
+                   Somi: Healing Art (Page 2)
+                </button>
+             </div>
+          </div>
+        </nav>
+
+        <div className="mt-auto space-y-6">
+           <div className="bg-[#3C366B] p-6 rounded-3xl border border-white/10 shadow-inner">
+             <p className="text-[10px] text-white/50 mb-3 uppercase tracking-[0.2em] font-black">나의 학습 현황</p>
+             <div className="flex justify-between items-end mb-4">
+               <span className="text-4xl font-black text-white tracking-tighter">84%</span>
+               <div className="flex flex-col items-end">
+                  <span className="text-[10px] text-[#F6AD55] font-black uppercase">Lv. 12 챌린저</span>
+                  <div className="flex gap-0.5 mt-1">
+                    {[1,2,3,4,5].map(i => <div key={i} className={`w-2 h-1 rounded-full ${i <= 4 ? "bg-[#ECC94B]" : "bg-white/10"}`}></div>)}
+                  </div>
+               </div>
+             </div>
+             <div className="w-full bg-[#2D3748] h-3 rounded-full overflow-hidden shadow-inner">
+               <motion.div initial={{ width: 0 }} animate={{ width: '84%' }} className="bg-gradient-to-r from-[#ECC94B] to-[#F6AD55] h-full rounded-full shadow-[0_0_10px_rgba(236,201,75,0.5)]"></motion.div>
+             </div>
+           </div>
+           <p className="text-center text-white/30 text-[10px] font-bold italic">© 2026 GRACE's English Class</p>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col h-screen overflow-y-auto bg-[#F7F9FC]">
+        {/* Header bar */}
+        <header className="h-24 bg-white border-b border-slate-100 flex items-center justify-between px-12 sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3">
+              <span className="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border border-orange-200">LESSON 3</span>
+              <h1 className="text-2xl font-black text-slate-800 tracking-tighter">Be Positive, Be Happy</h1>
+            </div>
+            <div className="h-8 w-[1px] bg-slate-100 hidden md:block"></div>
+            <div className="text-sm font-bold text-slate-400 hidden md:block uppercase tracking-widest">Section: {activeSection.toUpperCase()}</div>
+          </div>
+          <div className="flex items-center space-x-8">
+            <div className="flex -space-x-3">
+              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-[#4C51BF] flex items-center justify-center text-white font-black text-xs shadow-md">J</div>
+              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-[#F6AD55] flex items-center justify-center text-white font-black text-xs shadow-md">S</div>
+              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-[#34D399] flex items-center justify-center text-white font-black text-xs shadow-md">M</div>
+            </div>
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-black uppercase text-indigo-500 tracking-tighter">Today's Streak</span>
+              <span className="text-lg font-black text-slate-800 leading-none">🔥 14 DAYS</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Content area */}
+        <div className="p-12">
+          <AnimatePresence mode="wait">
+             <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+             >
+                {activeSection === 'dashboard' && (
+                  <DashboardView 
+                    navTo={navTo} 
+                  />
+                )}
+                {activeSection === 'vocab' && <VocabView navTo={navTo} setVocabQuizConfig={setVocabQuizConfig} setIsFinished={setIsFinished} setScore={setScore} handleSpeak={handleSpeak} />}
+                {activeSection === 'vocabQuiz' && (
+                  <VocabQuizView 
+                    isFinished={isFinished}
+                    setIsFinished={setIsFinished}
+                    score={score}
+                    setScore={setScore}
+                    vocabQuizConfig={vocabQuizConfig}
+                    navTo={navTo}
+                    handleSpeak={handleSpeak}
+                  />
+                )}
+                {(activeSection === 'grammar_ppc' || activeSection === 'grammar_so_that') && (
+                  <GrammarView 
+                    activeSection={activeSection}
+                    isFinished={isFinished}
+                    setIsFinished={setIsFinished}
+                    score={score}
+                    setScore={setScore}
+                    navTo={navTo}
+                    handleSpeak={handleSpeak}
+                  />
+                )}
+                {activeSection === 'writing' && (
+                  <WritingView 
+                    score={score}
+                    setScore={setScore}
+                    setIsFinished={setIsFinished}
+                    navTo={navTo}
+                    handleSpeak={handleSpeak}
+                  />
+                )}
+                {(activeSection === 'reading_p1' || activeSection === 'reading_p2_jiho' || activeSection === 'reading_p2_somi') && (
+                  <ReadingView 
+                    activeSection={activeSection}
+                    isFinished={isFinished}
+                    setIsFinished={setIsFinished}
+                    score={score}
+                    setScore={setScore}
+                    navTo={navTo}
+                    handleSpeak={handleSpeak}
+                  />
+                )}
+             </motion.div>
+          </AnimatePresence>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// --- Views ---
+
+const VocabView = ({ 
+  navTo, 
+  setVocabQuizConfig, 
+  setIsFinished, 
+  setScore,
+  handleSpeak
+}: { 
+  navTo: (s: Section) => void;
+  setVocabQuizConfig: (c: { section: 'all' | 'p1' | 'p2_jiho' | 'p2_somi', count: number }) => void;
+  setIsFinished: (v: boolean) => void;
+  setScore: React.Dispatch<React.SetStateAction<number>>;
+  handleSpeak: (t: string) => void;
+}) => {
+  const [selectedTab, setSelectedTab] = useState<'all' | 'p1' | 'p2_jiho' | 'p2_somi'>('all');
+
+  const filteredData = useMemo(() => {
+    if (selectedTab === 'all') return VOCAB_DATA;
+    return VOCAB_DATA.filter(word => word.section === selectedTab);
+  }, [selectedTab]);
+
+  const tabs = [
+    { id: 'all', label: '전체 어휘', icon: <BookOpen size={18} /> },
+    { id: 'p1', label: '1페이지 (Emotional Health)', icon: <Smile size={18} /> },
+    { id: 'p2_jiho', label: '2페이지 (Jiho)', icon: <FileText size={18} /> },
+    { id: 'p2_somi', label: '2페이지 (Somi)', icon: <PenTool size={18} /> },
+  ];
+
+  return (
+    <div className="space-y-12 pb-20">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+        <div>
+          <h2 className="text-5xl font-black text-slate-800 tracking-tighter mb-2">VOCABULARY MASTER</h2>
+          <p className="text-slate-500 font-bold text-xl uppercase tracking-widest pl-1">핵심 어휘 50가지 완벽 정복</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+           <button 
+            onClick={() => {
+              let count = 10;
+              if (selectedTab === 'all') count = 20;
+              else if (selectedTab === 'p1') count = 10;
+              else count = 5;
+              setVocabQuizConfig({ section: selectedTab, count });
+              setIsFinished(false);
+              setScore(0);
+              navTo('vocabQuiz');
+            }}
+            className="bg-[#4C51BF] hover:bg-[#3C366B] text-white px-8 py-4 rounded-3xl font-black text-lg shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center gap-3 mr-4"
+          >
+            QUIZ START <Zap size={20} fill="currentColor" />
+          </button>
         </div>
       </div>
-    );
-  };
 
-  const VocabQuizView = () => {
-    const [currentIdx, setCurrentIdx] = useState(0);
-    const [quizData] = useState(() => [...VOCAB_DATA].sort(() => Math.random() - 0.5).slice(0, 10));
-    const [options, setOptions] = useState<string[]>([]);
-    const [isAnswered, setIsAnswered] = useState(false);
-    const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+      <div className="flex items-center gap-2 bg-slate-100 p-2 rounded-[32px] w-fit overflow-x-auto no-scrollbar">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setSelectedTab(tab.id as any)}
+            className={`flex items-center gap-2 px-6 py-3 rounded-[24px] font-bold transition-all whitespace-nowrap ${
+              selectedTab === tab.id 
+                ? 'bg-white text-indigo-600 shadow-sm' 
+                : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
+            }`}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-    useEffect(() => {
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {filteredData.map((item) => (
+          <motion.div 
+            key={item.id}
+            layout
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            whileHover={{ y: -8, rotate: 1 }}
+            className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-2xl transition-all group relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-12 h-12 bg-slate-50 rounded-bl-2xl flex items-center justify-center text-slate-200 text-[10px] font-black">
+              #{String(item.id).padStart(2, '0')}
+            </div>
+            <div className="relative z-10 font-black">
+              <p className={`text-[10px] uppercase tracking-widest mb-2 italic ${
+                item.section === 'p1' ? 'text-emerald-500' :
+                item.section === 'p2_jiho' ? 'text-amber-500' : 'text-indigo-500'
+              }`}>
+                {item.section === 'p1' ? 'Emotional Health' :
+                 item.section === 'p2_jiho' ? 'Jiho\'s Case' : 'Somi\'s Case'}
+              </p>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <h3 className="text-3xl text-slate-800 truncate group-hover:text-indigo-600 transition-colors tracking-tighter">
+                  {item.word}
+                </h3>
+                <button 
+                  onClick={() => handleSpeak(item.word)}
+                  className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-slate-50 rounded-full transition-all active:scale-90"
+                  title="발음 듣기"
+                >
+                  <Volume2 size={20} />
+                </button>
+              </div>
+              <p className="text-xl text-slate-500 font-bold mb-6 underline decoration-indigo-100 underline-offset-4">{item.meaning}</p>
+              <button 
+                onClick={() => handleSpeak(item.example)}
+                className="w-full text-left bg-slate-50/80 p-4 rounded-2xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors group/example"
+              >
+                <div className="flex gap-2">
+                  <p className="text-sm italic text-slate-400 font-medium leading-relaxed group-hover/example:text-slate-600 transition-colors flex-1">"{item.example}"</p>
+                  <Volume2 size={12} className="text-slate-300 group-hover/example:text-indigo-400 mt-1 shrink-0" />
+                </div>
+              </button>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+const VocabQuizView = ({
+  isFinished, 
+  setIsFinished, 
+  score, 
+  setScore, 
+  vocabQuizConfig, 
+  navTo, 
+  handleSpeak 
+}: { 
+  isFinished: boolean;
+  setIsFinished: (v: boolean) => void;
+  score: number;
+  setScore: React.Dispatch<React.SetStateAction<number>>;
+  vocabQuizConfig: { section: string; count: number };
+  navTo: (s: Section) => void;
+  handleSpeak: (t: string) => void;
+}) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [quizData, setQuizData] = useState(() => {
+    const filtered = vocabQuizConfig.section === 'all' 
+      ? VOCAB_DATA 
+      : VOCAB_DATA.filter(v => v.section === vocabQuizConfig.section);
+    return [...filtered].sort(() => Math.random() - 0.5).slice(0, vocabQuizConfig.count);
+  });
+  const [options, setOptions] = useState<string[]>([]);
+  const [isAnswered, setIsAnswered] = useState(false);
+  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isAnswered && selectedIdx !== null) {
+      const isCorrect = options[selectedIdx] === quizData[currentIdx].meaning;
+      const delay = isCorrect ? 1500 : 3000; 
+      const timer = setTimeout(() => {
+        handleNext();
+      }, delay);
+      return () => clearTimeout(timer);
+    }
+  }, [isAnswered, selectedIdx]);
+
+  useEffect(() => {
+    if (currentIdx < quizData.length) {
       const correct = quizData[currentIdx].meaning;
       const others = VOCAB_DATA
         .filter(v => v.meaning !== correct)
@@ -878,92 +1093,239 @@ export default function App() {
         .slice(0, 3)
         .map(v => v.meaning);
       setOptions([correct, ...others].sort(() => Math.random() - 0.5));
-    }, [currentIdx, quizData]);
+    }
+  }, [currentIdx, quizData]);
 
-    const handleAnswer = (idx: number) => {
-      if (isAnswered) return;
-      setSelectedIdx(idx);
-      setIsAnswered(true);
-      if (options[idx] === quizData[currentIdx].meaning) {
-        setScore(prev => prev + 1);
-      }
-    };
-
-    const handleNext = () => {
-      if (currentIdx < quizData.length - 1) {
-        setCurrentIdx(prev => prev + 1);
-        setIsAnswered(false);
-        setSelectedIdx(null);
-      } else {
-        setIsFinished(true);
-      }
-    };
-
-    if (isFinished) return <ResultCard score={score} total={quizData.length} onRestart={() => navTo('vocabQuiz')} onGoHome={() => navTo('dashboard')} />;
-
-    return (
-      <div className="max-w-4xl mx-auto space-y-12">
-        <div className="bg-white p-12 rounded-[50px] shadow-2xl border border-slate-100 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-slate-100">
-            <motion.div 
-               initial={{ width: 0 }} 
-               animate={{ width: `${((currentIdx + 1) / quizData.length) * 100}%` }} 
-               className="h-full bg-indigo-500"
-            ></motion.div>
-          </div>
-          <div className="flex justify-between items-center mb-10">
-             <span className="bg-indigo-100 text-indigo-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Question {currentIdx + 1}/{quizData.length}</span>
-             <div className="flex items-center gap-2 text-slate-400 font-black">
-                <Flame size={20} className="text-orange-500" /> STREAK: 12
-             </div>
-          </div>
-          <p className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-4">What is the meaning of:</p>
-          <h3 className="text-7xl font-black text-slate-800 tracking-tighter mb-12 italic">"{quizData[currentIdx].word}"</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {options.map((opt, i) => (
-              <button
-                key={i}
-                onClick={() => handleAnswer(i)}
-                className={`p-8 text-2xl font-black rounded-3xl border-2 transition-all text-left flex items-center justify-between group ${
-                  isAnswered
-                    ? opt === quizData[currentIdx].meaning
-                      ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg shadow-emerald-100"
-                      : selectedIdx === i
-                        ? "bg-rose-50 border-rose-500 text-rose-700 shadow-lg shadow-rose-100"
-                        : "bg-white border-slate-100 text-slate-300"
-                    : "bg-white border-slate-100 text-slate-700 hover:border-indigo-500 hover:shadow-xl hover:-translate-y-1"
-                }`}
-              >
-                <span>{opt}</span>
-                {isAnswered && opt === quizData[currentIdx].meaning && <CheckCircle2 className="text-emerald-500" />}
-                {!isAnswered && <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-indigo-300" />}
-              </button>
-            ))}
-          </div>
-
-          <AnimatePresence>
-            {isAnswered && (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-12 flex justify-end"
-              >
-                <button 
-                  onClick={handleNext}
-                  className="bg-slate-800 text-white px-12 py-5 rounded-[2rem] font-black text-xl flex items-center gap-3 shadow-2xl hover:bg-black transition-all active:scale-95"
-                >
-                  {currentIdx === quizData.length - 1 ? "FINISH MISSION" : "NEXT LEVEL"} <ChevronRight size={24} />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    );
+  const handleAnswer = (idx: number) => {
+    if (isAnswered) return;
+    setSelectedIdx(idx);
+    setIsAnswered(true);
+    const isCorrect = options[idx] === quizData[currentIdx].meaning;
+    if (isCorrect) {
+      setScore(prev => prev + 1);
+    }
   };
 
-  const GrammarView = () => {
+  const handleNext = () => {
+    setIsAnswered(false);
+    setSelectedIdx(null);
+    if (currentIdx < quizData.length - 1) {
+      setCurrentIdx(prev => prev + 1);
+    } else {
+      setIsFinished(true);
+    }
+  };
+
+  if (isFinished) return (
+    <ResultCard 
+      score={score} 
+      total={quizData.length} 
+      onRestart={() => {
+        setIsFinished(false);
+        setCurrentIdx(0);
+        setScore(0);
+        setIsAnswered(false);
+        setSelectedIdx(null);
+        const filtered = vocabQuizConfig.section === 'all' 
+          ? VOCAB_DATA 
+          : VOCAB_DATA.filter(v => v.section === vocabQuizConfig.section);
+        setQuizData([...filtered].sort(() => Math.random() - 0.5).slice(0, vocabQuizConfig.count));
+      }} 
+      onGoHome={() => navTo('dashboard')} 
+    />
+  );
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-12">
+      <div className="bg-white p-12 rounded-[50px] shadow-2xl border border-slate-100 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-slate-100">
+          <motion.div 
+             initial={{ width: 0 }} 
+             animate={{ width: `${((currentIdx + 1) / quizData.length) * 100}%` }} 
+             className="h-full bg-indigo-500"
+          ></motion.div>
+        </div>
+        <div className="flex justify-between items-center mb-10">
+           <span className="bg-indigo-100 text-indigo-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-1">
+             QUESTION 
+             <AnimatePresence mode="wait">
+               <motion.span 
+                 key={currentIdx}
+                 initial={{ y: 10, opacity: 0 }}
+                 animate={{ y: 0, opacity: 1 }}
+                 exit={{ y: -10, opacity: 0 }}
+                 transition={{ duration: 0.2 }}
+                 className="inline-block min-w-[1.2rem] text-center"
+               >
+                 {currentIdx + 1}
+               </motion.span>
+             </AnimatePresence>
+             /{quizData.length}
+           </span>
+           <button 
+              onClick={handleNext}
+              className="text-slate-400 hover:text-indigo-600 font-black text-sm transition-colors flex items-center gap-1 group"
+           >
+              SKIP <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+           </button>
+        </div>
+        <p className="text-sm font-black text-slate-400 uppercase tracking-[0.2em] mb-4">What is the meaning of:</p>
+        <h3 className="text-7xl font-black text-slate-800 tracking-tighter mb-12 italic">"{quizData[currentIdx].word}"</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {options.map((opt, i) => (
+            <button
+              key={i}
+              onClick={() => handleAnswer(i)}
+              className={`p-8 text-2xl font-black rounded-3xl border-2 transition-all text-left flex items-center justify-between group ${
+                isAnswered
+                  ? opt === quizData[currentIdx].meaning
+                    ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg shadow-emerald-100"
+                    : selectedIdx === i
+                      ? "bg-rose-50 border-rose-500 text-rose-700 shadow-lg shadow-rose-100"
+                      : "bg-white border-slate-100 text-slate-300"
+                  : "bg-white border-slate-100 text-slate-700 hover:border-indigo-500 hover:shadow-xl hover:-translate-y-1"
+              }`}
+            >
+              <span>{opt}</span>
+              {isAnswered && opt === quizData[currentIdx].meaning && <CheckCircle2 className="text-emerald-500" />}
+              {!isAnswered && <ArrowRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-indigo-300" />}
+            </button>
+          ))}
+        </div>
+
+        <AnimatePresence>
+          {isAnswered && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-12 flex justify-end"
+            >
+              <button 
+                onClick={handleNext}
+                className="bg-slate-800 text-white px-12 py-5 rounded-[2rem] font-black text-xl flex items-center gap-3 shadow-2xl hover:bg-black transition-all active:scale-95"
+              >
+                {currentIdx === quizData.length - 1 ? "FINISH MISSION" : "NEXT LEVEL"} <ChevronRight size={24} />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+function SidebarBtn({ icon, label, active, onClick }: { icon: React.ReactNode; label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button 
+      onClick={onClick}
+      className={`flex items-center space-x-4 p-4 rounded-3xl transition-all font-bold tracking-tight text-lg group w-full text-left ${
+        active 
+          ? "bg-[#667EEA] text-white shadow-xl shadow-indigo-700/20 translate-x-1" 
+          : "text-white/70 hover:bg-white/10 hover:text-white"
+      }`}
+    >
+      <span className={`transition-transform group-hover:scale-110 ${active ? "text-white" : "text-indigo-300"}`}>{icon}</span>
+      <span>{label}</span>
+      {active && <motion.div layoutId="sidebar-active" className="ml-auto w-2 h-2 bg-white rounded-full"></motion.div>}
+    </button>
+  );
+}
+
+function MenuCard({ title, tagline, variant, accent, icon, onClick }: { title: string; tagline: string; variant: 'white' | 'slate' | 'amber'; accent: 'purple' | 'indigo' | 'orange' | 'emerald'; icon: React.ReactNode; onClick: () => void }) {
+  const themes = {
+    white: "bg-white border-slate-100 shadow-[0_10px_35px_rgba(0,0,0,0.03)]",
+    slate: "bg-[#EDF2F7] border-slate-200 border-2 border-dashed",
+    amber: "bg-amber-50 border-amber-100 shadow-sm"
+  };
+
+  const accentColors = {
+    purple: "bg-purple-100 text-purple-600",
+    indigo: "bg-indigo-100 text-indigo-600",
+    orange: "bg-orange-100 text-orange-600",
+    emerald: "bg-emerald-100 text-emerald-600"
+  };
+
+  const iconBg = {
+    purple: "bg-purple-600",
+    indigo: "bg-indigo-600",
+    orange: "bg-orange-600",
+    emerald: "bg-[#34D399]"
+  };
+
+  return (
+    <button 
+      onClick={onClick}
+      className={`group relative p-10 rounded-[40px] border transition-all text-left flex flex-col justify-between h-80 hover:shadow-2xl hover:-translate-y-2 ${themes[variant]}`}
+    >
+      <div className="space-y-6">
+        <div className={`w-16 h-16 rounded-3xl flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110 ${iconBg[accent]}`}>
+          {icon}
+        </div>
+        <div>
+          <h3 className="text-2xl font-black text-slate-800 mb-2 tracking-tighter">{title}</h3>
+          <p className="text-slate-500 font-bold leading-snug">{tagline}</p>
+        </div>
+      </div>
+      <div className={`flex items-center gap-2 p-1 px-4 rounded-full self-start font-black text-xs transition-colors group-hover:bg-white group-hover:shadow-md ${accentColors[accent]}`}>
+        START MISSION <ChevronRight size={14} />
+      </div>
+      <div className="absolute top-6 right-8 opacity-5 scale-150 grayscale pointer-events-none">{icon}</div>
+    </button>
+  );
+}
+
+function ResultCard({ score, total, onRestart, onGoHome }: { score: number; total: number; onRestart: () => void; onGoHome: () => void }) {
+  const percentage = Math.round((score / total) * 100);
+  
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="max-w-md mx-auto text-center space-y-8 bg-white p-12 rounded-[50px] shadow-[0_30px_100px_rgba(0,0,0,0.1)] border border-slate-50 relative overflow-hidden"
+    >
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
+      <div className="relative inline-block mt-4">
+        <div className="w-40 h-40 rounded-full border-[12px] border-slate-50 flex items-center justify-center bg-white shadow-inner">
+          <span className="text-5xl font-black text-indigo-600 tracking-tighter">{percentage}%</span>
+        </div>
+        <motion.div 
+          initial={{ rotate: -20, scale: 0 }}
+          animate={{ rotate: 0, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="absolute -top-4 -right-4 bg-yellow-400 w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white"
+        >
+          <Trophy className="text-white" size={30} />
+        </motion.div>
+      </div>
+
+      <div className="space-y-4">
+        <h2 className="text-4xl font-black text-slate-800 tracking-tighter underline decoration-indigo-200 underline-offset-8">MISSION COMPLETED</h2>
+        <p className="text-slate-500 font-bold text-lg leading-tight">
+          당신은 <span className="font-extrabold text-indigo-600 block text-2xl mt-1">{total}문제 중 {score}문제를 맞췄습니다!</span>
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-4 pt-4">
+        <button 
+          onClick={onRestart}
+          className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-2xl shadow-indigo-200 hover:bg-indigo-700 transition flex items-center justify-center gap-3 active:scale-95"
+        >
+          <RotateCcw size={24} /> 한 번 더 도전하기
+        </button>
+        <button 
+          onClick={onGoHome}
+          className="w-full py-5 bg-slate-100 text-slate-500 rounded-3xl font-black hover:bg-slate-200 transition active:scale-95"
+        >
+          메뉴로 돌아가기
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+
+  const GrammarView = ({ activeSection, setScore, isFinished, setIsFinished, score, navTo, handleSpeak }: { activeSection: Section; setScore: React.Dispatch<React.SetStateAction<number>>; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
     const isPpc = activeSection === 'grammar_ppc';
     const sectionKey = isPpc ? 'ppc' : 'so_that';
     const filteredQuestions = GRAMMAR_DATA.filter(q => q.section === sectionKey);
@@ -973,26 +1335,37 @@ export default function App() {
     const [feedback, setFeedback] = useState<{ isCorrect: boolean; explanation: string } | null>(null);
     const [showIntro, setShowIntro] = useState(true);
 
+    useEffect(() => {
+      if (feedback && feedback.isCorrect) {
+        const delay = 1500;
+        const timer = setTimeout(() => {
+          handleNext();
+        }, delay);
+        return () => clearTimeout(timer);
+      }
+    }, [feedback]);
+
     const handleSubmitSubjective = () => {
-      const correct = filteredQuestions[currentQuestion].answer.toLowerCase().trim().replace(/\s+/g, ' ');
-      const user = inputValue.toLowerCase().trim().replace(/\s+/g, ' ');
-      const isCorrect = user === correct;
+      if (feedback) return;
+      const q = filteredQuestions[currentQuestion];
+      const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
       
       if (isCorrect) setScore(prev => prev + 1);
-      setFeedback({ isCorrect, explanation: filteredQuestions[currentQuestion].explanation });
+      setFeedback({ isCorrect, explanation: q.explanation });
     };
 
     const handleChoiceAnswer = (ans: string) => {
+      if (feedback) return;
       const isCorrect = ans === filteredQuestions[currentQuestion].answer;
       if (isCorrect) setScore(prev => prev + 1);
       setFeedback({ isCorrect, explanation: filteredQuestions[currentQuestion].explanation });
     };
 
     const handleNext = () => {
+      setFeedback(null);
+      setInputValue('');
       if (currentQuestion < filteredQuestions.length - 1) {
         setCurrentQuestion(prev => prev + 1);
-        setFeedback(null);
-        setInputValue('');
       } else {
         setIsFinished(true);
       }
@@ -1013,10 +1386,21 @@ export default function App() {
                   <div className="space-y-6 text-xl font-bold text-slate-600 leading-relaxed">
                     <p className="flex items-start gap-4"><Star className="text-orange-400 shrink-0 mt-1" size={24} /> <span className="block italic">형태: have/has + been + V-ing</span></p>
                     <p className="flex items-start gap-4"><Star className="text-orange-400 shrink-0 mt-1" size={24} /> <span className="block italic">의미: 과거에 시작된 동작이 현재까지 지속됨을 강조 (~해오고 있다)</span></p>
-                    <p className="flex items-start gap-4 text-rose-600 bg-rose-50 p-4 rounded-2xl border border-rose-100">
-                      <AlertCircle className="shrink-0" size={20} /> 
-                      <span className="text-sm font-black">주의! 'know', 'like', 'love', 'believe' 등 상태를 나타내는 동사는 진행형으로 쓸 수 없으므로 현재완료(have p.p.)를 사용합니다. <br/>(예: I have been knowing her. (X) → I have known her. (O))</span>
-                    </p>
+                    <div className="flex items-start gap-4 text-rose-600 bg-rose-50 p-6 rounded-[30px] border border-rose-100 shadow-sm">
+                      <AlertCircle className="shrink-0 mt-1" size={20} /> 
+                      <div className="text-[15px] font-black space-y-3 w-full">
+                        <p className="text-rose-700">상태를 나타내는 동사는 진행형으로 쓸 수 없으므로 현재완료(have p.p.)를 사용합니다.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-slate-600 bg-white/50 p-4 rounded-2xl">
+                          <p>• 감정: like, hate, prefer</p>
+                          <p>• 인식: understand, believe, think, remember, forget</p>
+                          <p>• 감각: feel, smell, taste, sound</p>
+                          <p>• 소유: own</p>
+                        </div>
+                        <p className="text-slate-400 italic text-sm mt-2">
+                          (예: I have been knowing her. (X) → I have known her. (O))
+                        </p>
+                      </div>
+                    </div>
                     <div className="bg-indigo-600 text-white p-6 rounded-3xl mt-4 italic shadow-lg">예: Claire has been sleeping since nine.</div>
                   </div>
                 ) : (
@@ -1055,7 +1439,20 @@ export default function App() {
       );
     }
 
-    if (isFinished) return <ResultCard score={score} total={filteredQuestions.length} onRestart={() => setIsFinished(false)} onGoHome={() => navTo('dashboard')} />;
+    if (isFinished) return (
+      <ResultCard 
+        score={score} 
+        total={filteredQuestions.length} 
+        onRestart={() => {
+          setIsFinished(false);
+          setCurrentQuestion(0);
+          setFeedback(null);
+          setScore(0);
+          setInputValue('');
+        }} 
+        onGoHome={() => navTo('dashboard')} 
+      />
+    );
 
     const q = filteredQuestions[currentQuestion];
 
@@ -1067,77 +1464,116 @@ export default function App() {
           </div>
           
           <div className="flex justify-between items-center mb-8">
-            <span className="bg-slate-100 text-slate-500 px-5 py-2 rounded-2xl font-black text-xs uppercase tracking-widest">Question {currentQuestion + 1}/{filteredQuestions.length}</span>
-            <div className="flex items-center gap-1">
-              {[...Array(filteredQuestions.length)].map((_, i) => (
-                <div key={i} className={`w-3 h-3 rounded-full ${i < currentQuestion ? "bg-emerald-400" : i === currentQuestion ? "bg-indigo-400 animate-pulse" : "bg-slate-200"}`}></div>
-              ))}
+            <div className="flex items-center gap-3">
+              <span className="bg-slate-100 text-slate-500 px-5 py-2 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-1">
+                QUESTION 
+                <AnimatePresence mode="wait">
+                  <motion.span 
+                    key={currentQuestion}
+                    initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -10, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="inline-block min-w-[1rem] text-center"
+                  >
+                    {currentQuestion + 1}
+                  </motion.span>
+                </AnimatePresence>
+                /{filteredQuestions.length}
+              </span>
+              <button 
+                onClick={handleNext}
+                className="text-slate-300 hover:text-indigo-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-indigo-50"
+              >
+                SKIP
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+               <Trophy size={20} className="text-yellow-500" />
+               <span className="font-black text-slate-400 text-sm">SCORE: {score}</span>
             </div>
           </div>
 
           <div className="space-y-10 flex-1">
-            <div className="flex items-center justify-between gap-4">
-              <h3 className="text-4xl font-black text-slate-800 leading-tight tracking-tighter">
-                {q.question}
-              </h3>
-              <button 
-                onClick={() => handleSpeak(q.question)}
-                className="p-3 text-slate-300 hover:text-indigo-600 hover:bg-slate-50 rounded-full transition-all active:scale-90 shrink-0"
-                title="Listen to question"
-              >
-                <Volume2 size={24} />
-              </button>
-            </div>
-
-            {q.type === 'choice' ? (
-              <div className="grid grid-cols-1 gap-4">
-                {q.options?.map((opt, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleChoiceAnswer(opt)}
-                    className={`p-6 text-xl font-bold rounded-3xl border-2 transition-all text-left flex items-center justify-between group ${
-                      feedback
-                        ? opt === q.answer
-                          ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg shadow-emerald-100"
-                          : "bg-white border-slate-100 text-slate-300 opacity-50"
-                        : "bg-white border-slate-100 text-slate-700 hover:border-indigo-500 hover:shadow-xl group-active:scale-95"
-                    }`}
-                  >
-                    <span>{opt}</span>
-                    {feedback && opt === q.answer && <CheckCircle2 className="text-emerald-500" size={28} />}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <input 
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="정답을 입력하신 후 Enter 또는 버튼을 누르세요..."
-                  disabled={!!feedback}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSubmitSubjective()}
-                  className="w-full p-8 text-2xl font-black rounded-3xl border-2 border-slate-100 focus:border-indigo-500 focus:outline-none transition-all shadow-inner bg-slate-50/30 text-center"
-                />
-                {!feedback && (
+             <div className="space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                  <h3 className="text-3xl font-black text-slate-800 leading-tight tracking-tighter italic">
+                    Q: {q.question}
+                  </h3>
                   <button 
-                    onClick={handleSubmitSubjective}
-                    disabled={!inputValue}
-                    className="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-xl shadow-2xl shadow-indigo-100 hover:bg-black transition disabled:opacity-50 active:scale-95"
+                    onClick={() => handleSpeak(q.question)}
+                    className="p-3 text-slate-300 hover:text-indigo-600 hover:bg-slate-50 rounded-full transition-all active:scale-90 shrink-0"
+                    title="Listen to question"
                   >
-                    확정 후 채점하기
+                    <Volume2 size={24} />
                   </button>
-                )}
-              </div>
-            )}
+                </div>
+                <p className="text-xl font-bold text-slate-400">
+                  질문: {q.question_ko}
+                </p>
+             </div>
+
+             {q.type === 'choice' ? (
+                <div className="grid grid-cols-1 gap-4">
+                   {q.options?.map((opt, i) => (
+                      <motion.button
+                        key={i}
+                        whileHover={feedback === null ? { scale: 1.02, x: 10 } : {}}
+                        whileTap={feedback === null ? { scale: 0.98 } : {}}
+                        onClick={() => handleChoiceAnswer(opt)}
+                        disabled={feedback !== null}
+                        className={`p-6 rounded-3xl text-left font-black text-xl border-2 transition-all flex items-center justify-between group ${
+                          feedback === null 
+                            ? "bg-white border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 text-slate-700" 
+                            : feedback.isCorrect && opt === q.answer 
+                              ? "bg-emerald-50 border-emerald-500 text-emerald-700" 
+                              : !feedback.isCorrect && opt === q.answer 
+                                ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                                : !feedback.isCorrect && inputValue === opt
+                                  ? "bg-rose-50 border-rose-500 text-rose-700"
+                                  : "bg-white border-slate-100 text-slate-300 opacity-50"
+                        }`}
+                      >
+                         <span>{opt}</span>
+                         {feedback === null && <ChevronRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-indigo-400" />}
+                      </motion.button>
+                   ))}
+                </div>
+             ) : (
+                <div className="space-y-6">
+                   <div className="relative">
+                      <input 
+                        type="text"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Type your answer here..."
+                        onKeyDown={(e) => e.key === 'Enter' && handleSubmitSubjective()}
+                        disabled={feedback !== null}
+                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl p-8 text-2xl font-black text-slate-700 placeholder:text-slate-200 focus:outline-none focus:border-indigo-300 focus:bg-white transition-all shadow-inner"
+                      />
+                      {!feedback && (
+                        <button 
+                          onClick={handleSubmitSubjective}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-indigo-600 text-white p-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-90"
+                        >
+                          <Send size={24} />
+                        </button>
+                      )}
+                   </div>
+                   <p className="text-center text-slate-300 font-bold text-sm italic">
+                     * 대소문자나 문장 부호(마침표 등)는 채점에 영향을 주지 않습니다.
+                   </p>
+                </div>
+             )}
           </div>
 
           <AnimatePresence>
             {feedback && (
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`mt-10 p-10 rounded-[40px] border-4 ${
+                initial={{ y: 100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+                className={`mt-8 p-10 rounded-[40px] border-4 ${
                   feedback.isCorrect 
                     ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" 
                     : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"
@@ -1174,19 +1610,37 @@ export default function App() {
       </div>
     );
   };
-
-  const WritingView = () => {
+  const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [scrambled, setScrambled] = useState<string[]>([]);
     const [userOrder, setUserOrder] = useState<string[]>([]);
     const [feedback, setFeedback] = useState<boolean | null>(null);
     const [showMyStory, setShowMyStory] = useState(false);
+    const [isTypingMode, setIsTypingMode] = useState(false);
+    const [typedAnswer, setTypedAnswer] = useState('');
+
+    useEffect(() => {
+      if (feedback === true) {
+        const delay = 1500;
+        const timer = setTimeout(() => {
+          nextLevel();
+        }, delay);
+        return () => clearTimeout(timer);
+      }
+    }, [feedback]);
+
+    useEffect(() => {
+      if (!isTypingMode && scrambled.length === 0 && userOrder.length > 0 && feedback === null) {
+        checkAnswer();
+      }
+    }, [scrambled, userOrder, feedback, isTypingMode]);
 
     useEffect(() => {
       if (currentIdx < WRITING_DATA.length) {
         setScrambled([...WRITING_DATA[currentIdx].scrambled].sort(() => Math.random() - 0.5));
         setUserOrder([]);
         setFeedback(null);
+        setTypedAnswer('');
       }
     }, [currentIdx]);
 
@@ -1212,12 +1666,23 @@ export default function App() {
     };
 
     const checkAnswer = () => {
-      const isCorrect = userOrder.join(' ') === WRITING_DATA[currentIdx].correct;
+      const q = WRITING_DATA[currentIdx];
+      let isCorrect = false;
+      
+      if (isTypingMode) {
+        const fullSent = `${q.prefix || ""} ${q.correct} ${q.suffix || ""}`;
+        isCorrect = checkSubjectiveAnswer(typedAnswer, fullSent) || 
+                    checkSubjectiveAnswer(typedAnswer, q.correct);
+      } else {
+        isCorrect = normalizeStr(userOrder.join(' ')) === normalizeStr(q.correct);
+      }
+      
       setFeedback(isCorrect);
       if (isCorrect) setScore(prev => prev + 1);
     };
 
     const nextLevel = () => {
+      setFeedback(null);
       if (currentIdx < WRITING_DATA.length - 1) {
         setCurrentIdx(prev => prev + 1);
       } else {
@@ -1225,7 +1690,7 @@ export default function App() {
       }
     };
 
-    if (showMyStory) return <MyStoryView />;
+    if (showMyStory) return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} />;
 
     const q = WRITING_DATA[currentIdx];
 
@@ -1240,6 +1705,18 @@ export default function App() {
              <div className="flex items-center gap-3">
                <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Writing Mission</span>
                <span className="text-slate-300 font-bold tracking-widest uppercase text-xs">Sentence {currentIdx + 1}/{WRITING_DATA.length}</span>
+               <button 
+                onClick={nextLevel}
+                className="ml-4 text-slate-400 hover:text-orange-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-orange-50"
+               >
+                SKIP
+               </button>
+               <button 
+                onClick={() => setIsTypingMode(!isTypingMode)}
+                className={`ml-2 font-black text-xs py-1 px-3 rounded-lg transition-all ${isTypingMode ? "bg-orange-600 text-white" : "text-slate-400 hover:bg-orange-50"}`}
+               >
+                {isTypingMode ? "USE BLOCKS" : "TYPE ANSWER"}
+               </button>
              </div>
              <div className="flex items-center gap-2">
                 <Trophy size={20} className="text-yellow-500" />
@@ -1260,29 +1737,44 @@ export default function App() {
              <div className="space-y-8">
                 {/* Answer Area */}
                 <div className="bg-slate-50 p-10 rounded-[40px] border-2 border-dashed border-slate-200 min-h-[140px] flex flex-wrap gap-x-3 gap-y-4 justify-center items-center shadow-inner relative group">
-                   {userOrder.length === 0 && !q.prefix && !q.suffix && <p className="text-slate-300 font-black italic select-none">아래 단어들을 클릭하여 문장을 완성하세요.</p>}
-                   
-                   {q.prefix && (
-                     <div className="text-3xl font-black text-slate-400 mr-2 border-b-4 border-slate-200 pb-1">
-                       {q.prefix}
-                     </div>
-                   )}
+                   {isTypingMode ? (
+                     <input 
+                       type="text"
+                       value={typedAnswer}
+                       onChange={(e) => setTypedAnswer(e.target.value)}
+                       placeholder="여기에 문장을 직접 입력하세요..."
+                       disabled={feedback !== null}
+                       onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+                       className="w-full bg-transparent border-none text-3xl font-black text-slate-700 focus:outline-none text-center placeholder:text-slate-200"
+                       autoFocus
+                     />
+                   ) : (
+                     <>
+                       {userOrder.length === 0 && !q.prefix && !q.suffix && <p className="text-slate-300 font-black italic select-none">아래 단어들을 클릭하여 문장을 완성하세요.</p>}
+                       
+                       {q.prefix && (
+                         <div className="text-3xl font-black text-slate-400 mr-2 border-b-4 border-slate-200 pb-1">
+                           {q.prefix}
+                         </div>
+                       )}
 
-                   {userOrder.map((word, i) => (
-                      <motion.button
-                        key={`user-${i}-${word}`}
-                        layoutId={`word-${word}-${i}`}
-                        onClick={() => handleWordClick(word, true)}
-                        className={`px-6 py-3 rounded-2xl font-black text-lg shadow-md transition-all active:scale-90 ${feedback === null ? "bg-white text-slate-700 hover:bg-rose-50" : "bg-white/50 text-slate-400"}`}
-                      >
-                         {word}
-                      </motion.button>
-                   ))}
+                       {userOrder.map((word, i) => (
+                          <motion.button
+                            key={`user-${i}-${word}`}
+                            layoutId={`word-${word}-${i}`}
+                            onClick={() => handleWordClick(word, true)}
+                            className={`px-6 py-3 rounded-2xl font-black text-lg shadow-md transition-all active:scale-90 ${feedback === null ? "bg-white text-slate-700 hover:bg-rose-50" : "bg-white/50 text-slate-400"}`}
+                          >
+                             {word}
+                          </motion.button>
+                       ))}
 
-                   {q.suffix && (
-                     <div className="text-3xl font-black text-slate-400 ml-2 border-b-4 border-slate-200 pb-1">
-                       {q.suffix}
-                     </div>
+                       {q.suffix && (
+                         <div className="text-3xl font-black text-slate-400 ml-2 border-b-4 border-slate-200 pb-1">
+                           {q.suffix}
+                         </div>
+                       )}
+                     </>
                    )}
                 </div>
 
@@ -1314,7 +1806,7 @@ export default function App() {
                   ) : feedback ? (
                     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6 w-full max-w-2xl mx-auto">
                        <div className="bg-emerald-100 text-emerald-700 p-8 rounded-[40px] border-4 border-emerald-200 block shadow-xl relative group">
-                          <p className="text-4xl font-black tracking-tighter mb-4">EXCELLENT! 🎉</p>
+                          <p className="text-4xl font-black tracking-tighter mb-4">PERFECT! ✨</p>
                           <div className="flex items-center justify-center gap-3 mb-6 bg-white/40 p-4 rounded-2xl border border-white/40">
                             <p className="font-bold text-xl">
                               {q.prefix ? `${q.prefix} ` : ""}{q.correct}{q.suffix ? ` ${q.suffix}` : ""}
@@ -1361,6 +1853,9 @@ export default function App() {
                           <button onClick={() => { setScrambled([...q.scrambled].sort()); setUserOrder([]); setFeedback(null); }} className="bg-slate-100 text-slate-500 px-10 py-5 rounded-3xl font-black hover:bg-slate-200 transition">다시 하기</button>
                           <button onClick={() => setFeedback(true)} className="bg-indigo-600 text-white px-10 py-5 rounded-3xl font-black hover:bg-indigo-700 transition">정답 보기</button>
                        </div>
+                       <button onClick={nextLevel} className="mt-4 block mx-auto bg-slate-800 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-black transition active:scale-95 flex items-center gap-3">
+                          {currentIdx === WRITING_DATA.length - 1 ? "CREATE MY STORY" : "NEXT MISSION"} <ChevronRight size={24} />
+                       </button>
                     </motion.div>
                   )}
                </AnimatePresence>
@@ -1371,7 +1866,7 @@ export default function App() {
     );
   };
 
-  const MyStoryView = () => {
+  const MyStoryView = ({ handleSpeak, navTo }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void }) => {
     const [sentencePPC, setSentencePPC] = useState('');
     const [sentenceSoThat, setSentenceSoThat] = useState('');
     const [submitted, setSubmitted] = useState(false);
@@ -1517,7 +2012,7 @@ export default function App() {
     );
   };
 
-  const ReadingView = () => {
+  const ReadingView = ({ activeSection, isFinished, setIsFinished, score, setScore, navTo, handleSpeak }: { activeSection: Section; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; setScore: React.Dispatch<React.SetStateAction<number>>; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
     const isP1 = activeSection === 'reading_p1';
     const sectionKey = isP1 ? 'p1' : activeSection === 'reading_p2_jiho' ? 'p2_jiho' : 'p2_somi' as keyof typeof READING_TEXTS;
     const filteredQuestions = READING_DATA.filter(q => q.section === sectionKey);
@@ -1529,17 +2024,41 @@ export default function App() {
 
     const content = READING_TEXTS[sectionKey];
 
+    useEffect(() => {
+      if (feedback && feedback.isCorrect) {
+        const delay = 1500;
+        const timer = setTimeout(() => {
+          handleNext();
+        }, delay);
+        return () => clearTimeout(timer);
+      }
+    }, [feedback]);
+
     const handleNext = () => {
+      setFeedback(null);
+      setInputValue('');
       if (currentQuestion < filteredQuestions.length - 1) {
         setCurrentQuestion(prev => prev + 1);
-        setFeedback(null);
-        setInputValue('');
       } else {
         setIsFinished(true);
       }
     };
 
-    if (isFinished) return <ResultCard score={score} total={filteredQuestions.length} onRestart={() => { setIsFinished(false); setShowQuiz(false); setCurrentQuestion(0); }} onGoHome={() => navTo('dashboard')} />;
+    if (isFinished) return (
+      <ResultCard 
+        score={score} 
+        total={filteredQuestions.length} 
+        onRestart={() => { 
+          setIsFinished(false); 
+          setShowQuiz(false); 
+          setCurrentQuestion(0); 
+          setScore(0);
+          setFeedback(null);
+          setInputValue('');
+        }} 
+        onGoHome={() => navTo('dashboard')} 
+      />
+    );
 
     if (!showQuiz) {
       return (
@@ -1628,8 +2147,29 @@ export default function App() {
              <div className="flex items-center gap-3">
                <span className="bg-emerald-100 text-emerald-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Reading Section</span>
                <span className="text-slate-300 font-bold tracking-widest uppercase text-xs">Page {activeSection.includes('p1') ? '1' : '2'} / {activeSection.replace('reading_', '').toUpperCase()}</span>
+               <button 
+                onClick={handleNext}
+                className="ml-4 text-slate-400 hover:text-emerald-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-emerald-50"
+               >
+                SKIP
+               </button>
              </div>
-             <div className="text-slate-400 font-black text-sm">QUEST: {currentQuestion + 1} / {filteredQuestions.length}</div>
+             <div className="text-slate-400 font-black text-sm flex items-center gap-1">
+               QUEST: 
+               <AnimatePresence mode="wait">
+                 <motion.span 
+                   key={currentQuestion}
+                   initial={{ scale: 1.2, opacity: 0 }}
+                   animate={{ scale: 1, opacity: 1 }}
+                   exit={{ scale: 0.8, opacity: 0 }}
+                   transition={{ duration: 0.2 }}
+                   className="inline-block min-w-[1rem] text-center text-emerald-500"
+                 >
+                   {currentQuestion + 1}
+                 </motion.span>
+               </AnimatePresence>
+               / {filteredQuestions.length}
+             </div>
           </div>
 
           <div className="space-y-10 flex-1">
@@ -1657,6 +2197,7 @@ export default function App() {
                       <button
                         key={i}
                         onClick={() => {
+                           if (feedback) return;
                            const isCorrect = opt === q.answer;
                            if (isCorrect) setScore(prev => prev + 1);
                            setFeedback({ isCorrect, explanation: q.explanation });
@@ -1683,26 +2224,24 @@ export default function App() {
                       onChange={(e) => setInputValue(e.target.value)}
                       placeholder="정답을 입력하신 후 Enter 또는 버튼을 누르세요..."
                       disabled={!!feedback}
-                      onKeyDown={(e) => e.key === 'Enter' && (()=>{
-                         const correct = q.answer.toLowerCase().trim();
-                         const user = inputValue.toLowerCase().trim();
-                         const isCorrect = user === correct;
-                         if (isCorrect) setScore(prev => prev + 1);
-                         setFeedback({ isCorrect, explanation: q.explanation });
-                      })()}
+                      onKeyDown={(e) => e.key === 'Enter' && (() => {
+                       if (feedback) return;
+                       const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
+                       if (isCorrect) setScore(prev => prev + 1);
+                       setFeedback({ isCorrect, explanation: q.explanation });
+                    })()}
                       className="w-full p-8 text-2xl font-black rounded-3xl border-2 border-slate-100 focus:border-emerald-500 focus:outline-none transition-all shadow-inner bg-slate-50/30 text-center"
                    />
                    {!feedback && (
                       <button 
-                        onClick={()=>{
-                           const correct = q.answer.toLowerCase().trim();
-                           const user = inputValue.toLowerCase().trim();
-                           const isCorrect = user === correct;
-                           if (isCorrect) setScore(prev => prev + 1);
-                           setFeedback({ isCorrect, explanation: q.explanation });
-                        }}
+                        onClick={() => {
+                          if (feedback) return;
+                          const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
+                          if (isCorrect) setScore(prev => prev + 1);
+                          setFeedback({ isCorrect, explanation: q.explanation });
+                       }}
                         disabled={!inputValue}
-                        className="w-full py-6 bg-emerald-500 text-white rounded-3xl font-black text-xl shadow-2xl shadow-emerald-100 hover:bg-emerald-600 transition disabled:opacity-50"
+                        className="w-full py-6 bg-emerald-500 text-white rounded-3xl font-black text-xl shadow-xl shadow-emerald-100 hover:bg-emerald-600 transition disabled:opacity-50 active:scale-95"
                       >
                          제출 및 확인
                       </button>
@@ -1727,7 +2266,7 @@ export default function App() {
                           {feedback.isCorrect ? <CheckCircle2 className="text-white" size={32} /> : <AlertCircle className="text-white" size={32} />}
                         </div>
                         <div>
-                          <h4 className="text-3xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Good Try! 💪"}</h4>
+                          <h4 className="text-3xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Check Again! 💪"}</h4>
                           {!feedback.isCorrect && (
                              <p className="text-lg font-bold opacity-80 mt-1">정답: <span className="underline decoration-2 underline-offset-4">{q.answer}</span></p>
                           )}
@@ -1761,7 +2300,7 @@ export default function App() {
     );
   };
 
-  const DashboardView = () => (
+  const DashboardView = ({ navTo }: { navTo: (s: Section) => void }) => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
       <div className="lg:col-span-2 space-y-8">
         <div className="bg-gradient-to-br from-[#4C51BF] to-[#667EEA] p-16 rounded-[60px] text-white relative overflow-hidden shadow-2xl shadow-indigo-200">
@@ -1852,248 +2391,3 @@ export default function App() {
       </div>
     </div>
   );
-
-  return (
-    <div className="flex h-screen bg-[#2D3748] font-sans selection:bg-indigo-200 selection:text-indigo-900 overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-96 bg-[#2D3748] p-10 flex flex-col h-full border-r border-white/5 relative z-20">
-        <div className="flex items-center space-x-4 mb-16 pl-2">
-          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl shadow-white/10">
-            <Award className="text-[#4C51BF]" size={30} fill="currentColor" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-black text-white tracking-widest leading-none">GRACE's</h1>
-            <p className="text-sm font-black text-indigo-400 uppercase tracking-[0.4em] mt-1">English Class</p>
-          </div>
-        </div>
-
-        <nav className="flex-1 space-y-3">
-          <SidebarBtn icon={<Zap size={20} />} label="대시보드" active={activeSection === 'dashboard'} onClick={() => navTo('dashboard')} />
-          <SidebarBtn icon={<Brain size={20} />} label="어휘마스터" active={activeSection === 'vocab' || activeSection === 'vocabQuiz'} onClick={() => navTo('vocab')} />
-          <div className="pt-6 pb-2">
-             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] pl-6 mb-4">Core Training</p>
-             <div className="space-y-2">
-                <button 
-                  onClick={() => navTo('grammar_ppc')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'grammar_ppc' ? "bg-indigo-500/20 text-white" : "text-white/40 hover:text-white"}`}
-                >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_ppc' ? "bg-indigo-400" : "bg-white/10"}`}></div>
-                   현재완료 진행형
-                </button>
-                <button 
-                  onClick={() => navTo('grammar_so_that')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'grammar_so_that' ? "bg-indigo-500/20 text-white" : "text-white/40 hover:text-white"}`}
-                >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_so_that' ? "bg-indigo-400" : "bg-white/10"}`}></div>
-                   SO ~ THAT 구문
-                </button>
-             </div>
-          </div>
-          <SidebarBtn icon={<PenTool size={20} />} label="영작 트레이닝" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
-          <div className="pt-6 pb-2">
-             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] pl-6 mb-4">Text Analysis</p>
-             <div className="space-y-2">
-                <button 
-                  onClick={() => navTo('reading_p1')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p1' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
-                >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p1' ? "bg-emerald-400" : "bg-white/10"}`}></div>
-                   Emotional Health (Page 1)
-                </button>
-                <button 
-                  onClick={() => navTo('reading_p2_jiho')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p2_jiho' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
-                >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_jiho' ? "bg-emerald-400" : "bg-white/10"}`}></div>
-                   Jiho: Gratitude (Page 2)
-                </button>
-                <button 
-                  onClick={() => navTo('reading_p2_somi')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p2_somi' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
-                >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_somi' ? "bg-emerald-400" : "bg-white/10"}`}></div>
-                   Somi: Healing Art (Page 2)
-                </button>
-             </div>
-          </div>
-        </nav>
-
-        <div className="mt-auto space-y-6">
-           <div className="bg-[#3C366B] p-6 rounded-3xl border border-white/10 shadow-inner">
-             <p className="text-[10px] text-white/50 mb-3 uppercase tracking-[0.2em] font-black">나의 학습 현황</p>
-             <div className="flex justify-between items-end mb-4">
-               <span className="text-4xl font-black text-white tracking-tighter">84%</span>
-               <div className="flex flex-col items-end">
-                  <span className="text-[10px] text-[#F6AD55] font-black uppercase">Lv. 12 챌린저</span>
-                  <div className="flex gap-0.5 mt-1">
-                    {[1,2,3,4,5].map(i => <div key={i} className={`w-2 h-1 rounded-full ${i <= 4 ? "bg-[#ECC94B]" : "bg-white/10"}`}></div>)}
-                  </div>
-               </div>
-             </div>
-             <div className="w-full bg-[#2D3748] h-3 rounded-full overflow-hidden shadow-inner">
-               <motion.div initial={{ width: 0 }} animate={{ width: '84%' }} className="bg-gradient-to-r from-[#ECC94B] to-[#F6AD55] h-full rounded-full shadow-[0_0_10px_rgba(236,201,75,0.5)]"></motion.div>
-             </div>
-           </div>
-           <p className="text-center text-white/30 text-[10px] font-bold italic">© 2026 GRACE's English Class</p>
-        </div>
-      </aside>
-
-      {/* Main Content Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-y-auto bg-[#F7F9FC]">
-        {/* Header bar */}
-        <header className="h-24 bg-white border-b border-slate-100 flex items-center justify-between px-12 sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-3">
-              <span className="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border border-orange-200">LESSON 3</span>
-              <h1 className="text-2xl font-black text-slate-800 tracking-tighter">Be Positive, Be Happy</h1>
-            </div>
-            <div className="h-8 w-[1px] bg-slate-100 hidden md:block"></div>
-            <div className="text-sm font-bold text-slate-400 hidden md:block uppercase tracking-widest">Section: {activeSection.toUpperCase()}</div>
-          </div>
-          <div className="flex items-center space-x-8">
-            <div className="flex -space-x-3">
-              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-[#4C51BF] flex items-center justify-center text-white font-black text-xs shadow-md">J</div>
-              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-[#F6AD55] flex items-center justify-center text-white font-black text-xs shadow-md">S</div>
-              <div className="w-10 h-10 rounded-2xl border-4 border-white bg-[#34D399] flex items-center justify-center text-white font-black text-xs shadow-md">M</div>
-            </div>
-            <div className="flex flex-col items-end">
-              <span className="text-[10px] font-black uppercase text-indigo-500 tracking-tighter">Today's Streak</span>
-              <span className="text-lg font-black text-slate-800 leading-none">🔥 14 DAYS</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Content area */}
-        <div className="p-12">
-          <AnimatePresence mode="wait">
-             <motion.div
-                key={activeSection}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ type: "spring", stiffness: 100, damping: 20 }}
-             >
-                {activeSection === 'dashboard' && <DashboardView />}
-                {activeSection === 'vocab' && <VocabView />}
-                {activeSection === 'vocabQuiz' && <VocabQuizView />}
-                {(activeSection === 'grammar_ppc' || activeSection === 'grammar_so_that') && <GrammarView />}
-                {activeSection === 'writing' && <WritingView />}
-                {(activeSection === 'reading_p1' || activeSection === 'reading_p2_jiho' || activeSection === 'reading_p2_somi') && <ReadingView />}
-             </motion.div>
-          </AnimatePresence>
-        </div>
-      </main>
-    </div>
-  );
-}
-
-// --- Sub-components ---
-
-function SidebarBtn({ icon, label, active, onClick }: { icon: React.ReactNode; label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button 
-      onClick={onClick}
-      className={`flex items-center space-x-4 p-4 rounded-3xl transition-all font-bold tracking-tight text-lg group w-full text-left ${
-        active 
-          ? "bg-[#667EEA] text-white shadow-xl shadow-indigo-700/20 translate-x-1" 
-          : "text-white/70 hover:bg-white/10 hover:text-white"
-      }`}
-    >
-      <span className={`transition-transform group-hover:scale-110 ${active ? "text-white" : "text-indigo-300"}`}>{icon}</span>
-      <span>{label}</span>
-      {active && <motion.div layoutId="sidebar-active" className="ml-auto w-2 h-2 bg-white rounded-full"></motion.div>}
-    </button>
-  );
-}
-
-function MenuCard({ title, tagline, variant, accent, icon, onClick }: { title: string; tagline: string; variant: 'white' | 'slate' | 'amber'; accent: 'purple' | 'indigo' | 'orange' | 'emerald'; icon: React.ReactNode; onClick: () => void }) {
-  const themes = {
-    white: "bg-white border-slate-100 shadow-[0_10px_35px_rgba(0,0,0,0.03)]",
-    slate: "bg-[#EDF2F7] border-slate-200 border-2 border-dashed",
-    amber: "bg-amber-50 border-amber-100 shadow-sm"
-  };
-
-  const accentColors = {
-    purple: "bg-purple-100 text-purple-600",
-    indigo: "bg-indigo-100 text-indigo-600",
-    orange: "bg-orange-100 text-orange-600",
-    emerald: "bg-emerald-100 text-emerald-600"
-  };
-
-  const iconBg = {
-    purple: "bg-purple-600",
-    indigo: "bg-indigo-600",
-    orange: "bg-orange-600",
-    emerald: "bg-[#34D399]"
-  };
-
-  return (
-    <button 
-      onClick={onClick}
-      className={`group relative p-10 rounded-[40px] border transition-all text-left flex flex-col justify-between h-80 hover:shadow-2xl hover:-translate-y-2 ${themes[variant]}`}
-    >
-      <div className="space-y-6">
-        <div className={`w-16 h-16 rounded-3xl flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110 ${iconBg[accent]}`}>
-          {icon}
-        </div>
-        <div>
-          <h3 className="text-2xl font-black text-slate-800 mb-2 tracking-tighter">{title}</h3>
-          <p className="text-slate-500 font-bold leading-snug">{tagline}</p>
-        </div>
-      </div>
-      <div className={`flex items-center gap-2 p-1 px-4 rounded-full self-start font-black text-xs transition-colors group-hover:bg-white group-hover:shadow-md ${accentColors[accent]}`}>
-        START MISSION <ChevronRight size={14} />
-      </div>
-      <div className="absolute top-6 right-8 opacity-5 scale-150 grayscale pointer-events-none">{icon}</div>
-    </button>
-  );
-}
-
-function ResultCard({ score, total, onRestart, onGoHome }: { score: number; total: number; onRestart: () => void; onGoHome: () => void }) {
-  const percentage = Math.round((score / total) * 100);
-  
-  return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="max-w-md mx-auto text-center space-y-8 bg-white p-12 rounded-[50px] shadow-[0_30px_100px_rgba(0,0,0,0.1)] border border-slate-50 relative overflow-hidden"
-    >
-      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
-      <div className="relative inline-block mt-4">
-        <div className="w-40 h-40 rounded-full border-[12px] border-slate-50 flex items-center justify-center bg-white shadow-inner">
-          <span className="text-5xl font-black text-indigo-600 tracking-tighter">{percentage}%</span>
-        </div>
-        <motion.div 
-          initial={{ rotate: -20, scale: 0 }}
-          animate={{ rotate: 0, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="absolute -top-4 -right-4 bg-yellow-400 w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white"
-        >
-          <Trophy className="text-white" size={30} />
-        </motion.div>
-      </div>
-
-      <div className="space-y-4">
-        <h2 className="text-4xl font-black text-slate-800 tracking-tighter underline decoration-indigo-200 underline-offset-8">MISSION COMPLETED</h2>
-        <p className="text-slate-500 font-bold text-lg leading-tight">
-          당신은 <span className="font-extrabold text-indigo-600 block text-2xl mt-1">{total}문제 중 {score}문제를 맞췄습니다!</span>
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-4 pt-4">
-        <button 
-          onClick={onRestart}
-          className="w-full py-5 bg-indigo-600 text-white rounded-3xl font-black shadow-2xl shadow-indigo-200 hover:bg-indigo-700 transition flex items-center justify-center gap-3 active:scale-95"
-        >
-          <RotateCcw size={24} /> 한 번 더 도전하기
-        </button>
-        <button 
-          onClick={onGoHome}
-          className="w-full py-5 bg-slate-100 text-slate-500 rounded-3xl font-black hover:bg-slate-200 transition active:scale-95"
-        >
-          메뉴로 돌아가기
-        </button>
-      </div>
-    </motion.div>
-  );
-}
