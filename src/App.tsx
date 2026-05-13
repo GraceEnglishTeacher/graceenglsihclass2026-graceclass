@@ -954,6 +954,13 @@ const VocabView = ({
     { id: 'p2_somi', label: '2페이지 (Somi)', icon: <PenTool size={18} /> },
   ];
 
+  const quizBtnColors = {
+    all: 'bg-[#4C51BF] hover:bg-[#3C366B] shadow-indigo-200',
+    p1: 'bg-[#10B981] hover:bg-[#059669] shadow-emerald-200',
+    p2_jiho: 'bg-[#F69665] hover:bg-[#ED8936] shadow-orange-200',
+    p2_somi: 'bg-[#805AD5] hover:bg-[#6B46C1] shadow-purple-200',
+  };
+
   return (
     <div className="space-y-12 pb-20">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
@@ -973,7 +980,7 @@ const VocabView = ({
               setScore(0);
               navTo('vocabQuiz');
             }}
-            className="bg-[#4C51BF] hover:bg-[#3C366B] text-white px-8 py-4 rounded-3xl font-black text-lg shadow-xl shadow-indigo-200 transition-all active:scale-95 flex items-center gap-3 mr-4"
+            className={`${quizBtnColors[selectedTab]} text-white px-8 py-4 rounded-3xl font-black text-lg shadow-xl transition-all active:scale-95 flex items-center gap-3 mr-4`}
           >
             QUIZ START <Zap size={20} fill="currentColor" />
           </button>
@@ -1074,17 +1081,6 @@ const VocabQuizView = ({
   const [options, setOptions] = useState<string[]>([]);
   const [isAnswered, setIsAnswered] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (isAnswered && selectedIdx !== null) {
-      const isCorrect = options[selectedIdx] === quizData[currentIdx].meaning;
-      const delay = isCorrect ? 1500 : 3000; 
-      const timer = setTimeout(() => {
-        handleNext();
-      }, delay);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnswered, selectedIdx]);
 
   useEffect(() => {
     if (currentIdx < quizData.length) {
@@ -1327,7 +1323,7 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
 }
 
 
-  const GrammarView = ({ activeSection, setScore, isFinished, setIsFinished, score, navTo, handleSpeak }: { activeSection: Section; setScore: React.Dispatch<React.SetStateAction<number>>; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+    const GrammarView = ({ activeSection, setScore, isFinished, setIsFinished, score, navTo, handleSpeak }: { activeSection: Section; setScore: React.Dispatch<React.SetStateAction<number>>; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
     const isPpc = activeSection === 'grammar_ppc';
     const sectionKey = isPpc ? 'ppc' : 'so_that';
     const filteredQuestions = GRAMMAR_DATA.filter(q => q.section === sectionKey);
@@ -1336,16 +1332,6 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
     const [inputValue, setInputValue] = useState('');
     const [feedback, setFeedback] = useState<{ isCorrect: boolean; explanation: string } | null>(null);
     const [showIntro, setShowIntro] = useState(true);
-
-    useEffect(() => {
-      if (feedback && feedback.isCorrect) {
-        const delay = 1500;
-        const timer = setTimeout(() => {
-          handleNext();
-        }, delay);
-        return () => clearTimeout(timer);
-      }
-    }, [feedback]);
 
     const handleSubmitSubjective = () => {
       if (feedback) return;
@@ -1578,7 +1564,8 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
                 initial={{ y: 100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
-                className={`mt-8 p-10 rounded-[40px] border-4 ${
+                onClick={handleNext}
+                className={`mt-8 p-10 rounded-[40px] border-4 cursor-pointer hover:scale-[1.01] transition-transform ${
                   feedback.isCorrect 
                     ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" 
                     : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"
@@ -1615,7 +1602,7 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
       </div>
     );
   };
-  const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+    const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
     const [currentIdx, setCurrentIdx] = useState(0);
     const [scrambled, setScrambled] = useState<string[]>([]);
     const [userOrder, setUserOrder] = useState<string[]>([]);
@@ -1623,16 +1610,6 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
     const [showMyStory, setShowMyStory] = useState(false);
     const [isTypingMode, setIsTypingMode] = useState(false);
     const [typedAnswer, setTypedAnswer] = useState('');
-
-    useEffect(() => {
-      if (feedback === true) {
-        const delay = 2500;
-        const timer = setTimeout(() => {
-          nextLevel();
-        }, delay);
-        return () => clearTimeout(timer);
-      }
-    }, [feedback]);
 
     useEffect(() => {
       if (!isTypingMode && scrambled.length === 0 && userOrder.length > 0 && feedback === null) {
@@ -1803,14 +1780,17 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
                   {feedback === null ? (
                     <button 
                       onClick={checkAnswer}
-                      disabled={userOrder.length === 0}
+                      disabled={isTypingMode ? !typedAnswer.trim() : userOrder.length === 0}
                       className="bg-[#4C51BF] text-white px-16 py-6 rounded-3xl font-black text-2xl shadow-2xl shadow-indigo-100 hover:bg-indigo-700 transition disabled:opacity-50 active:scale-95"
                     >
                       정답 확인하기
                     </button>
                   ) : feedback ? (
                     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6 w-full max-w-2xl mx-auto">
-                       <div className="bg-emerald-100 text-emerald-700 p-8 rounded-[40px] border-4 border-emerald-200 block shadow-xl relative group">
+                       <div 
+                        onClick={nextLevel}
+                        className="bg-emerald-100 text-emerald-700 p-8 rounded-[40px] border-4 border-emerald-200 block shadow-xl relative group cursor-pointer hover:scale-[1.01] transition-transform"
+                       >
                           <p className="text-4xl font-black tracking-tighter mb-4">PERFECT! ✨</p>
                           <div className="flex items-center justify-center gap-3 mb-6 bg-white/40 p-4 rounded-2xl border border-white/40">
                             <p className="font-bold text-xl">
@@ -1850,7 +1830,10 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
                     </motion.div>
                   ) : (
                     <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="space-y-6">
-                       <div className="bg-rose-50 text-rose-700 p-8 rounded-[40px] border-4 border-rose-100 inline-block">
+                       <div 
+                        onClick={nextLevel}
+                        className="bg-rose-50 text-rose-700 p-8 rounded-[40px] border-4 border-rose-100 inline-block cursor-pointer hover:scale-[1.01] transition-transform"
+                       >
                           <p className="text-3xl font-black tracking-tighter mb-2">TRY AGAIN! 💪</p>
                           <p className="font-bold">단어의 순서를 다시 한 번 생각해보세요.</p>
                        </div>
@@ -2017,7 +2000,7 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
     );
   };
 
-  const ReadingView = ({ activeSection, isFinished, setIsFinished, score, setScore, navTo, handleSpeak }: { activeSection: Section; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; setScore: React.Dispatch<React.SetStateAction<number>>; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+    const ReadingView = ({ activeSection, isFinished, setIsFinished, score, setScore, navTo, handleSpeak }: { activeSection: Section; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; setScore: React.Dispatch<React.SetStateAction<number>>; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
     const isP1 = activeSection === 'reading_p1';
     const sectionKey = isP1 ? 'p1' : activeSection === 'reading_p2_jiho' ? 'p2_jiho' : 'p2_somi' as keyof typeof READING_TEXTS;
     const filteredQuestions = READING_DATA.filter(q => q.section === sectionKey);
@@ -2028,16 +2011,6 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
     const [showQuiz, setShowQuiz] = useState(false);
 
     const content = READING_TEXTS[sectionKey];
-
-    useEffect(() => {
-      if (feedback && feedback.isCorrect) {
-        const delay = 1500;
-        const timer = setTimeout(() => {
-          handleNext();
-        }, delay);
-        return () => clearTimeout(timer);
-      }
-    }, [feedback]);
 
     const handleNext = () => {
       setFeedback(null);
@@ -2259,7 +2232,8 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
                   <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`mt-10 p-10 rounded-[40px] border-4 ${
+                    onClick={handleNext}
+                    className={`mt-10 p-10 rounded-[40px] border-4 cursor-pointer hover:scale-[1.01] transition-transform ${
                       feedback.isCorrect 
                         ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" 
                         : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"
