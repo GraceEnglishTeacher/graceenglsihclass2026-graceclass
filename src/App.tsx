@@ -17,7 +17,8 @@ import {
   Volume2,
   FileText,
   Search,
-  MessageSquare
+  MessageSquare,
+  Send
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -37,6 +38,7 @@ interface GrammarQuestion {
   type: 'choice' | 'subjective';
   section: 'ppc' | 'so_that';
   question: string;
+  question_ko?: string;
   options?: string[];
   answer: string;
   explanation: string;
@@ -1394,7 +1396,8 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
                           <p>• 감정: like, hate, prefer</p>
                           <p>• 인식: understand, believe, think, remember, forget</p>
                           <p>• 감각: feel, smell, taste, sound</p>
-                          <p>• 소유: own</p>
+                          <p>• 소유: own, have, belong to</p>
+                          <p>• 상태: be, exist</p>
                         </div>
                         <p className="text-slate-400 italic text-sm mt-2">
                           (예: I have been knowing her. (X) → I have known her. (O))
@@ -1508,9 +1511,11 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
                     <Volume2 size={24} />
                   </button>
                 </div>
-                <p className="text-xl font-bold text-slate-400">
-                  질문: {q.question_ko}
-                </p>
+                {q.question_ko && (
+                  <p className="text-xl font-bold text-slate-400">
+                    질문: {q.question_ko}
+                  </p>
+                )}
              </div>
 
              {q.type === 'choice' ? (
@@ -1621,7 +1626,7 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
 
     useEffect(() => {
       if (feedback === true) {
-        const delay = 1500;
+        const delay = 2500;
         const timer = setTimeout(() => {
           nextLevel();
         }, delay);
