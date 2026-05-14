@@ -764,50 +764,56 @@ export default function App() {
         </div>
 
         <nav className="flex-1 space-y-3">
-          <SidebarBtn icon={<Zap size={20} />} label="대시보드" active={activeSection === 'dashboard'} onClick={() => navTo('dashboard')} />
-          <SidebarBtn icon={<Brain size={20} />} label="어휘마스터" active={activeSection === 'vocab' || activeSection === 'vocabQuiz'} onClick={() => navTo('vocab')} />
-          <div className="pt-6 pb-2">
-             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] pl-6 mb-4">Core Training</p>
-             <div className="space-y-2">
+          <SidebarBtn icon={<Zap size={20} />} label="DASHBOARD" active={activeSection === 'dashboard'} onClick={() => navTo('dashboard')} />
+          <SidebarBtn icon={<Brain size={20} />} label="VOCA MASTER" active={activeSection === 'vocab' || activeSection === 'vocabQuiz'} onClick={() => navTo('vocab')} />
+          <div className="pt-10 pb-4">
+             <div className="flex items-center gap-4 pl-4 mb-8">
+                <Star className="text-indigo-300" size={20} />
+                <p className="text-lg font-black uppercase tracking-[0.2em] text-indigo-300 whitespace-nowrap">GRAMMAR MASTER</p>
+             </div>
+             <div className="space-y-3">
                 <button 
                   onClick={() => navTo('grammar_ppc')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'grammar_ppc' ? "bg-indigo-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'grammar_ppc' ? "bg-indigo-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_ppc' ? "bg-indigo-400" : "bg-white/10"}`}></div>
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_ppc' ? "bg-white" : "bg-white/10"}`}></div>
                    현재완료 진행형
                 </button>
                 <button 
                   onClick={() => navTo('grammar_so_that')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'grammar_so_that' ? "bg-indigo-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'grammar_so_that' ? "bg-indigo-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_so_that' ? "bg-indigo-400" : "bg-white/10"}`}></div>
-                   SO ~ THAT 구문
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_so_that' ? "bg-white" : "bg-white/10"}`}></div>
+                   so ~ that 구문
                 </button>
              </div>
           </div>
-          <SidebarBtn icon={<PenTool size={20} />} label="영작 트레이닝" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
-          <div className="pt-6 pb-2">
-             <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] pl-6 mb-4">Text Analysis</p>
-             <div className="space-y-2">
+          <SidebarBtn icon={<PenTool size={20} />} label="WRITING MASTER" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
+          <div className="pt-10 pb-4">
+             <div className="flex items-center gap-4 pl-4 mb-8">
+                <BookOpen className="text-indigo-300" size={20} />
+                <p className="text-lg font-black uppercase tracking-[0.2em] text-indigo-300 whitespace-nowrap">READING MASTER</p>
+             </div>
+             <div className="space-y-3">
                 <button 
                   onClick={() => navTo('reading_p1')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p1' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p1' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p1' ? "bg-emerald-400" : "bg-white/10"}`}></div>
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p1' ? "bg-white" : "bg-white/10"}`}></div>
                    Emotional Health (Page 1)
                 </button>
                 <button 
                   onClick={() => navTo('reading_p2_jiho')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p2_jiho' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_jiho' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_jiho' ? "bg-emerald-400" : "bg-white/10"}`}></div>
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_jiho' ? "bg-white" : "bg-white/10"}`}></div>
                    Jiho: Gratitude (Page 2)
                 </button>
                 <button 
                   onClick={() => navTo('reading_p2_somi')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-bold transition-all ${activeSection === 'reading_p2_somi' ? "bg-emerald-500/20 text-white" : "text-white/40 hover:text-white"}`}
+                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_somi' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_somi' ? "bg-emerald-400" : "bg-white/10"}`}></div>
+                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_somi' ? "bg-white" : "bg-white/10"}`}></div>
                    Somi: Healing Art (Page 2)
                 </button>
              </div>
@@ -965,8 +971,8 @@ const VocabView = ({
     <div className="space-y-12 pb-20">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
         <div>
-          <h2 className="text-5xl font-black text-slate-800 tracking-tighter mb-2">VOCABULARY MASTER</h2>
-          <p className="text-slate-500 font-bold text-xl uppercase tracking-widest pl-1">핵심 어휘 50가지 완벽 정복</p>
+          <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-4 uppercase whitespace-nowrap">VOCA MASTER</h2>
+          <p className="text-indigo-500 font-bold text-2xl uppercase tracking-[0.2em] pl-1 whitespace-nowrap">핵심 어휘 50가지 완벽 정복</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
            <button 
@@ -1054,6 +1060,140 @@ const VocabView = ({
     </div>
   );
 };
+const VocabReviewView = ({ words, onFinish, handleSpeak }: { words: VocabWord[], onFinish: () => void, handleSpeak: (t: string) => void }) => {
+  const [currentWordIdx, setCurrentWordIdx] = useState(0);
+  const [attempts, setAttempts] = useState([
+    { english: '', korean: '' },
+    { english: '', korean: '' },
+    { english: '', korean: '' }
+  ]);
+  const [feedback, setFeedback] = useState<(boolean | null)[]>([null, null, null]);
+  const [shake, setShake] = useState(false);
+
+  if (!words || words.length === 0) {
+    onFinish();
+    return null;
+  }
+
+  const currentWord = words[currentWordIdx];
+
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const newFeedback = attempts.map(att => 
+      normalizeStr(att.english) === normalizeStr(currentWord.word) &&
+      normalizeStr(att.korean) === normalizeStr(currentWord.meaning)
+    );
+    setFeedback(newFeedback);
+
+    if (newFeedback.every(f => f === true)) {
+      handleSpeak("Perfect");
+      if (currentWordIdx < words.length - 1) {
+        setTimeout(() => {
+          setCurrentWordIdx(prev => prev + 1);
+          setAttempts([{ english: '', korean: '' }, { english: '', korean: '' }, { english: '', korean: '' }]);
+          setFeedback([null, null, null]);
+        }, 1000);
+      } else {
+        setTimeout(() => onFinish(), 1000);
+      }
+    } else {
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      handleSpeak("Check your answers");
+    }
+  };
+
+  const handleInputChange = (idx: number, field: 'english' | 'korean', value: string) => {
+    const nextAttempts = [...attempts];
+    nextAttempts[idx] = { ...nextAttempts[idx], [field]: value };
+    setAttempts(nextAttempts);
+  };
+
+  return (
+    <div className="max-w-5xl mx-auto space-y-12">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white p-12 rounded-[50px] shadow-2xl border-4 border-indigo-100 relative overflow-hidden"
+      >
+        <div className="mb-10 text-center">
+          <span className="bg-rose-100 text-rose-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">틀린 단어 복습</span>
+          <h2 className="text-4xl font-black text-slate-800 tracking-tighter mt-4">오답 정복하기 (3번씩 완성)</h2>
+          <p className="text-slate-400 font-bold mt-2">각 단어를 3번씩 정확하게 입력하여 완벽하게 외워보세요.</p>
+        </div>
+
+        <div className="flex flex-col items-center gap-12">
+          <div className="text-center space-y-4 bg-indigo-50/50 p-10 rounded-[40px] border-2 border-indigo-100 w-full">
+            <div className="flex items-center justify-center gap-6">
+              <p className="text-7xl font-black text-indigo-600 tracking-tighter leading-none">{currentWord.word}</p>
+              <button 
+                onClick={() => handleSpeak(currentWord.word)}
+                className="p-4 text-indigo-400 hover:text-indigo-600 hover:bg-white rounded-full transition-all active:scale-90 shadow-sm"
+              >
+                <Volume2 size={40} />
+              </button>
+            </div>
+            <p className="text-4xl font-bold text-slate-500">{currentWord.meaning}</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="w-full space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[0, 1, 2].map((idx) => (
+                <motion.div 
+                  key={idx}
+                  animate={{ x: shake && feedback[idx] === false ? [0, -5, 5, -5, 5, 0] : 0 }}
+                  className={`p-6 rounded-[32px] border-2 transition-all space-y-4 ${
+                    feedback[idx] === true ? "bg-emerald-50 border-emerald-200" : 
+                    feedback[idx] === false ? "bg-rose-50 border-rose-200" : "bg-slate-50 border-slate-100"
+                  }`}
+                >
+                  <div className="flex items-center justify-between px-2">
+                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Attempt {idx + 1}</span>
+                    {feedback[idx] === true && <Zap size={16} className="text-emerald-500 fill-current" />}
+                  </div>
+                  <div className="space-y-3">
+                    <input 
+                      type="text" 
+                      value={attempts[idx].english}
+                      onChange={(e) => handleInputChange(idx, 'english', e.target.value)}
+                      placeholder="English"
+                      className={`w-full bg-white border-2 rounded-2xl p-4 text-xl font-black outline-none transition-all ${
+                        feedback[idx] === true ? "border-emerald-100 text-emerald-700" : "border-slate-100 text-slate-700 focus:border-indigo-300"
+                      }`}
+                    />
+                    <input 
+                      type="text" 
+                      value={attempts[idx].korean}
+                      onChange={(e) => handleInputChange(idx, 'korean', e.target.value)}
+                      placeholder="뜻 (Korean)"
+                      className={`w-full bg-white border-2 rounded-2xl p-4 text-xl font-black outline-none transition-all ${
+                        feedback[idx] === true ? "border-emerald-100 text-emerald-700" : "border-slate-100 text-slate-700 focus:border-indigo-300"
+                      }`}
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            <button 
+              type="submit"
+              className="w-full py-7 bg-indigo-600 text-white rounded-[2rem] font-black text-2xl shadow-2xl shadow-indigo-200 hover:bg-slate-800 transition active:scale-95 flex items-center justify-center gap-3 mt-4"
+            >
+              다음 단어로 넘어가기 <ArrowRight size={24} />
+            </button>
+          </form>
+          
+          <div className="bg-slate-50 px-10 py-4 rounded-3xl border border-slate-100">
+            <span className="text-slate-400 font-black text-sm uppercase tracking-widest">
+              WORD <span className="text-indigo-600 text-xl mx-1">{currentWordIdx + 1}</span> OF {words.length}
+            </span>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 const VocabQuizView = ({
   isFinished, 
   setIsFinished, 
@@ -1072,6 +1212,8 @@ const VocabQuizView = ({
   handleSpeak: (t: string) => void;
 }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [missedWords, setMissedWords] = useState<VocabWord[]>([]);
+  const [showReview, setShowReview] = useState(false);
   const [quizData, setQuizData] = useState(() => {
     const filtered = vocabQuizConfig.section === 'all' 
       ? VOCAB_DATA 
@@ -1098,21 +1240,50 @@ const VocabQuizView = ({
     if (isAnswered) return;
     setSelectedIdx(idx);
     setIsAnswered(true);
-    const isCorrect = options[idx] === quizData[currentIdx].meaning;
+    const correctWord = quizData[currentIdx];
+    const isCorrect = options[idx] === correctWord.meaning;
     if (isCorrect) {
       setScore(prev => prev + 1);
+    } else {
+      setMissedWords(prev => [...prev, correctWord]);
     }
+    
+    // Auto-advance after 1.5s
+    setTimeout(() => {
+      handleNext();
+    }, 1500);
   };
 
-  const handleNext = () => {
+  const handleNext = (isSkip = false) => {
+    if (isSkip && !isAnswered) {
+      setMissedWords(prev => [...prev, quizData[currentIdx]]);
+    }
     setIsAnswered(false);
     setSelectedIdx(null);
     if (currentIdx < quizData.length - 1) {
       setCurrentIdx(prev => prev + 1);
     } else {
-      setIsFinished(true);
+      if (missedWords.length > 0 || (isSkip && currentIdx === quizData.length - 1)) {
+        // If we skipped the last one, missedWords state might not have updated yet due to async
+        // but setMissedWords uses functional update or we can just check if we need review
+        setShowReview(true);
+      } else {
+        setIsFinished(true);
+      }
     }
   };
+
+  if (showReview) {
+    return <VocabReviewView words={missedWords} onFinish={() => setIsFinished(true)} handleSpeak={handleSpeak} />;
+  }
+
+  if (quizData.length === 0) return (
+    <div className="text-center py-20 bg-white rounded-[50px] shadow-2xl border border-slate-100">
+      <h2 className="text-4xl font-black text-slate-800 mb-4">No words found!</h2>
+      <p className="text-slate-500 mb-8">This section currently has no vocabulary data.</p>
+      <button onClick={() => navTo('dashboard')} className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black">Go Back</button>
+    </div>
+  );
 
   if (isFinished) return (
     <ResultCard 
@@ -1124,6 +1295,8 @@ const VocabQuizView = ({
         setScore(0);
         setIsAnswered(false);
         setSelectedIdx(null);
+        setMissedWords([]);
+        setShowReview(false);
         const filtered = vocabQuizConfig.section === 'all' 
           ? VOCAB_DATA 
           : VOCAB_DATA.filter(v => v.section === vocabQuizConfig.section);
@@ -1161,7 +1334,7 @@ const VocabQuizView = ({
              /{quizData.length}
            </span>
            <button 
-              onClick={handleNext}
+              onClick={() => handleNext(true)}
               className="text-slate-400 hover:text-indigo-600 font-black text-sm transition-colors flex items-center gap-1 group"
            >
               SKIP <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -1195,16 +1368,14 @@ const VocabQuizView = ({
         <AnimatePresence>
           {isAnswered && (
             <motion.div 
-              initial={{ opacity: 0, y: 20 }} 
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-12 flex justify-end"
+              initial={{ opacity: 0, scale: 0.9 }} 
+              animate={{ opacity: 1, scale: 1 }}
+              className="mt-12 flex flex-col items-center gap-4"
             >
-              <button 
-                onClick={handleNext}
-                className="bg-slate-800 text-white px-12 py-5 rounded-[2rem] font-black text-xl flex items-center gap-3 shadow-2xl hover:bg-black transition-all active:scale-95"
-              >
-                {currentIdx === quizData.length - 1 ? "FINISH MISSION" : "NEXT LEVEL"} <ChevronRight size={24} />
-              </button>
+              <div className={`text-2xl font-black ${options[selectedIdx!] === quizData[currentIdx].meaning ? "text-emerald-500" : "text-rose-500"}`}>
+                {options[selectedIdx!] === quizData[currentIdx].meaning ? "Great Job! 🎉" : "Keep Going! 💪"}
+              </div>
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">잠시 후 다음 퀴즈로 이동합니다...</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -1217,14 +1388,14 @@ function SidebarBtn({ icon, label, active, onClick }: { icon: React.ReactNode; l
   return (
     <button 
       onClick={onClick}
-      className={`flex items-center space-x-4 p-4 rounded-3xl transition-all font-bold tracking-tight text-lg group w-full text-left ${
+      className={`flex items-center space-x-4 p-4 rounded-3xl transition-all font-black uppercase tracking-widest text-lg group w-full text-left ${
         active 
           ? "bg-[#667EEA] text-white shadow-xl shadow-indigo-700/20 translate-x-1" 
           : "text-white/70 hover:bg-white/10 hover:text-white"
       }`}
     >
       <span className={`transition-transform group-hover:scale-110 ${active ? "text-white" : "text-indigo-300"}`}>{icon}</span>
-      <span>{label}</span>
+      <span className={`whitespace-nowrap ${!active && "text-indigo-300"}`}>{label}</span>
       {active && <motion.div layoutId="sidebar-active" className="ml-auto w-2 h-2 bg-white rounded-full"></motion.div>}
     </button>
   );
@@ -1291,7 +1462,7 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
           initial={{ rotate: -20, scale: 0 }}
           animate={{ rotate: 0, scale: 1 }}
           transition={{ delay: 0.3 }}
-          className="absolute -top-4 -right-4 bg-yellow-400 w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white"
+          className="absolute -top-4 -right-4 bg-yellow-300 w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl border-4 border-white"
         >
           <Trophy className="text-white" size={30} />
         </motion.div>
@@ -1366,8 +1537,8 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -translate-y-32 translate-x-32"></div>
             <div className="relative z-10">
               <span className="inline-block bg-indigo-100 text-indigo-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-[0.2em] mb-8">Concept Review</span>
-              <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-6 leading-tight">
-                {isPpc ? "Present Perfect Continuous" : "So ... That ... Clause"}
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-8 leading-tight uppercase">
+                {isPpc ? "Present Perfect Continuous" : "so ... that ... Clause"}
               </h2>
               <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 mb-10">
                 {isPpc ? (
@@ -2052,8 +2223,8 @@ function ResultCard({ score, total, onRestart, onGoHome }: { score: number; tota
                   <BookOpen className="text-white" size={32} />
                 </div>
                 <div>
-                  <h2 className="text-4xl font-black text-slate-800 tracking-tighter">{content.title}</h2>
-                  <p className="text-emerald-500 font-bold uppercase tracking-widest text-sm">Main Text Analysis</p>
+                  <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-2 uppercase">{content.title}</h2>
+                  <p className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-lg">Main Text Analysis</p>
                 </div>
               </div>
               <button 
