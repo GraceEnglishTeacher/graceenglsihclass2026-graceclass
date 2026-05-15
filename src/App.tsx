@@ -1977,6 +1977,84 @@ function ResultCard({
     }, [scrambled, userOrder, feedback, isTypingMode, subSection]);
 
     const handleWordClick = (word: string, fromUser: boolean) => {
+             {q.type === 'choice' ? (
+                <div className="grid grid-cols-1 gap-4">
+                   {q.options?.map((opt, i) => (
+                      <button
+                        key={i}
+                        onClick={() => handleChoiceAnswer(opt)}
+                        disabled={!!feedback}
+                        className={`p-6 text-xl font-black rounded-3xl border-2 transition-all text-left flex items-center justify-between group ${
+                           feedback ? (opt === q.answer ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg" : "bg-white text-slate-300") : "bg-white text-slate-700 hover:border-indigo-500 hover:shadow-xl active:scale-95"
+                        }`}
+                      >
+                         <span>{opt}</span>
+                         {feedback && opt === q.answer && <CheckCircle2 className="text-emerald-500" />}
+                      </button>
+                   ))}
+                </div>
+             ) : (
+                <div className="space-y-6">
+                   <input 
+                      type="text" 
+                      value={inputValue} 
+                      onChange={(e) => setInputValue(e.target.value)} 
+                      placeholder="정답을 입력하신 후 Enter 또는 버튼을 누르세요..." 
+                      disabled={!!feedback} 
+                      onKeyDown={(e) => e.key === 'Enter' && handleSubmitSubjective()} 
+                      className="w-full p-8 text-2xl font-black rounded-3xl border-2 border-slate-100 focus:border-indigo-500 focus:outline-none transition-all shadow-inner bg-slate-50/30 text-center placeholder:text-slate-200" 
+                   />
+                   {!feedback && (
+                      <button onClick={handleSubmitSubjective} disabled={!inputValue} className="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-xl shadow-xl hover:bg-indigo-700 transition active:scale-95">제출 및 확인</button>
+                   )}
+                </div>
+             )}
+
+             <AnimatePresence>
+                {feedback && (
+                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`mt-10 p-10 rounded-[40px] border-4 cursor-pointer hover:scale-[1.01] transition-transform ${feedback.isCorrect ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"} shadow-2xl relative overflow-hidden`}>
+                     <div className="relative z-10">
+                       <div className="flex items-center gap-4 mb-6">
+                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${feedback.isCorrect ? "bg-emerald-500" : "bg-rose-500"}`}>
+                           {feedback.isCorrect ? <CheckCircle2 className="text-white" size={32} /> : <AlertCircle className="text-white" size={32} />}
+                         </div>
+                         <h4 className="text-3xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Check Again! 💪"}</h4>
+                       </div>
+                       <div className="bg-white/60 backdrop-blur-sm p-8 rounded-3xl border border-white/50 shadow-inner"><p className="text-xl font-bold leading-relaxed">{feedback.explanation}</p></div>
+                       <button onClick={handleNext} className={`mt-8 w-full py-5 rounded-2xl font-black text-xl text-white shadow-xl flex items-center justify-center gap-3 active:scale-95 ${feedback.isCorrect ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200" : "bg-rose-500 hover:bg-rose-600 shadow-rose-200"}`}>
+                         {currentQuestion < filteredQuestions.length - 1 ? "NEXT QUESTION" : "SEE RESULTS"} <ChevronRight size={24} />
+                       </button>
+                     </div>
+                   </motion.div>
+                )}
+             </AnimatePresence>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'story'>('menu');
+    const [currentIdx, setCurrentIdx] = useState(0);
+    const [userOrder, setUserOrder] = useState<string[]>([]);
+    const [scrambled, setScrambled] = useState<string[]>([]);
+    const [feedback, setFeedback] = useState<boolean | null>(null);
+    const [isTypingMode, setIsTypingMode] = useState(false);
+    const [typedAnswer, setTypedAnswer] = useState('');
+
+    const filteredQuestions = WRITING_DATA;
+
+    useEffect(() => {
+      if (subSection === 'practice' && currentIdx < filteredQuestions.length) {
+        const q = filteredQuestions[currentIdx];
+        setScrambled([...q.scrambled].sort());
+        setUserOrder([]);
+        setFeedback(null);
+        setTypedAnswer('');
+      }
+    }, [currentIdx, subSection]);
+
+    const handleWordClick = (word: string, fromUser: boolean) => {
       if (feedback !== null) return;
       if (fromUser) {
         setUserOrder(prev => {
@@ -1985,7 +2063,7 @@ function ResultCard({
           if (lastIdx !== -1) newOrder.splice(lastIdx, 1);
           return newOrder;
         });
-        setScrambled(prev => [...prev, word]);
+        setScrambled(prev => [...prev, word].sort());
       } else {
         setScrambled(prev => {
           const newScrambled = [...prev];
@@ -1993,7 +2071,19 @@ function ResultCard({
           if (idx !== -1) newScrambled.splice(idx, 1);
           return newScrambled;
         });
-        setUserOrder(prev => [...prev, word]);
+        setUserOrder(prev => {
+           const newOrder = [...prev, word];
+           const q = filteredQuestions[currentIdx];
+           if (newOrder.length === q.scrambled.length) {
+              setTimeout(() => {
+                 const isCorrect = normalizeStr(newOrder.join(' ')) === normalizeStr(q.correct);
+                 if (isCorrect) setScore(s => s + 1);
+                 setFeedback(isCorrect);
+                 handleSpeak(isCorrect ? "Perfect" : "Try again");
+              }, 300);
+           }
+           return newOrder;
+        });
       }
     };
 
@@ -2178,15 +2268,7 @@ function ResultCard({
 
              <div className="pt-8 text-center">
                <AnimatePresence mode="wait">
-                  {feedback === null ? (
-                    <button 
-                      onClick={checkAnswer}
-                      disabled={isTypingMode ? !typedAnswer.trim() : userOrder.length === 0}
-                      className="bg-[#4C51BF] text-white px-16 py-6 rounded-3xl font-black text-2xl shadow-2xl shadow-indigo-100 hover:bg-indigo-700 transition disabled:opacity-50 active:scale-95"
-                    >
-                      정답 확인하기
-                    </button>
-                  ) : feedback ? (
+                  {feedback !== null && (feedback ? (
                     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6 w-full max-w-2xl mx-auto">
                        <div 
                         onClick={nextLevel}
@@ -2905,8 +2987,18 @@ function ResultCard({
                     <Heart className="text-white" size={32} fill="currentColor" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase">My Gratitude Diary</h2>
-                    <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg">마음 건강과 감사의 조각들을 기록하세요</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase">My Gratitude Diary</h2>
+                        <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg">마음 건강과 감사의 조각들을 기록하세요</p>
+                      </div>
+                      <button 
+                        onClick={refreshData}
+                        className="p-4 bg-white border border-rose-100 text-rose-400 hover:text-rose-600 hover:border-rose-200 rounded-[2rem] transition-all shadow-sm flex items-center gap-3 font-black text-xs uppercase tracking-widest px-8"
+                      >
+                        <RefreshCw size={18} /> Refresh Diary
+                      </button>
+                    </div>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100 focus-within:border-rose-200 transition-all flex items-center gap-3">
                     <User size={20} className="text-slate-400" />
