@@ -18,12 +18,34 @@ import {
   FileText,
   Search,
   MessageSquare,
-  Send
+  Send,
+  Heart,
+  User,
+  RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Types ---
-type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi';
+type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude';
+
+interface Comment {
+  id: string;
+  author: string;
+  text: string;
+  date: string;
+}
+
+interface GratitudeEntry {
+  id: string;
+  date: string;
+  content: string;
+  ppcSentence?: string;
+  soThatSentence?: string;
+  author?: string;
+  avatar?: string;
+  reactions?: { [emoji: string]: number };
+  comments?: Comment[];
+}
 
 interface VocabWord {
   id: number;
@@ -126,41 +148,41 @@ const VOCAB_DATA: VocabWord[] = [
 ];
 
 const GRAMMAR_DATA: GrammarQuestion[] = [
-  // Present Perfect Continuous (PPC)
+  // Present Perfect Continuous (PPC) - Refined
   {
     id: 1, type: 'choice', section: 'ppc',
     question: "다음 중 어법상 옳은 문장을 고르세요.",
     options: [
       "Jiho has been write in his diary since last year.",
-      "Somi has been paint sunflowers for six months.",
+      "Somi have been painting sunflowers for six months.",
       "I have been feeling sad lately.",
       "She has being exercise regularly."
     ],
     answer: "I have been feeling sad lately.",
-    explanation: "현재완료 진행형은 'have/has + been + V-ing' 형태입니다."
+    explanation: "현재완료 진행형은 'have/has + been + V-ing' 형태입니다. feel은 감각 동사이지만 최근의 일시적인 감정을 강조할 때 진행형으로 쓰기도 합니다."
   },
   {
     id: 2, type: 'subjective', section: 'ppc',
-    question: "Jiho (study) English for two hours. (현재완료진행형으로 쓰세요)",
-    answer: "has been studying",
-    explanation: "주어가 3인칭 단수이므로 has been V-ing 형태인 has been studying을 씁니다."
+    question: "I (play) soccer since 2 p.m. (현재완료진행형으로 쓰세요)",
+    answer: "have been playing",
+    explanation: "주어 I에 맞추어 have been V-ing 형태인 have been playing을 씁니다."
   },
   {
       id: 3, type: 'choice', section: 'ppc',
       question: "문맥상 알맞은 표현을 고르세요: Somi _______ art for years.",
       options: ["has been loving", "has loved", "is loving", "loves"],
       answer: "has loved",
-      explanation: "love와 같은 상태 동사는 현재완료 진행형보다는 현재완료를 주로 사용합니다."
+      explanation: "love, know, have(소유)와 같은 상태 동사는 진행형을 쓰지 않고 현재완료형(have p.p.)을 씁니다."
   },
   {
       id: 4, type: 'subjective', section: 'ppc',
-      question: "I (wait) for the bus since 3 o'clock. (현재완료진행형으로 쓰세요)",
-      answer: "have been waiting",
-      explanation: "주어가 1인칭이므로 have been waiting이 적절합니다."
+      question: "It (rain) for three hours. (현재완료진행형으로 쓰세요)",
+      answer: "has been raining",
+      explanation: "비인칭 주어 It은 3인칭 단수 취급하므로 has been raining을 씁니다."
   },
   {
       id: 5, type: 'choice', section: 'ppc',
-      question: "We ______ here for a long time. (현재완료진행형)",
+      question: "We ______ here for a long time.",
       options: ["have been staying", "has been staying", "are staying", "stayed"],
       answer: "have been staying",
       explanation: "복수 주어 We에 맞춰 have been staying을 사용합니다."
@@ -181,7 +203,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   {
     id: 7, type: 'subjective', section: 'so_that',
     question: "Somi was (happy / she / that / so / a / sang / song). (순서대로 배열하세요)",
-    answer: "Somi was so happy that she sang a song",
+    answer: "so happy that she sang a song",
     explanation: "so + 형용사 + that + 주어 + 동사 어순으로 문장을 완성합니다."
   },
   {
@@ -198,9 +220,9 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   },
   {
     id: 9, type: 'subjective', section: 'so_that',
-    question: "The problem was so hard that I couldn't solve it. (의미가 같도록 빈칸을 채우세요) = The problem was ____ ____ to solve.",
+    question: "The problem was so hard that I couldn't solve it. (의미가 같도록 빈칸을 채우세요) = The problem was ____ to solve.",
     answer: "too hard",
-    explanation: "so ~ that ... can't 구문은 'too ~ to' 구문으로 바꾸어 쓸 수 있습니다."
+    explanation: "so ~ that ... can't(과거는 couldn't) 구문은 'too + 형용사 + to부정사' 구문으로 바꿀 수 있습니다."
   },
   {
     id: 10, type: 'choice', section: 'so_that',
@@ -212,52 +234,52 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
       "He is so smart to follow the rules."
     ],
     answer: "He is smart enough to follow the rules.",
-    explanation: "so ~ that ... can(긍정)은 '형용사 + enough to' 구문으로 바꿀 수 있습니다."
+    explanation: "so ~ that ... can(긍정)은 '형용사 + enough to' 구문으로 바꿀 수 있습니다. enough는 형용사 뒤에 위치합니다."
   },
   {
     id: 11, type: 'subjective', section: 'ppc',
-    question: "It (rain) since this morning. (현재완료진행형으로 쓰세요)",
-    answer: "has been raining",
-    explanation: "날씨를 나타내는 비인칭 주어 It 뒤에는 'has been V-ing'를 씁니다."
+    question: "She (study) English since last year. (현재완료진행형으로 쓰세요)",
+    answer: "has been studying",
+    explanation: "주어 She에 맞춰 has been V-ing 형태를 사용합니다."
   },
   {
     id: 12, type: 'choice', section: 'ppc',
-    question: "They _______ for the exam for three hours.",
-    options: ["have been studying", "has been studying", "are studying", "studied"],
-    answer: "have been studying",
-    explanation: "복수 주어 They에 맞춰 'have been studying'이 적절합니다."
+    question: "다음 빈칸에 들어갈 말이 바르게 짝지어진 것은? 'He has been waiting ______ 3 o'clock ______ two hours.'",
+    options: ["since - for", "for - since", "since - since", "for - for"],
+    answer: "since - for",
+    explanation: "since 뒤에는 시작 시점, for 뒤에는 기간이 옵니다."
   },
   {
     id: 15, type: 'subjective', section: 'ppc',
-    question: "I (live) in Seoul since I was born. (현재완료진행형으로 쓰세요)",
-    answer: "have been living",
-    explanation: "주어 I에 맞춰 'have been living'을 사용합니다."
+    question: "They (wait) for the bus for 30 minutes. (현재완료진행형으로 쓰세요)",
+    answer: "have been waiting",
+    explanation: "주어 They에 맞춰 have been waiting을 씁니다."
   },
   {
     id: 16, type: 'choice', section: 'ppc',
     question: "Mom ______ dinner for three hours. She looks tired.",
     options: ["has been cooking", "have been cooking", "is cooking", "cooked"],
     answer: "has been cooking",
-    explanation: "3인칭 단수 주어 Mom에 맞춰 'has been cooking'을 씁니다."
+    explanation: "단수 주어 Mom에 맞춰 has been cooking을 씁니다."
   },
   {
     id: 17, type: 'subjective', section: 'ppc',
-    question: "They (play) basketball since 10 AM. (현재완료진행형으로 쓰세요)",
-    answer: "have been playing",
-    explanation: "지속성을 강조할 때 'have been V-ing'를 씁니다."
+    question: "He (watch) TV since morning. (현재완료진행형으로 쓰세요)",
+    answer: "has been watching",
+    explanation: "주어 He에 맞춰 has been V-ing 형태를 사용합니다."
   },
   {
     id: 13, type: 'subjective', section: 'so_that',
-    question: "She was (tired / so / that / she / went / back / home). (어순에 맞게 배열하세요)",
-    answer: "She was so tired that she went back home",
-    explanation: "so + 형용사 + that + 주어 + 동사 순서로 문장을 만듭니다."
+    question: "Jiho is so tall that he can reach the shelf. (의미가 같도록 빈칸을 채우세요) = Jiho is tall ____ to reach the shelf.",
+    answer: "enough",
+    explanation: "긍정의 의미인 '너무 ~해서 ...할 수 있다(so ~ that ... can)'는 '형용사 + enough to'로 바꿔 쓸 수 있습니다."
   },
   {
     id: 14, type: 'choice', section: 'so_that',
     question: "다음 중 'I was so busy that I couldn't call you'와 의미가 같은 것은?",
     options: ["I was too busy to call you", "I was busy enough to call you", "I was so busy to call you", "I was enough busy to call you"],
     answer: "I was too busy to call you",
-    explanation: "so ~ that ... couldn't는 'too ~ to' 구문과 의미가 같습니다."
+    explanation: "부정의 의미인 '너무 ~해서 ...할 수 없다(so ~ that ... can't)'는 'too + 형용사 + to' 구문과 의미가 같습니다."
   },
   {
     id: 18, type: 'choice', section: 'so_that',
@@ -269,7 +291,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   {
     id: 19, type: 'subjective', section: 'so_that',
     question: "The box was (heavy / so / that / I / lift / couldn't / it). (어순에 맞게 배열하세요)",
-    answer: "The box was so heavy that I couldn't lift it",
+    answer: "so heavy that I couldn't lift it",
     explanation: "so + 형용사 + that + 주어 + 동사 어순입니다."
   },
   {
@@ -278,6 +300,63 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
     options: ["that", "so", "because", "to"],
     answer: "that",
     explanation: "so ~ that 구문에서 결과를 이끄는 접속사 that을 씁니다."
+  },
+  {
+    id: 21, type: 'subjective', section: 'ppc',
+    question: "They (exercise) in the gym since 2 PM. (현재완료진행형으로 쓰세요)",
+    answer: "have been exercising",
+    explanation: "주어 They에 맞춰 have been exercising을 사용합니다."
+  },
+  {
+    id: 22, type: 'choice', section: 'ppc',
+    question: "I ______ for my glasses for half an hour. I can't find them.",
+    options: ["have been looking", "has been looking", "am looking", "looked"],
+    answer: "have been looking",
+    explanation: "주어 I에 맞춰 have been looking을 사용합니다."
+  },
+  {
+    id: 23, type: 'subjective', section: 'so_that',
+    question: "The tea was too hot to drink. (의미가 같도록 빈칸을 채우세요) = The tea was ____ hot ____ I couldn't drink it.",
+    answer: "so that | so, that",
+    explanation: "too ~ to 구문은 'so ~ that ... can't/couldn't' 구문으로 바꿀 수 있습니다."
+  },
+  {
+    id: 24, type: 'choice', section: 'so_that',
+    question: "의미가 같은 문장을 고르세요: 'He is old enough to drive a car.'",
+    options: [
+      "He is so old that he can drive a car.",
+      "He is too old to drive a car.",
+      "He is old that he can drive a car.",
+      "He is so old to drive a car."
+    ],
+    answer: "He is so old that he can drive a car.",
+    explanation: "enough to 구문은 'so ~ that ... can' 구문으로 바꿀 수 있습니다."
+  },
+  {
+    id: 25, type: 'subjective', section: 'so_that',
+    question: "The soup is (hot / so / it / that / eat / can't / I). (어순에 맞게 배열하세요)",
+    answer: "so hot that I can't eat it",
+    explanation: "so + 형용사 + that 구문을 사용하여 인과관계를 나타냅니다."
+  },
+  {
+    id: 26, type: 'choice', section: 'so_that',
+    question: "다음 두 문장을 'so ~ that'을 사용하여 연결할 때 빈칸에 알맞은 것은? 'It was a very cold day. We stayed indoors.' -> It was ______ cold ______ we stayed indoors.",
+    options: ["so - that", "too - to", "very - that", "so - as"],
+    answer: "so - that",
+    explanation: "결과를 나타내는 so ~ that 구문을 사용합니다."
+  },
+  {
+    id: 27, type: 'subjective', section: 'so_that',
+    question: "He is so rich that he can buy anything. (의미가 같도록 빈칸을 채우세요) = He is rich ____ to buy anything.",
+    answer: "enough",
+    explanation: "긍정 결과(so ~ that ... can)는 '형용사 + enough to'로 전환 가능합니다."
+  },
+  {
+    id: 28, type: 'choice', section: 'so_that',
+    question: "문장의 빈칸에 들어갈 말이 바르게 짝지어진 것은? 'I was ______ tired ______ I couldn't finish my homework.'",
+    options: ["so - that", "too - that", "very - that", "so - because"],
+    answer: "so - that",
+    explanation: "원인과 결과를 나타내는 핵심 표현은 so ... that 입니다."
   }
 ];
 
@@ -829,6 +908,7 @@ export default function App() {
              </div>
           </div>
           <SidebarBtn icon={<PenTool size={20} />} label="WRITING MASTER" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
+          <SidebarBtn icon={<Heart size={20} />} label="MY GRATITUDE DIARY" active={activeSection === 'gratitude'} onClick={() => navTo('gratitude')} />
           <div className="pt-10 pb-4">
              <div className="flex items-center gap-4 pl-4 mb-8">
                 <BookOpen className="text-indigo-300" size={20} />
@@ -963,6 +1043,12 @@ export default function App() {
                     handleSpeak={handleSpeak}
                   />
                 )}
+                {activeSection === 'gratitude' && (
+                  <GratitudeDiaryView 
+                    handleSpeak={handleSpeak}
+                    navTo={navTo}
+                  />
+                )}
              </motion.div>
           </AnimatePresence>
         </div>
@@ -1017,7 +1103,10 @@ const VocabView = ({
         <div className="flex flex-wrap items-center gap-3">
            <button 
             onClick={() => {
-              let count = 3;
+              let count = 10;
+              if (selectedTab === 'all') count = 20;
+              else if (selectedTab === 'p1') count = 10;
+              else count = 5;
               setVocabQuizConfig({ section: selectedTab, count });
               setIsFinished(false);
               setScore(0);
@@ -1317,12 +1406,8 @@ const VocabQuizView = ({
     if (currentIdx < quizData.length - 1) {
       setCurrentIdx(prev => prev + 1);
     } else {
-      // Quiz finished - automatically navigate
-      if (hasMistakes) {
-        setShowReview(true);
-      } else {
-        setIsFinished(true);
-      }
+      // Quiz finished - always show result card first
+      setIsFinished(true);
     }
   };
 
@@ -1373,7 +1458,7 @@ const VocabQuizView = ({
         </div>
         <div className="flex justify-between items-center mb-10">
            <span className="bg-indigo-100 text-indigo-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-1">
-             {currentIdx + 1} / {quizData.length}
+             QUEST {currentIdx + 1} / {quizData.length}
            </span>
            <button 
               onClick={() => handleNext(true)}
@@ -1562,12 +1647,14 @@ function ResultCard({
         >
           <RotateCcw size={24} /> 한 번 더 도전하기
         </button>
-        <button 
-          onClick={onGoHome}
-          className="w-full py-5 bg-slate-100 text-slate-500 rounded-3xl font-black hover:bg-slate-200 transition active:scale-95"
-        >
-          대시보드로 돌아가기
-        </button>
+        {(!onReviewMistakes || !missedWords || missedWords.length === 0) && (
+          <button 
+            onClick={onGoHome}
+            className="w-full py-5 bg-slate-100 text-slate-500 rounded-3xl font-black hover:bg-slate-200 transition active:scale-95"
+          >
+            대시보드로 돌아가기
+          </button>
+        )}
       </div>
     </motion.div>
   );
@@ -1581,7 +1668,7 @@ function ResultCard({
     const filteredQuestions = useMemo(() => {
       const all = GRAMMAR_DATA.filter(q => q.section === sectionKey);
       const shuffled = [...all].sort(() => Math.random() - 0.5);
-      return shuffled.slice(0, 3);
+      return shuffled.slice(0, 10);
     }, [activeSection]);
     
     // Create a stable mapping of actual index to fake index (1-5) for display if required 
@@ -1604,6 +1691,7 @@ function ResultCard({
 
     const handleChoiceAnswer = (ans: string) => {
       if (feedback) return;
+      setInputValue(ans);
       const isCorrect = ans === filteredQuestions[currentQuestion].answer;
       if (isCorrect) setScore(prev => prev + 1);
       setFeedback({ isCorrect, explanation: filteredQuestions[currentQuestion].explanation });
@@ -1725,14 +1813,8 @@ function ResultCard({
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-3">
               <span className="bg-slate-100 text-slate-500 px-5 py-2 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-1">
-                {currentQuestion + 1} / {filteredQuestions.length}
+                QUEST {currentQuestion + 1} / {filteredQuestions.length}
               </span>
-              <button 
-                onClick={handleNext}
-                className="text-slate-300 hover:text-indigo-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-indigo-50"
-              >
-                SKIP
-              </button>
             </div>
             <div className="flex items-center gap-2">
                <Trophy size={20} className="text-yellow-500" />
@@ -1818,15 +1900,15 @@ function ResultCard({
           <AnimatePresence>
             {feedback && (
               <motion.div 
-                initial={{ y: 100, opacity: 0 }}
+                initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
+                exit={{ y: 20, opacity: 0 }}
                 onClick={handleNext}
                 className={`mt-8 p-10 rounded-[40px] border-4 cursor-pointer hover:scale-[1.01] transition-transform ${
                   feedback.isCorrect 
                     ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" 
                     : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"
-                } shadow-2xl relative overflow-hidden`}
+                } shadow-2xl relative overflow-hidden group`}
               >
                  <div className="relative z-10">
                     <div className="flex items-center gap-4 mb-6">
@@ -1834,22 +1916,29 @@ function ResultCard({
                         {feedback.isCorrect ? <CheckCircle2 className="text-white" size={32} /> : <AlertCircle className="text-white" size={32} />}
                       </div>
                       <div>
-                        <h4 className="text-3xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Check Again! 💪"}</h4>
-                        {!feedback.isCorrect && <p className="text-lg font-bold opacity-80 mt-1">정답: {q.answer}</p>}
+                        <h4 className="text-4xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Check the Tip! 💪"}</h4>
+                        {!feedback.isCorrect && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-sm font-black uppercase tracking-widest opacity-60">CORRECT ANSWER:</span>
+                            <p className="text-2xl font-black text-rose-600 underline decoration-rose-300 underline-offset-8 decoration-4">
+                              {q.answer}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <div className="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow-inner">
+                    <div className="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow-inner group-hover:bg-white/80 transition-colors">
                       <p className="text-lg font-bold leading-relaxed">{feedback.explanation}</p>
                     </div>
                     <button 
-                      onClick={handleNext}
+                      onClick={(e) => { e.stopPropagation(); handleNext(); }}
                       className={`mt-8 w-full py-5 rounded-2xl font-black text-xl shadow-xl transition active:scale-95 flex items-center justify-center gap-3 ${
                         feedback.isCorrect 
                           ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200" 
                           : "bg-rose-500 hover:bg-rose-600 text-white shadow-rose-200"
                       }`}
                     >
-                      {currentQuestion === filteredQuestions.length - 1 ? "FINISH MODULE" : "NEXT STEP"} <ChevronRight size={24} />
+                      {currentQuestion === filteredQuestions.length - 1 ? "FINISH MODULE" : "NEXT QUESTION"} <ArrowRight size={24} />
                     </button>
                  </div>
               </motion.div>
@@ -1859,35 +1948,33 @@ function ResultCard({
       </div>
     );
   };
-    const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+  const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'story'>('menu');
     const [currentIdx, setCurrentIdx] = useState(0);
     const [scrambled, setScrambled] = useState<string[]>([]);
     const [userOrder, setUserOrder] = useState<string[]>([]);
     const [feedback, setFeedback] = useState<boolean | null>(null);
-    const [showMyStory, setShowMyStory] = useState(false);
     const [isTypingMode, setIsTypingMode] = useState(false);
     const [typedAnswer, setTypedAnswer] = useState('');
 
-    useEffect(() => {
-      if (!isTypingMode && scrambled.length === 0 && userOrder.length > 0 && feedback === null) {
-        checkAnswer();
-      }
-    }, [scrambled, userOrder, feedback, isTypingMode]);
-
     const filteredQuestions = useMemo(() => {
-      // Group by section and slice 3? Or just pick 3 total. 
-      // The user likely wants 3 problems per session.
-      return [...WRITING_DATA].sort(() => Math.random() - 0.5).slice(0, 3);
+      return [...WRITING_DATA];
     }, []);
 
     useEffect(() => {
-      if (currentIdx < filteredQuestions.length) {
+      if (subSection === 'practice' && filteredQuestions[currentIdx]) {
         setScrambled([...filteredQuestions[currentIdx].scrambled].sort(() => Math.random() - 0.5));
         setUserOrder([]);
         setFeedback(null);
         setTypedAnswer('');
       }
-    }, [currentIdx, filteredQuestions]);
+    }, [subSection, currentIdx, filteredQuestions]);
+
+    useEffect(() => {
+      if (!isTypingMode && scrambled.length === 0 && userOrder.length > 0 && feedback === null && subSection === 'practice') {
+        checkAnswer();
+      }
+    }, [scrambled, userOrder, feedback, isTypingMode, subSection]);
 
     const handleWordClick = (word: string, fromUser: boolean) => {
       if (feedback !== null) return;
@@ -1911,13 +1998,17 @@ function ResultCard({
     };
 
     const checkAnswer = () => {
-      const q = WRITING_DATA[currentIdx];
+      const q = filteredQuestions[currentIdx];
       let isCorrect = false;
       
       if (isTypingMode) {
+        // Only require typing the arranged words correctly
+        const normInput = normalizeStr(typedAnswer);
+        const normCorrect = normalizeStr(q.correct);
         const fullSent = `${q.prefix || ""} ${q.correct} ${q.suffix || ""}`;
-        isCorrect = checkSubjectiveAnswer(typedAnswer, fullSent) || 
-                    checkSubjectiveAnswer(typedAnswer, q.correct);
+        const normFull = normalizeStr(fullSent);
+        
+        isCorrect = normInput === normCorrect || normInput === normFull;
       } else {
         isCorrect = normalizeStr(userOrder.join(' ')) === normalizeStr(q.correct);
       }
@@ -1927,15 +2018,55 @@ function ResultCard({
     };
 
     const nextLevel = () => {
-      setFeedback(null);
-      if (currentIdx < WRITING_DATA.length - 1) {
+      if (currentIdx < filteredQuestions.length - 1) {
         setCurrentIdx(prev => prev + 1);
       } else {
-        setShowMyStory(true);
+        setSubSection('story');
       }
     };
 
-    if (showMyStory) return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} />;
+    if (subSection === 'menu') {
+      return (
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
+            <div>
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-4 uppercase">WRITING MASTER</h2>
+              <p className="text-orange-500 font-bold text-2xl uppercase tracking-[0.2em] pl-1">어법을 활용한 완벽한 문장 만들기</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <MenuCard 
+              title="WRITING PRACTICE" 
+              tagline="핵심 어법이 포함된 문장들을 바르게 배열하고 직접 입력하는 연습을 합니다." 
+              variant="white" accent="orange" 
+              icon={<FileText size={42} />} 
+              onClick={() => setSubSection('practice')} 
+            />
+            <MenuCard 
+              title="MY STORY BUILDER" 
+              tagline="학습한 어법(PPC, so~that)을 활용하여 자신의 건강 이야기를 영작해봅니다." 
+              variant="white" accent="indigo" 
+              icon={<PenTool size={42} />} 
+              onClick={() => setSubSection('story')} 
+            />
+          </div>
+          
+          <div className="bg-orange-50 p-10 rounded-[50px] border border-orange-100 mt-12">
+             <h4 className="text-xl font-black text-orange-800 mb-4 flex items-center gap-3">
+                <Star size={24} fill="currentColor" /> WRITING TIPS
+             </h4>
+             <ul className="space-y-3 text-lg font-bold text-orange-700/80">
+                <li className="flex items-start gap-2">• 현재완료 진행형(have been -ing) 어순에 주의하세요.</li>
+                <li className="flex items-start gap-2">• so ~ that 절에서 원인과 결과의 논리적 흐름을 파악하세요.</li>
+                <li className="flex items-start gap-2">• <b>TYPE ANSWER</b> 모드를 활성화하면 단어 블록 없이 직접 입력하여 실력을 테스트할 수 있습니다.</li>
+             </ul>
+          </div>
+        </div>
+      );
+    }
+
+    if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
 
     const q = filteredQuestions[currentIdx];
 
@@ -1948,8 +2079,15 @@ function ResultCard({
 
           <div className="flex justify-between items-center mb-12">
              <div className="flex items-center gap-3">
-               <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Writing Mission</span>
-               <span className="text-slate-300 font-bold tracking-widest uppercase text-xs">{currentIdx + 1} / {filteredQuestions.length}</span>
+               <button 
+                 onClick={() => setSubSection('menu')}
+                 className="p-3 bg-slate-50 text-slate-400 hover:text-orange-600 rounded-2xl transition-all active:scale-90 mr-2"
+                 title="Back to menu"
+               >
+                 <RotateCcw size={20} className="-rotate-90" />
+               </button>
+               <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Writing Practice</span>
+               <span className="text-slate-300 font-bold tracking-widest uppercase text-xs">Sentence {currentIdx + 1} / {filteredQuestions.length}</span>
                <button 
                 onClick={nextLevel}
                 className="ml-4 text-slate-400 hover:text-orange-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-orange-50"
@@ -2027,7 +2165,7 @@ function ResultCard({
                 <div className={`flex flex-wrap gap-3 justify-center ${feedback !== null ? "opacity-30 pointer-events-none" : ""}`}>
                    {scrambled.map((word, i) => (
                       <motion.button
-                        key={`scrambled-${i}-${word}`}
+                        key={`scrambled-${currentIdx}-${i}-${word}`}
                         layoutId={`word-${word}-${i}`}
                         onClick={() => handleWordClick(word, false)}
                         className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-black text-lg shadow-xl hover:bg-slate-700 hover:-translate-y-1 transition-all active:scale-95"
@@ -2117,7 +2255,7 @@ function ResultCard({
     );
   };
 
-  const MyStoryView = ({ handleSpeak, navTo }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void }) => {
+  const MyStoryView = ({ handleSpeak, navTo, onBack }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void; onBack: () => void }) => {
     const [sentencePPC, setSentencePPC] = useState('');
     const [sentenceSoThat, setSentenceSoThat] = useState('');
     const [submitted, setSubmitted] = useState(false);
@@ -2134,8 +2272,16 @@ function ResultCard({
           <div className="absolute top-0 right-0 w-80 h-80 bg-orange-50 rounded-full -translate-y-40 translate-x-40"></div>
           
           <div className="relative z-10 space-y-12">
-             <div className="space-y-4">
+             <div className="flex items-center justify-between">
+                <button 
+                  onClick={onBack}
+                  className="p-4 bg-slate-50 text-slate-400 hover:text-indigo-600 rounded-3xl transition-all active:scale-90"
+                >
+                  <RotateCcw size={28} className="-rotate-90" />
+                </button>
                 <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Final Step</span>
+             </div>
+             <div className="space-y-4">
                 <h2 className="text-5xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none mb-4">MY STORY<br/><span className="text-indigo-600">BUILDER</span></h2>
                 <p className="text-xl font-bold text-slate-400">학습한 핵심 어법을 활용하여 당신의 감정 건강 이야기를 만들어보세요.</p>
              </div>
@@ -2268,7 +2414,7 @@ function ResultCard({
     const sectionKey = isP1 ? 'p1' : activeSection === 'reading_p2_jiho' ? 'p2_jiho' : 'p2_somi' as keyof typeof READING_TEXTS;
     const filteredQuestions = useMemo(() => {
       const all = READING_DATA.filter(q => q.section === sectionKey);
-      return all.slice(0, 3);
+      return all;
     }, [sectionKey]);
     
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -2402,7 +2548,7 @@ function ResultCard({
           <div className="flex justify-between items-center mb-12">
              <div className="flex items-center gap-3">
                <span className="bg-emerald-100 text-emerald-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-1">
-                 {currentQuestion + 1} / {filteredQuestions.length}
+                 QUEST {currentQuestion + 1} / {filteredQuestions.length}
                </span>
                <span className="text-slate-300 font-bold tracking-widest uppercase text-[10px]">P.{activeSection.includes('p1') ? '1' : '2'} / {sectionKey.toUpperCase()}</span>
                <button 
@@ -2543,6 +2689,548 @@ function ResultCard({
              </AnimatePresence>
           </div>
         </div>
+      </div>
+    );
+  };
+
+  const GratitudeDiaryView = ({ handleSpeak, navTo }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void }) => {
+    const [viewTab, setViewTab] = useState<'my' | 'class'>('my');
+    const [entries, setEntries] = useState<GratitudeEntry[]>(() => {
+      try {
+        const saved = localStorage.getItem('gratitude_diary');
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    });
+
+    const [classEntries, setClassEntries] = useState<GratitudeEntry[]>(() => {
+      try {
+        const saved = localStorage.getItem('class_diary');
+        if (saved) return JSON.parse(saved);
+        
+        // Mock data for initial class diary
+        const mocks: GratitudeEntry[] = [
+          {
+            id: 'mock1',
+            author: 'Somi',
+            date: '2026년 5월 12일 화요일',
+            content: 'I saw a beautiful sunflower today. It was so bright that it made me smile.',
+            ppcSentence: 'I have been looking for sunflowers since morning.',
+            soThatSentence: 'The sun was so bright that I had to wear my hat.',
+            reactions: { '🌻': 5, '✨': 3 },
+            comments: [{ id: 'c1', author: 'Jiho', text: 'Great observation!', date: '2026-05-12' }]
+          },
+          {
+            id: 'mock2',
+            author: 'Jiho',
+            date: '2026년 5월 13일 수요일',
+            content: 'I finished my painting today! It was so hard that I almost stopped, but I did it.',
+            ppcSentence: 'I have been painting this picture for three days.',
+            soThatSentence: 'The brush moved so smoothly that it felt like dreaming.',
+            reactions: { '🎨': 8, '👏': 4 },
+            comments: []
+          },
+          {
+            id: 'mock3',
+            author: 'Minjun',
+            date: '2026년 5월 14일 목요일',
+            content: 'Playing soccer helped me feel better after a long day at school.',
+            ppcSentence: 'I have been playing soccer with my friends since 2 p.m.',
+            soThatSentence: 'I was so tired that I could focus only on the ball.',
+            reactions: { '⚽': 6, '🔥': 2 },
+            comments: [{ id: 'c2', author: 'Hana', text: 'Health is the best!', date: '2026-05-14' }]
+          },
+          {
+            id: 'mock4',
+            author: 'Hana',
+            date: '2026년 5월 14일 목요일',
+            content: 'Reading about the stars made me feel peaceful and small in a good way.',
+            ppcSentence: 'I have been reading this space book for a week.',
+            soThatSentence: 'The stars were so beautiful that I forgot all my stress.',
+            reactions: { '⭐': 10, '📚': 5 },
+            comments: []
+          },
+          {
+            id: 'mock5',
+            author: 'Doyun',
+            date: '2026년 5월 14일 목요일',
+            content: 'Listening to music is my favorite way to relax after studying.',
+            ppcSentence: 'I have been listening to lo-fi beats since evening.',
+            soThatSentence: 'The music was so calm that I fell asleep quickly.',
+            reactions: { '🎧': 7, '😴': 3 },
+            comments: []
+          }
+        ];
+        return mocks;
+      } catch {
+        return [];
+      }
+    });
+
+    const [newEntry, setNewEntry] = useState('');
+    const [authorName, setAuthorName] = useState('');
+    const [ppcInput, setPpcInput] = useState('');
+    const [soThatInput, setSoThatInput] = useState('');
+    const [commentInput, setCommentInput] = useState<{ [id: string]: string }>({});
+  
+    const refreshData = () => {
+      try {
+        const savedPersonal = localStorage.getItem('gratitude_diary');
+        if (savedPersonal) setEntries(JSON.parse(savedPersonal));
+        const savedClass = localStorage.getItem('class_diary');
+        if (savedClass) setClassEntries(JSON.parse(savedClass));
+      } catch (e) {
+        console.error("Refresh failed:", e);
+      }
+    };
+
+    const handleSave = () => {
+      if (!newEntry.trim() && !ppcInput.trim() && !soThatInput.trim()) return;
+      const entry: GratitudeEntry = {
+        id: Date.now().toString(),
+        author: authorName.trim() || 'Anonymous',
+        date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+        content: newEntry,
+        ppcSentence: ppcInput,
+        soThatSentence: soThatInput,
+        reactions: {},
+        comments: []
+      };
+      
+      // Update personal entries
+      const updatedPersonal = [entry, ...entries];
+      setEntries(updatedPersonal);
+      localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
+      
+      // Also add to class diary
+      const updatedClass = [entry, ...classEntries];
+      setClassEntries(updatedClass);
+      localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+
+      setNewEntry('');
+      setAuthorName('');
+      setPpcInput('');
+      setSoThatInput('');
+    };
+  
+    const handleDelete = (id: string, isClass: boolean = false) => {
+      if (isClass) {
+        const updated = classEntries.filter(e => e.id !== id);
+        setClassEntries(updated);
+        localStorage.setItem('class_diary', JSON.stringify(updated));
+      } else {
+        const updated = entries.filter(e => e.id !== id);
+        setEntries(updated);
+        localStorage.setItem('gratitude_diary', JSON.stringify(updated));
+      }
+    };
+
+    const handleReaction = (id: string, emoji: string, isClass: boolean = false) => {
+      const targetState = isClass ? classEntries : entries;
+      const setter = isClass ? setClassEntries : setEntries;
+      const storageKey = isClass ? 'class_diary' : 'gratitude_diary';
+
+      const updated = targetState.map(e => {
+        if (e.id === id) {
+          const reactions = { ...(e.reactions || {}) };
+          reactions[emoji] = (reactions[emoji] || 0) + 1;
+          return { ...e, reactions };
+        }
+        return e;
+      });
+      setter(updated);
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+    };
+
+    const handleAddComment = (id: string, isClass: boolean = false) => {
+      const text = commentInput[id];
+      if (!text || !text.trim()) return;
+
+      const targetState = isClass ? classEntries : entries;
+      const setter = isClass ? setClassEntries : setEntries;
+      const storageKey = isClass ? 'class_diary' : 'gratitude_diary';
+
+      const updated = targetState.map(e => {
+        if (e.id === id) {
+          const comments = [
+            ...(e.comments || []),
+            { 
+              id: Date.now().toString(), 
+              author: 'Me', 
+              text, 
+              date: new Date().toISOString().split('T')[0] 
+            }
+          ];
+          return { ...e, comments };
+        }
+        return e;
+      });
+      setter(updated);
+      localStorage.setItem(storageKey, JSON.stringify(updated));
+      setCommentInput({ ...commentInput, [id]: '' });
+    };
+  
+    return (
+      <div className="max-w-6xl mx-auto space-y-12 pb-20">
+        {/* Tab Selection */}
+        <div className="flex justify-center">
+          <div className="bg-slate-100 p-2 rounded-[30px] flex gap-2">
+            <button 
+              onClick={() => setViewTab('my')}
+              className={`px-10 py-4 rounded-[24px] font-black tracking-tight transition-all ${viewTab === 'my' ? 'bg-white text-rose-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+              MY DIARY
+            </button>
+            <button 
+              onClick={() => setViewTab('class')}
+              className={`px-10 py-4 rounded-[24px] font-black tracking-tight transition-all ${viewTab === 'class' ? 'bg-white text-indigo-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+            >
+              OUR CLASS DIARY
+            </button>
+          </div>
+        </div>
+
+        {viewTab === 'my' ? (
+          <>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white p-12 rounded-[60px] shadow-2xl border border-rose-100 relative overflow-hidden max-w-4xl mx-auto"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-rose-50 rounded-full -translate-y-32 translate-x-32 opacity-50"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="w-16 h-16 bg-rose-500 rounded-3xl flex items-center justify-center shadow-lg shadow-rose-200">
+                    <Heart className="text-white" size={32} fill="currentColor" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase">My Gratitude Diary</h2>
+                    <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg">마음 건강과 감사의 조각들을 기록하세요</p>
+                  </div>
+                  <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100 focus-within:border-rose-200 transition-all flex items-center gap-3">
+                    <User size={20} className="text-slate-400" />
+                    <input 
+                      type="text"
+                      value={authorName}
+                      onChange={(e) => setAuthorName(e.target.value)}
+                      placeholder="이름 (e.g. Jiho)"
+                      className="bg-transparent border-none focus:ring-0 text-lg font-black text-slate-700 placeholder:text-slate-300 w-32"
+                    />
+                  </div>
+                </div>
+      
+                <div className="space-y-10">
+                  {/* Mental Health - PPC */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xl font-black text-slate-700 flex items-center gap-2">
+                        <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-xs">01</span>
+                        Mental Health Status
+                      </h4>
+                      <span className="text-[10px] font-black bg-indigo-50 text-indigo-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: have been -ing</span>
+                    </div>
+                    <div className="bg-slate-50 p-6 rounded-[30px] border border-slate-100 focus-within:border-indigo-200 transition-colors">
+                      <input 
+                        type="text"
+                        value={ppcInput}
+                        onChange={(e) => setPpcInput(e.target.value)}
+                        placeholder="최근 어떤 기분을 느껴왔나요? (예: I have been feeling peaceful lately.)"
+                        className="w-full bg-transparent border-none focus:ring-0 text-lg font-bold text-slate-700 placeholder:text-slate-200"
+                      />
+                    </div>
+                  </div>
+    
+                  {/* Stress Relief - so...that */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xl font-black text-slate-700 flex items-center gap-2">
+                        <span className="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-xs">02</span>
+                        Stress Relief Methods
+                      </h4>
+                      <span className="text-[10px] font-black bg-emerald-50 text-emerald-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: so ~ that ...</span>
+                    </div>
+                    <div className="bg-slate-50 p-6 rounded-[30px] border border-slate-100 focus-within:border-emerald-200 transition-colors">
+                      <input 
+                        type="text"
+                        value={soThatInput}
+                        onChange={(e) => setSoThatInput(e.target.value)}
+                        placeholder="스트레스 해소를 위해 무엇을 하나요? (예: I was so stressed that I went for a walk.)"
+                        className="w-full bg-transparent border-none focus:ring-0 text-lg font-bold text-slate-700 placeholder:text-slate-200"
+                      />
+                    </div>
+                  </div>
+    
+                  {/* Today's Gratitude */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xl font-black text-slate-700 flex items-center gap-2">
+                        <span className="w-8 h-8 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center text-xs">03</span>
+                        Today's Gratitude
+                      </h4>
+                      <div className="bg-rose-50 px-4 py-2 rounded-2xl flex items-center gap-2">
+                        <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Example Guide</span>
+                        <div className="w-1.5 h-1.5 bg-rose-300 rounded-full animate-pulse"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Visual Guide Box */}
+                    <div className="bg-gradient-to-br from-rose-50 to-white p-6 rounded-[30px] border border-rose-100/50 shadow-sm mb-4">
+                       <div className="flex items-start gap-4">
+                          <div className="p-3 bg-white rounded-2xl shadow-sm text-rose-400">
+                             <BookOpen size={20} />
+                          </div>
+                          <div className="space-y-2">
+                             <p className="text-sm font-black text-slate-600 uppercase tracking-tighter">Guide: Stress Management & Gratitude</p>
+                             <p className="text-base font-bold text-slate-500 leading-relaxed italic">
+                               "I <span className="text-indigo-500">have been practicing</span> deep breathing to stay calm. 
+                               I was <span className="text-emerald-500">so relaxed</span> after breathing <span className="text-emerald-500">that</span> I could focus better. 
+                               I am <span className="text-rose-500">grateful</span> for this peaceful morning."
+                             </p>
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 focus-within:border-rose-200 transition-colors shadow-inner">
+                      <textarea 
+                          value={newEntry}
+                          onChange={(e) => setNewEntry(e.target.value)}
+                          placeholder="오늘 하루 있었던 가장 감사한 일을 자유롭게 써보세요. 위의 예시를 참고하면 더 좋아요!"
+                          className="w-full bg-transparent border-none focus:ring-0 text-xl font-bold text-slate-700 placeholder:text-slate-200 h-32 p-1 resize-none"
+                      />
+                    </div>
+                  </div>
+    
+                  <button 
+                    onClick={handleSave}
+                    disabled={!newEntry.trim() && !ppcInput.trim() && !soThatInput.trim()}
+                    className="w-full py-6 bg-rose-500 text-white rounded-3xl font-black text-2xl shadow-xl shadow-rose-100 hover:bg-rose-600 transition active:scale-95 disabled:opacity-30 flex items-center justify-center gap-3"
+                  >
+                    마음 기록 완료 <PenTool size={24} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+      
+            <div className="space-y-6 max-w-4xl mx-auto">
+              <div className="flex justify-between items-center px-4">
+                <h3 className="text-2xl font-black text-slate-800 flex items-center gap-3 tracking-tighter">
+                  <FileText className="text-rose-500" /> 저장된 감사 기록들
+                </h3>
+                <button 
+                  onClick={refreshData}
+                  className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
+                >
+                  <RefreshCw size={16} /> Refresh
+                </button>
+              </div>
+              
+              <AnimatePresence initial={false}>
+                {entries.length === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-white p-20 rounded-[50px] border-2 border-dashed border-slate-100 text-center"
+                  >
+                    <p className="text-slate-300 font-black text-xl italic">아직 기록된 마음 일기가 없습니다. 첫 기록을 남겨보세요!</p>
+                  </motion.div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-6">
+                    {entries.map((entry) => (
+                      <motion.div 
+                        key={entry.id}
+                        layout
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white p-10 rounded-[50px] border border-slate-100 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden"
+                      >
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                           <div>
+                              <p className="text-xs font-black text-rose-300 uppercase tracking-widest mb-1">{entry.date}</p>
+                              <div className="w-12 h-1 bg-rose-100 rounded-full"></div>
+                           </div>
+                           <div className="flex gap-2">
+                              <button 
+                                onClick={() => handleSpeak(`${entry.ppcSentence}. ${entry.soThatSentence}. ${entry.content}`)}
+                                className="p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all"
+                              >
+                                <Volume2 size={24} />
+                              </button>
+                           </div>
+                        </div>
+    
+                        <div className="space-y-6">
+                          {(entry.ppcSentence || entry.soThatSentence) && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {entry.ppcSentence && (
+                                <div className="bg-indigo-50/50 p-5 rounded-3xl border border-indigo-100/50">
+                                  <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.15em] block mb-2">Mental Status (PPC)</span>
+                                  <p className="text-lg font-bold text-slate-700 italic">"{entry.ppcSentence}"</p>
+                                </div>
+                              )}
+                              {entry.soThatSentence && (
+                                <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/50">
+                                  <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.15em] block mb-2">Stress Management (So~That)</span>
+                                  <p className="text-lg font-bold text-slate-700 italic">"{entry.soThatSentence}"</p>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          <div className="pl-4 border-l-4 border-rose-100">
+                            <span className="text-[10px] font-black text-rose-400 uppercase tracking-[0.15em] block mb-2">Gratitude Notes</span>
+                            <p className="text-2xl font-black text-slate-800 leading-tight">{entry.content}</p>
+                          </div>
+                        </div>
+
+                        {/* Reaction & Comment Section for Personal View */}
+                        <div className="mt-8 pt-6 border-t border-slate-50 flex flex-col gap-4">
+                          <div className="flex flex-wrap gap-2">
+                             {['👍', '❤️', '👏', '🔥', '✨', '😊'].map(emoji => (
+                               <button 
+                                  key={emoji}
+                                  onClick={() => handleReaction(entry.id, emoji, false)}
+                                  className={`px-3 py-1.5 rounded-xl text-sm font-bold border transition-all flex items-center gap-1.5 ${entry.reactions?.[emoji] ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-slate-50 border-transparent text-slate-400 hover:bg-slate-100'}`}
+                               >
+                                  <span>{emoji}</span>
+                                  {entry.reactions?.[emoji] && <span className="text-[10px]">{entry.reactions[emoji]}</span>}
+                               </button>
+                             ))}
+                          </div>
+                          <div className="space-y-3">
+                             {entry.comments && entry.comments.length > 0 && (
+                               <div className="space-y-2 bg-slate-50/50 p-4 rounded-2xl">
+                                  {entry.comments.map(c => (
+                                    <div key={c.id} className="text-xs">
+                                       <span className="font-black text-rose-500 mr-2">{c.author}</span>
+                                       <span className="text-slate-600">{c.text}</span>
+                                    </div>
+                                  ))}
+                               </div>
+                             )}
+                             <div className="relative">
+                                <input 
+                                  type="text"
+                                  value={commentInput[entry.id] || ''}
+                                  onChange={(e) => setCommentInput({...commentInput, [entry.id]: e.target.value})}
+                                  onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id, false)}
+                                  placeholder="나의 생각이나 댓글을 남겨보세요..."
+                                  className="w-full h-10 pl-4 pr-10 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-600 focus:ring-2 focus:ring-rose-100 transition-all"
+                                />
+                                <button onClick={() => handleAddComment(entry.id, false)} className="absolute right-2 top-1/2 -translate-y-1/2 text-rose-400 p-1"><Send size={16} /></button>
+                             </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </AnimatePresence>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="text-center space-y-4 relative">
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">Our Class Wall</h2>
+              <p className="text-indigo-500 font-black uppercase tracking-[0.2em] text-xl italic underline underline-offset-8 decoration-indigo-200 decoration-4">우리 반 친구들의 마음 기록장</p>
+              <button 
+                onClick={refreshData}
+                className="absolute right-0 top-0 p-3 bg-white border border-slate-100 text-slate-400 hover:text-indigo-500 hover:border-indigo-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
+              >
+                <RefreshCw size={16} /> Refresh
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <AnimatePresence initial={false}>
+                {classEntries.map((entry, idx) => (
+                  <motion.div 
+                    key={entry.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="bg-white p-8 rounded-[40px] shadow-lg border border-indigo-50 hover:shadow-2xl transition-all relative flex flex-col justify-between"
+                  >
+                     <div className="space-y-6">
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-md ${idx % 3 === 0 ? 'bg-rose-400' : idx % 3 === 1 ? 'bg-indigo-400' : 'bg-emerald-400'}`}>
+                               {entry.author?.charAt(0)}
+                            </div>
+                            <div>
+                               <p className="font-black text-slate-800 text-lg leading-none">{entry.author}</p>
+                               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{entry.date.split('요일')[0]}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                           <div className="space-y-2">
+                             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Health & Gratitude</p>
+                             <p className="text-xl font-bold text-slate-700 leading-tight">"{entry.content}"</p>
+                           </div>
+                           {(entry.ppcSentence || entry.soThatSentence) && (
+                             <div className="space-y-2 pt-4 border-t border-slate-50">
+                               {entry.ppcSentence && <p className="text-xs text-slate-400 italic">...{entry.ppcSentence}</p>}
+                               {entry.soThatSentence && <p className="text-xs text-slate-400 italic">...{entry.soThatSentence}</p>}
+                             </div>
+                           )}
+                        </div>
+                     </div>
+
+                     <div className="mt-8 pt-6 border-t border-slate-50 flex flex-col gap-4">
+                        {/* Reactions */}
+                        <div className="flex flex-wrap gap-2">
+                           {['👍', '❤️', '👏', '🔥', '✨', '😊'].map(emoji => (
+                             <button 
+                                key={emoji}
+                                onClick={() => handleReaction(entry.id, emoji, true)}
+                                className={`px-3 py-1.5 rounded-xl text-sm font-bold border transition-all flex items-center gap-1.5 ${entry.reactions?.[emoji] ? 'bg-indigo-50 border-indigo-100 text-indigo-600 scale-105 shadow-sm' : 'bg-slate-50 border-transparent text-slate-400 hover:bg-slate-100'}`}
+                             >
+                                <span>{emoji}</span>
+                                {entry.reactions?.[emoji] && <span className="text-[10px]">{entry.reactions[emoji]}</span>}
+                             </button>
+                           ))}
+                        </div>
+
+                        {/* Comments */}
+                        <div className="space-y-3">
+                           {entry.comments && entry.comments.length > 0 && (
+                             <div className="space-y-2 bg-slate-50/50 p-4 rounded-2xl">
+                                {entry.comments.slice(-2).map(c => (
+                                  <div key={c.id} className="text-xs">
+                                     <span className="font-black text-indigo-500 mr-2">{c.author}</span>
+                                     <span className="text-slate-600">{c.text}</span>
+                                  </div>
+                                ))}
+                             </div>
+                           )}
+                           <div className="relative">
+                              <input 
+                                type="text"
+                                value={commentInput[entry.id] || ''}
+                                onChange={(e) => setCommentInput({...commentInput, [entry.id]: e.target.value})}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id, true)}
+                                placeholder="댓글을 남겨주세요..."
+                                className="w-full h-10 pl-4 pr-10 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-300"
+                              />
+                              <button 
+                                onClick={() => handleAddComment(entry.id, true)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-indigo-400 hover:text-indigo-600 transition-colors p-1"
+                              >
+                                <Send size={16} />
+                              </button>
+                           </div>
+                        </div>
+                     </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        )}
       </div>
     );
   };
