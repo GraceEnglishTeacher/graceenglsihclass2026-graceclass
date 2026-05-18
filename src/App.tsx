@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
+  LayoutDashboard,
   Brain, 
   CheckCircle2, 
   BookOpen, 
@@ -29,12 +30,19 @@ import {
   Eraser,
   Undo,
   Languages,
-  Sparkles
+  Sparkles,
+  Menu
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import dogTemplate from './assets/images/puppy_cute_zentangle_template_1779095376379.png';
+import dogExample from './assets/images/dog_zentangle_simple_example_1779094661261.png';
+import catTemplate from './assets/images/cat_cute_zentangle_template_1779095394772.png';
+import catExample from './assets/images/cat_zentangle_simple_example_v2_1779094682528.png';
+import heartTemplate from './assets/images/heart_structured_template_1779094260287.png';
+import heartExample from './assets/images/heart_zentangle_example_1779094285713.png';
 
 // --- Types ---
-type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude' | 'zentangle';
+type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading' | 'reading_warmup' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude' | 'zentangle';
 
 interface Comment {
   id: string;
@@ -100,7 +108,7 @@ interface WritingQuestion {
 interface ReadingQuestion {
   id: number;
   type: 'choice' | 'subjective';
-  section: 'p1' | 'p2_jiho' | 'p2_somi';
+  section: 'warmup' | 'p1' | 'p2_jiho' | 'p2_somi';
   question: string;
   question_ko: string;
   options?: string[];
@@ -511,6 +519,28 @@ const WRITING_DATA: WritingQuestion[] = [
 ];
 
 const READING_DATA: ReadingQuestion[] = [
+  // Warm-up Reading: Want to Be Happy?
+  {
+    id: 101, section: 'warmup', type: 'subjective',
+    question: "What do all people want according to the speaker?",
+    question_ko: "연설자에 따르면 모든 사람들이 원하는 것은 무엇인가요? (All people want ...)",
+    answer: "to be happy",
+    explanation: "연설자는 모든 사람들이 공통적으로 '행복해지기를 원한다(all of us want to be happy)'고 말합니다."
+  },
+  {
+    id: 102, section: 'warmup', type: 'subjective',
+    question: "According to the speaker, what makes people happy?",
+    question_ko: "연설자에 따르면 무엇이 사람들을 행복하게 만드나요? (It's ... that makes people happy.)",
+    answer: "gratefulness",
+    explanation: "연설자는 행복이 우리를 감사하게 만드는 것이 아니라, '감사함(gratefulness)'이 우리를 행복하게 만든다고 강조합니다."
+  },
+  {
+    id: 103, section: 'warmup', type: 'subjective',
+    question: "Why are some rich or successful people not happy?",
+    question_ko: "왜 어떤 부유하거나 성공한 사람들은 행복하지 않은가요? (Because they want ...)",
+    answer: "something else or more of the same",
+    explanation: "그들은 이미 가진 것에 만족하지 못하고 '다른 무언가나 혹은 같은 것을 더 많이' 원하기 때문입니다."
+  },
   // Page 1: Protecting Your Emotional Health
   {
     id: 1, section: 'p1', type: 'choice',
@@ -809,8 +839,13 @@ const READING_DATA: ReadingQuestion[] = [
 ];
 
 const READING_TEXTS = {
+  warmup: {
+    title: "Warm-up Reading: Want to Be Happy?",
+    text: "There is something you know about me, something very personal, and there is something I know about every one of you and that’s very central to your concerns. There is also something that we know about everyone we meet anywhere in the world, or on the street. That is very mainspring of whatever they do and whatever they put up with. And that is that all of us want to be happy. In this, we are all together. How we imagine our happiness, that differs from one another, but it’s already a lot that we have all in common that we want to be happy. Now my topic is gratefulness.\n\nWhat is the connection between happiness and gratefulness? Many people would say, “Well, that’s very easy.” When you are happy, you are grateful. But think again. Is it really the happy people that are grateful? We all know quite a number of people who have everything that it would take to be happy, and they are not happy because they want something else or they want more of the same. And we all know people who have lots of misfortune, misfortune that we ourselves would not want to have, and they are deeply happy. They radiate happiness. You are surprised. Why? Because they are grateful.\n\nSo it is not happiness that makes us grateful. It's gratefulness that makes us happy. If you think it’s happiness that makes you grateful, think again. It's gratefulness that makes us happy.",
+    translation: "여러분이 저에 대해 알고 있는 것이 하나 있습니다. 아주 개인적인 어떤 것입니다. 그리고 제가 여러분 모두에 대해 알고 있는 것이 하나 있는데, 그것은 여러분의 관심사에서 매우 핵심적인 것입니다. 또한 우리는 세상 어디에서든 길에서 만나는 모든 사람들에 대해 알고 있는 것이 있는데, 그것은 그들이 하는 모든 행동과 견디어 내는 모든 것의 가장 중요한 원동력입니다. 그것은 바로 우리 모두가 행복해지고 싶어한다는 것입니다. 이 점에서 우리는 모두 같습니다. 우리가 행복을 어떻게 생각하는지는 사람마다 다릅니다. 하지만 우리가 행복해지고 싶어한다는 공통점을 가지고 있다는 것만으로도 이미 매우 큰 의미가 있습니다. 이제 제 주제는 감사함(gratefulness)입니다.\n\n행복과 감사함 사이에는 어떤 관계가 있을까요? 많은 사람들은 '아, 그건 아주 쉽죠'라고 말할 것입니다. 행복할 때 사람은 감사하게 됩니다. 하지만 다시 생각해 보세요. 정말 행복한 사람들이 감사하는 사람들일까요? 우리는 행복하기 위해 필요한 모든 것을 가진 많은 사람들을 알고 있지만, 그들은 다른 무언가를 원하거나 이미 가진 것을 더 많이 원하기 때문 에 행복하지 않습니다. 그리고 우리는 많은 불행을 겪고 있는데도 매우 행복한 사람들도 알고 있습니다. 그들은 행복을 발산합니다. 여러분은 놀라게 됩니다. 왜일까요? 왜냐하면 그들은 감사하기 때문입니다. 그러므로 우리를 감사하게 만드는 것은 행복이 아닙니다. 우리를 행복하게 만드는 것이 바로 감사함입니다. 만약 행복이 여러분을 감사하게 만든다고 생각한다면, 다시 생각해 보세요. 여러분을 행복하게 만드는 것은 감사함입니다."
+  },
   p1: {
-    title: "How to Protect Your Emotional Health (Page 1)",
+    title: "How to Protect Your Emotional Health",
     text: "Emotional health is as important as physical health. It starts with noticing what makes you feel sad or happy. When you notice these feelings, you should talk about them with someone you trust. Some people keep their feelings inside, but this can cause problems in your relationships later. To be emotionally healthy, it is also essential to maintain your physical health by exercising regularly and getting enough sleep. Lastly, remember that humans are social animals by nature. Connecting with other people is a necessary part of staying happy and strong.",
     translation: "정서적 건강은 신체적 건강만큼이나 중요합니다. 그것은 무엇이 당신을 슬프게 하거나 기쁘게 만드는지 알아차리는 것에서부터 시작됩니다. 이러한 감정들을 알아차렸을 때, 당신이 신뢰하는 사람과 그것들에 대해 이야기해야 합니다. 어떤 사람들은 자신의 감정을 내면에 담아두지만, 이것은 나중에 당신의 관계에 문제를 일으킬 수 있습니다. 정서적으로 건강해지기 위해서는 정기적으로 운동하고 충분한 수면을 취함으로써 신체적 건강을 유지하는 것도 필수적입니다. 마지막으로, 인간은 본래 사회적 동물이라는 것을 기억하세요. 다른 사람들과 연결되는 것은 행복하고 강하게 지내기 위한 필수적인 부분입니다."
   },
@@ -867,6 +902,7 @@ export default function App() {
   const [activeSection, setActiveSection] = useState<Section>('dashboard');
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [vocabQuizConfig, setVocabQuizConfig] = useState<{ section: 'all' | 'p1' | 'p2_jiho' | 'p2_somi', count: number }>({ section: 'all', count: 10 });
 
   const handleSpeak = (text: string) => {
@@ -889,125 +925,170 @@ export default function App() {
 
   // Views moved outside App component to prevent unmount/remount on state changes
   return (
-    <div className="flex h-screen bg-[#2D3748] font-sans selection:bg-indigo-200 selection:text-indigo-900 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[#2D3748] font-sans selection:bg-indigo-200 selection:text-indigo-900 overflow-hidden">
+      {/* Mobile Header */}
+      <div className="md:hidden flex items-center justify-between p-4 bg-[#2D3748] border-b border-white/5 z-[60] shrink-0">
+        <div className="flex items-center space-x-3">
+          <Award className="text-[#4C51BF]" size={24} fill="currentColor" />
+          <span className="text-white font-black tracking-widest text-[10px]">GRACE'S ENGLISH CLASS</span>
+        </div>
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-white bg-white/5 rounded-lg active:scale-95 transition-all">
+          <Menu size={20} />
+        </button>
+      </div>
+
+      {/* Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-[35] md:hidden backdrop-blur-sm transition-all" 
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-96 bg-[#2D3748] p-10 flex flex-col h-full border-r border-white/5 relative z-20">
-        <div className="flex items-center space-x-4 mb-16 pl-2">
-          <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl shadow-white/10">
-            <Award className="text-[#4C51BF]" size={30} fill="currentColor" />
+      <aside className={`${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative top-0 left-0 w-72 md:w-80 bg-[#2D3748] p-6 md:p-8 flex flex-col h-full border-r border-white/5 z-40 transition-transform duration-300 ease-in-out`}>
+        <div className="flex items-center space-x-4 mb-8 md:mb-10 pl-2">
+          <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl shadow-white/10 shrink-0">
+            <Award className="text-[#4C51BF]" size={26} fill="currentColor" />
           </div>
-          <div>
-            <h1 className="text-2xl font-black text-white tracking-widest leading-none">GRACE's</h1>
-            <p className="text-sm font-black text-indigo-400 uppercase tracking-[0.4em] mt-1">English Class</p>
+          <div className="md:block">
+            <h1 className="text-xl font-black text-white tracking-widest leading-none">GRACE's</h1>
+            <p className="text-[10px] md:text-xs font-black text-indigo-400 uppercase tracking-[0.4em] mt-1 shrink-0">English Class</p>
           </div>
         </div>
 
-        <nav className="flex-1 space-y-3">
-          <SidebarBtn icon={<Zap size={20} />} label="DASHBOARD" active={activeSection === 'dashboard'} onClick={() => navTo('dashboard')} />
-          <SidebarBtn icon={<Brain size={20} />} label="VOCA MASTER" active={activeSection === 'vocab' || activeSection === 'vocabQuiz'} onClick={() => navTo('vocab')} />
-          <div className="pt-10 pb-4">
-             <div className="flex items-center gap-4 pl-4 mb-8">
-                <Star className="text-indigo-300" size={20} />
-                <p className="text-lg font-black uppercase tracking-[0.2em] text-indigo-300 whitespace-nowrap">GRAMMAR MASTER</p>
+        <nav className="flex-1 space-y-1.5 md:space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+          <SidebarBtn 
+            icon={<LayoutDashboard className="w-5 h-5 text-white" />} 
+            label="DASHBOARD" 
+            active={activeSection === 'dashboard'} 
+            onClick={() => { navTo('dashboard'); setMobileMenuOpen(false); }} 
+          />
+          <SidebarBtn 
+            icon={<Languages className="w-5 h-5 text-white" />} 
+            label="VOCA MASTER" 
+            active={activeSection === 'vocab' || activeSection === 'vocabQuiz'} 
+            onClick={() => { navTo('vocab'); setMobileMenuOpen(false); }} 
+          />
+          
+          <div className="pt-4 md:pt-6 pb-1">
+             <div className="flex items-center space-x-3 p-4 rounded-3xl font-black uppercase tracking-widest text-lg text-white whitespace-nowrap">
+                <Brain className="w-6 h-6 text-indigo-300 shrink-0" />
+                <span>GRAMMAR MASTER</span>
              </div>
-             <div className="space-y-3">
+             <div className="space-y-1 md:space-y-1.5 px-2">
                 <button 
-                  onClick={() => navTo('grammar_ppc')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'grammar_ppc' ? "bg-indigo-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
+                  onClick={() => { navTo('grammar_ppc'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'grammar_ppc' ? "bg-cyan-500 text-white shadow-lg translate-x-1" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_ppc' ? "bg-white" : "bg-white/10"}`}></div>
+                   <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'grammar_ppc' ? "bg-white" : "bg-cyan-400"}`}></div>
                    현재완료 진행형
                 </button>
                 <button 
-                  onClick={() => navTo('grammar_so_that')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'grammar_so_that' ? "bg-indigo-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
+                  onClick={() => { navTo('grammar_so_that'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'grammar_so_that' ? "bg-pink-600 text-white shadow-lg translate-x-1" : "text-pink-100 hover:text-white hover:bg-white/10"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'grammar_so_that' ? "bg-white" : "bg-white/10"}`}></div>
+                   <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'grammar_so_that' ? "bg-white" : "bg-pink-400"}`}></div>
                    so ~ that 구문
                 </button>
              </div>
           </div>
-          <SidebarBtn icon={<PenTool size={20} />} label="WRITING MASTER" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
-          <div className="pt-10 pb-4">
-             <div className="flex items-center gap-4 pl-4 mb-8">
-                <BookOpen className="text-indigo-300" size={20} />
-                <p className="text-lg font-black uppercase tracking-[0.2em] text-indigo-300 whitespace-nowrap">READING MASTER</p>
+
+          <SidebarBtn 
+            icon={<PenTool className="w-5 h-5 text-white" />} 
+            label="WRITING MASTER" 
+            active={activeSection === 'writing'} 
+            onClick={() => { navTo('writing'); setMobileMenuOpen(false); }} 
+          />
+          
+          <div className="pt-2 md:pt-4">
+             <div className="flex items-center space-x-3 p-4 rounded-3xl font-black uppercase tracking-widest text-lg text-white whitespace-nowrap">
+                <BookOpen className="w-6 h-6 text-indigo-300 shrink-0" />
+                <span>READING MASTER</span>
              </div>
-             <div className="space-y-3">
+             <div className="space-y-1 md:space-y-1.5 px-2">
                 <button 
-                  onClick={() => navTo('reading_p1')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p1' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
+                  onClick={() => { navTo('reading_warmup'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'reading_warmup' ? "bg-amber-500 text-white shadow-lg translate-x-1" : "text-amber-100 hover:text-white hover:bg-white/10"}`}
                 >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p1' ? "bg-white" : "bg-white/10"}`}></div>
-                   Emotional Health (Page 1)
+                   <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'reading_warmup' ? "bg-white" : "bg-amber-400"}`}></div>
+                   Warm-up Reading
                 </button>
-                <div className="space-y-1">
-                  <button 
-                    onClick={() => navTo('reading_p2_jiho')}
-                    className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_jiho' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
-                  >
-                     <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_jiho' ? "bg-white" : "bg-white/10"}`}></div>
-                     Jiho: Gratitude (Page 2)
-                  </button>
-                  <button 
-                    onClick={() => navTo('gratitude')}
-                    className={`w-full flex items-center gap-4 px-12 py-2 rounded-xl font-black text-xs transition-all ${activeSection === 'gratitude' ? "text-white bg-indigo-500/30" : "text-indigo-400 hover:text-white"}`}
-                  >
-                     <Heart size={14} className={activeSection === 'gratitude' ? "text-rose-400" : ""} />
-                     감사 일기 쓰기 (Gratitude)
-                  </button>
-                </div>
-                <div className="space-y-1">
-                  <button 
-                    onClick={() => navTo('reading_p2_somi')}
-                    className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_somi' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
-                  >
-                     <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_somi' ? "bg-white" : "bg-white/10"}`}></div>
-                     Somi: Healing Art (Page 2)
-                  </button>
-                  <button 
-                    onClick={() => navTo('zentangle')}
-                    className={`w-full flex items-center gap-4 px-12 py-2 rounded-xl font-black text-xs transition-all ${activeSection === 'zentangle' ? "text-white bg-indigo-500/30" : "text-indigo-400 hover:text-white"}`}
-                  >
-                     <Palette size={14} className={activeSection === 'zentangle' ? "text-indigo-400" : ""} />
-                     젠탱글 그리기 (Zentangle)
-                  </button>
-                </div>
+                <button 
+                  onClick={() => { navTo('reading_p1'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'reading_p1' ? "bg-cyan-500 text-white shadow-lg translate-x-1" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
+                >
+                   <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'reading_p1' ? "bg-white" : "bg-cyan-400"}`}></div>
+                   Emotional Health
+                </button>
+                <button 
+                  onClick={() => { navTo('reading_p2_jiho'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'reading_p2_jiho' ? "bg-pink-600 text-white shadow-lg translate-x-1" : "text-pink-100 hover:text-white hover:bg-white/10"}`}
+                >
+                   <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'reading_p2_jiho' ? "bg-white" : "bg-pink-400"}`}></div>
+                   Jiho's Story
+                </button>
+                <button 
+                  onClick={() => { navTo('reading_p2_somi'); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'reading_p2_somi' ? "bg-cyan-500 text-white shadow-lg translate-x-1" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
+                >
+                   <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'reading_p2_somi' ? "bg-white" : "bg-cyan-400"}`}></div>
+                   Somi's Story
+                </button>
+             </div>
+          </div>
+
+          <div className="pt-2 md:pt-4 pb-1">
+             <div className="flex items-center space-x-3 p-4 rounded-3xl font-black uppercase tracking-widest text-lg text-white whitespace-nowrap">
+                <Sparkles className="w-6 h-6 text-indigo-300 shrink-0" />
+                <span>ACTIVITIES</span>
+             </div>
+             <div className="space-y-1 md:space-y-1.5 px-2">
+                 <button 
+                   onClick={() => { navTo('gratitude'); setMobileMenuOpen(false); }}
+                   className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'gratitude' ? "bg-pink-600 text-white shadow-lg translate-x-1" : "text-pink-100 hover:text-white hover:bg-white/10"}`}
+                 >
+                    <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'gratitude' ? "bg-white" : "bg-pink-400"}`}></div>
+                    Gratitude Diary
+                 </button>
+                 <button 
+                   onClick={() => { navTo('zentangle'); setMobileMenuOpen(false); }}
+                   className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'zentangle' ? "bg-cyan-500 text-white shadow-lg translate-x-1" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
+                 >
+                    <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'zentangle' ? "bg-white" : "bg-cyan-400"}`}></div>
+                    Zentangles
+                 </button>
              </div>
           </div>
         </nav>
 
-        <div className="mt-auto space-y-6">
-           <div className="bg-[#3C366B] p-6 rounded-3xl border border-white/10 shadow-inner">
-             <p className="text-[10px] text-white/50 mb-3 uppercase tracking-[0.2em] font-black">나의 학습 현황</p>
-             <div className="flex justify-between items-end mb-4">
-               <span className="text-4xl font-black text-white tracking-tighter">84%</span>
+        <div className="mt-4 md:mt-6 space-y-3">
+           <div className="bg-[#3C366B] p-4 md:p-5 rounded-2xl border border-white/10 shadow-inner">
+             <div className="flex justify-between items-end mb-2">
+               <span className="text-2xl font-black text-white tracking-tighter">84%</span>
                <div className="flex flex-col items-end">
-                  <span className="text-[10px] text-[#F6AD55] font-black uppercase">Lv. 12 챌린저</span>
-                  <div className="flex gap-0.5 mt-1">
-                    {[1,2,3,4,5].map(i => <div key={i} className={`w-2 h-1 rounded-full ${i <= 4 ? "bg-[#ECC94B]" : "bg-white/10"}`}></div>)}
-                  </div>
+                  <span className="text-[8px] text-[#F6AD55] font-black uppercase">Lv. 12 챌린저</span>
                </div>
              </div>
-             <div className="w-full bg-[#2D3748] h-3 rounded-full overflow-hidden shadow-inner">
-               <motion.div initial={{ width: 0 }} animate={{ width: '84%' }} className="bg-gradient-to-r from-[#ECC94B] to-[#F6AD55] h-full rounded-full shadow-[0_0_10px_rgba(236,201,75,0.5)]"></motion.div>
+             <div className="w-full bg-[#2D3748] h-1.5 rounded-full overflow-hidden shadow-inner">
+               <motion.div initial={{ width: 0 }} animate={{ width: '84%' }} className="bg-gradient-to-r from-[#ECC94B] to-[#F6AD55] h-full rounded-full"></motion.div>
              </div>
            </div>
-           <p className="text-center text-white/30 text-[10px] font-bold italic">© 2026 GRACE's English Class</p>
+           <p className="text-center text-white/30 text-[8px] font-medium tracking-widest italic uppercase">© 2026 GRACE's English Class</p>
         </div>
       </aside>
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-screen overflow-y-auto bg-[#F7F9FC]">
         {/* Header bar */}
-        <header className="h-24 bg-white border-b border-slate-100 flex items-center justify-between px-12 sticky top-0 z-10 shadow-sm">
-          <div className="flex items-center space-x-6">
+        <header className="h-16 md:h-24 bg-white border-b border-slate-100 flex items-center justify-between px-4 md:px-12 sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center space-x-4 md:space-x-6">
             <div className="flex items-center space-x-3">
-              <span className="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border border-orange-200">LESSON 3</span>
-              <h1 className="text-2xl font-black text-slate-800 tracking-tighter">Be Positive, Be Happy</h1>
+              <span className="bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm border border-orange-200 shrink-0">LESSON 3</span>
+              <h1 className="text-sm md:text-2xl font-black text-slate-800 tracking-tighter">Be Positive, Be Happy</h1>
             </div>
-            <div className="h-8 w-[1px] bg-slate-100 hidden md:block"></div>
-            <div className="text-sm font-bold text-slate-400 hidden md:block uppercase tracking-widest">Section: {activeSection.toUpperCase()}</div>
+            <div className="h-8 w-[1px] bg-slate-100 hidden lg:block"></div>
+            <div className="text-[10px] md:text-sm font-bold text-slate-400 hidden lg:block uppercase tracking-widest">Section: {activeSection.toUpperCase()}</div>
           </div>
           <div className="flex items-center space-x-8">
             <div className="flex -space-x-3">
@@ -1069,7 +1150,7 @@ export default function App() {
                     handleSpeak={handleSpeak}
                   />
                 )}
-                {(activeSection === 'reading' || activeSection === 'reading_p1' || activeSection === 'reading_p2_jiho' || activeSection === 'reading_p2_somi') && (
+                {(activeSection === 'reading' || activeSection === 'reading_warmup' || activeSection === 'reading_p1' || activeSection === 'reading_p2_jiho' || activeSection === 'reading_p2_somi') && (
                   <ReadingView 
                     activeSection={activeSection}
                     isFinished={isFinished}
@@ -1558,11 +1639,11 @@ function SidebarBtn({ icon, label, active, onClick }: { icon: React.ReactNode; l
       className={`flex items-center space-x-4 p-4 rounded-3xl transition-all font-black uppercase tracking-widest text-lg group w-full text-left ${
         active 
           ? "bg-[#667EEA] text-white shadow-xl shadow-indigo-700/20 translate-x-1" 
-          : "text-white/70 hover:bg-white/10 hover:text-white"
+          : "text-white hover:bg-white/10 hover:text-white"
       }`}
     >
-      <span className={`transition-transform group-hover:scale-110 ${active ? "text-white" : "text-indigo-300"}`}>{icon}</span>
-      <span className={`whitespace-nowrap ${!active && "text-indigo-300"}`}>{label}</span>
+      <span className={`transition-transform group-hover:scale-110 text-white`}>{icon}</span>
+      <span className={`whitespace-nowrap text-white`}>{label}</span>
       {active && <motion.div layoutId="sidebar-active" className="ml-auto w-2 h-2 bg-white rounded-full"></motion.div>}
     </button>
   );
@@ -1617,7 +1698,8 @@ function ResultCard({
   onRestart, 
   onGoHome, 
   missedWords, 
-  onReviewMistakes 
+  onReviewMistakes,
+  userName
 }: { 
   score: number; 
   total: number; 
@@ -1625,6 +1707,7 @@ function ResultCard({
   onGoHome: () => void;
   missedWords?: VocabWord[];
   onReviewMistakes?: () => void;
+  userName?: string;
 }) {
   const percentage = Math.round((score / total) * 100);
   
@@ -1650,9 +1733,17 @@ function ResultCard({
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-4xl font-black text-slate-800 tracking-tighter underline decoration-indigo-200 underline-offset-8">MISSION COMPLETED</h2>
+        <div className="flex flex-col items-center gap-1">
+          {userName && <span className="bg-indigo-100 text-indigo-700 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-1">{userName}'S SCORE</span>}
+          <h2 className="text-4xl font-black text-slate-800 tracking-tighter underline decoration-indigo-200 underline-offset-8 uppercase">MISSION COMPLETED</h2>
+        </div>
         <p className="text-slate-500 font-bold text-lg leading-tight">
-          당신은 <span className="font-extrabold text-indigo-600 block text-2xl mt-1">{total}문제 중 {score}문제를 맞췄습니다!</span>
+          {userName ? (
+            <><span className="text-indigo-600">{userName}</span>님은 </>
+          ) : (
+            <>당신은 </>
+          )}
+          <span className="font-extrabold text-indigo-600 block text-2xl mt-1">{total}문제 중 {score}문제를 맞췄습니다!</span>
         </p>
       </div>
 
@@ -1747,6 +1838,10 @@ function ResultCard({
     };
 
     const handleNext = () => {
+      // If skipped (no feedback yet), add to mistakes so it can be reviewed/retried
+      if (!feedback) {
+        setMistakes(prev => prev.includes(currentQuestion) ? prev : [...prev, currentQuestion]);
+      }
       setFeedback(null);
       setInputValue('');
       if (currentQuestion < filteredQuestions.length - 1) {
@@ -1763,7 +1858,7 @@ function ResultCard({
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full -translate-y-32 translate-x-32"></div>
             <div className="relative z-10">
               <span className="inline-block bg-indigo-100 text-indigo-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-[0.2em] mb-8">Concept Review</span>
-              <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-8 leading-tight uppercase">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 tracking-tighter mb-8 leading-tight uppercase">
                 {isPpc ? "Present Perfect Continuous" : "so ... that ... Clause"}
               </h2>
               <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 mb-10">
@@ -1843,14 +1938,14 @@ function ResultCard({
           onGoHome={() => navTo('dashboard')} 
         />
 
-        {mistakes.length > 0 && (
+        {(mistakes.length > 0 || score < filteredQuestions.length) && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white p-12 rounded-[50px] shadow-2xl border border-slate-100"
           >
              <h3 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3">
-                <AlertCircle className="text-rose-500" /> 오답 리뷰 (Review Mistakes)
+                <AlertCircle className="text-rose-500" /> 오답노트 & 다시 풀어보기 (Incorrect Answer Note)
              </h3>
              <div className="space-y-6">
                 {mistakes.map((idx) => {
@@ -1858,7 +1953,11 @@ function ResultCard({
                   return (
                     <div key={idx} className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-4">
                        <div className="flex justify-between items-start">
-                          <p className="text-rose-500 font-black text-sm uppercase tracking-widest px-4 py-1 bg-rose-50 rounded-full inline-block">Question {idx + 1}</p>
+                          <div className="flex gap-2">
+                            <p className="text-rose-500 font-black text-sm uppercase tracking-widest px-4 py-1 bg-rose-50 rounded-full inline-block">Question {idx + 1}</p>
+                            {/* Check if it was skipped or wrong - if score wasn't incremented and it wasn't in mistakes before? 
+                                Actually, we just treat them all as review items. */}
+                          </div>
                           <button 
                             onClick={() => {
                               setCurrentQuestion(idx);
@@ -1866,16 +1965,23 @@ function ResultCard({
                               setFeedback(null);
                               setInputValue('');
                             }}
-                            className="text-indigo-600 font-black text-sm flex items-center gap-2 hover:underline"
+                            className="bg-indigo-600 text-white px-6 py-2 rounded-xl font-black text-xs flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-sm active:scale-95"
                           >
-                            <RotateCcw size={16} /> 다시 풀어보기
+                            <RotateCcw size={14} /> 다시 풀어보기
                           </button>
                        </div>
-                       <p className="text-xl font-black text-slate-800">{questionData.question}</p>
-                       <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                          <p className="text-emerald-700 font-bold">정답: {questionData.answer}</p>
+                       <p className="text-xl font-black text-slate-800 italic">{questionData.question}</p>
+                       {questionData.question_ko && <p className="text-slate-400 font-bold">{questionData.question_ko}</p>}
+                       <div className="flex flex-col md:flex-row gap-4 mt-4">
+                          <div className="flex-1 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                             <p className="text-emerald-700 font-black text-sm uppercase mb-1">정답 (Correct Answer)</p>
+                             <p className="text-emerald-800 font-black text-lg">{questionData.answer}</p>
+                          </div>
+                          <div className="flex-1 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                             <p className="text-amber-700 font-black text-sm uppercase mb-1">해설 (Explanation)</p>
+                             <p className="text-amber-800 font-bold">{questionData.explanation}</p>
+                          </div>
                        </div>
-                       <p className="text-slate-500 font-bold italic">{questionData.explanation}</p>
                     </div>
                   );
                 })}
@@ -2578,7 +2684,7 @@ function ResultCard({
 
                     <div className="mt-8 pt-8 border-t border-slate-50 space-y-6">
                       <div className="flex flex-wrap gap-2">
-                        {['👍', '❤️', '👏', '🔥', '✨'].map(emoji => (
+                        {['👍', '❤️', '👏', '🔥', '✨', '😭', '💪'].map(emoji => (
                           <button 
                             key={emoji}
                             onClick={() => handleReaction(entry.id, emoji)}
@@ -2629,29 +2735,30 @@ function ResultCard({
           <div className="absolute top-0 right-0 w-80 h-80 bg-orange-50 rounded-full -translate-y-40 translate-x-40"></div>
           
           <div className="relative z-10 space-y-12">
-             <div className="flex items-center justify-between">
+             <div className="flex items-center">
                 <button 
                   onClick={onBack}
                   className="p-4 bg-slate-50 text-slate-400 hover:text-indigo-600 rounded-3xl transition-all active:scale-90"
                 >
                   <RotateCcw size={28} className="-rotate-90" />
                 </button>
-                <div className="flex gap-3">
+             </div>
+
+             <div className="space-y-4">
+                <h2 className="text-5xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none mb-4 whitespace-nowrap">MY STORY <span className="text-indigo-600 uppercase">BUILDER</span></h2>
+                <div className="flex gap-3 pt-2">
                   <button 
                     onClick={() => setStoryTab('wall')}
-                    className="bg-indigo-50 text-indigo-600 px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-100 transition-all active:scale-95 shadow-sm"
+                    className="bg-indigo-50 text-indigo-600 px-6 py-2 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-100 transition-all active:scale-95 shadow-sm"
                   >
                     Class Stories ⮕
                   </button>
-                  <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Final Step</span>
+                  <span className="bg-orange-100 text-orange-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center">Final Step</span>
                 </div>
-             </div>
-             <div className="space-y-4">
-                <h2 className="text-5xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none mb-4">MY STORY<br/><span className="text-indigo-600">BUILDER</span></h2>
                 <p className="text-xl font-bold text-slate-400">학습한 핵심 어법을 활용하여 당신의 감정 건강 이야기를 만들어보세요.</p>
              </div>
 
-             <div className="bg-slate-50 p-10 rounded-[45px] border border-slate-100 focus-within:border-indigo-300 transition-all flex items-center gap-6 shadow-inner">
+             <div className="bg-slate-50 p-10 rounded-[45px] border border-slate-100 focus-within:border-indigo-300 transition-all flex items-center gap-6 shadow-inner max-w-md">
                 <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-slate-400 shadow-sm border border-slate-100">
                   <User size={32} />
                 </div>
@@ -2801,100 +2908,119 @@ function ResultCard({
     );
   };
 
-    const ReadingView = ({ activeSection, isFinished, setIsFinished, score, setScore, navTo, handleSpeak }: { activeSection: Section; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; setScore: React.Dispatch<React.SetStateAction<number>>; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
-    if (activeSection === 'reading') {
-      return (
-        <div className="max-w-6xl mx-auto space-y-12">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-            <div>
-              <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-4 uppercase">READING MASTER</h2>
-              <p className="text-emerald-500 font-bold text-2xl uppercase tracking-[0.2em] pl-1">본문 이해와 독해 실력 향상</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <MenuCard 
-              title="EMOTIONAL HEALTH" 
-              tagline="Page 1: 감정 건강을 지키는 다양한 방법들에 대해 알아봅니다." 
-              variant="white" accent="emerald" 
-              icon={<Smile size={42} />} 
-              onClick={() => navTo('reading_p1')} 
-            />
-            <div className="space-y-4">
-              <MenuCard 
-                title="JIHO'S GRATITUDE" 
-                tagline="Page 2: 지호의 감사 일기가 가져온 긍정적 변화를 확인합니다." 
-                variant="white" accent="orange" 
-                icon={<MessageSquare size={42} />} 
-                onClick={() => navTo('reading_p2_jiho')} 
-              />
-              <button 
-                onClick={() => navTo('gratitude')}
-                className="w-full p-6 bg-indigo-50 border border-indigo-100 rounded-[30px] flex items-center justify-between group hover:bg-indigo-100 transition-all shadow-sm"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-rose-500 shadow-sm">
-                    <Heart size={20} fill="currentColor" />
-                  </div>
-                  <span className="font-black text-indigo-900 tracking-tight">나의 감사 일기로 이동하기</span>
-                </div>
-                <ArrowRight size={20} className="text-indigo-300 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-            <div className="space-y-4">
-              <MenuCard 
-                title="SOMI'S HEALING ART" 
-                tagline="Page 2: 소미가 힐링 아트를 통해 감정을 표현하는 방법을 배웁니다." 
-                variant="white" accent="indigo" 
-                icon={<Palette size={42} />} 
-                onClick={() => navTo('reading_p2_somi')} 
-              />
-              <button 
-                onClick={() => navTo('zentangle')}
-                className="w-full p-6 bg-indigo-50 border border-indigo-100 rounded-[30px] flex items-center justify-between group hover:bg-indigo-100 transition-all shadow-sm"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-500 shadow-sm">
-                    <Palette size={20} />
-                  </div>
-                  <span className="font-black text-indigo-900 tracking-tight">나의 젠탱글 그리기로 이동하기</span>
-                </div>
-                <ArrowRight size={20} className="text-indigo-300 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
+  const ReadingView = ({ activeSection, isFinished, setIsFinished, score, setScore, navTo, handleSpeak }: { activeSection: Section; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; setScore: React.Dispatch<React.SetStateAction<number>>; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+    const isWarmup = activeSection === 'reading_warmup';
     const isP1 = activeSection === 'reading_p1';
-    const sectionKey = isP1 ? 'p1' : activeSection === 'reading_p2_jiho' ? 'p2_jiho' : 'p2_somi' as keyof typeof READING_TEXTS;
+    const sectionKey = isWarmup ? 'warmup' : isP1 ? 'p1' : activeSection === 'reading_p2_jiho' ? 'p2_jiho' : 'p2_somi';
+    const content = READING_TEXTS[sectionKey as keyof typeof READING_TEXTS];
     const filteredQuestions = useMemo(() => {
-      const all = READING_DATA.filter(q => q.section === sectionKey);
+      const all = READING_DATA.filter(q => q.section === (sectionKey as any));
       return all;
     }, [sectionKey]);
     
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [inputValue, setInputValue] = useState('');
+    const [userName, setUserName] = useState('');
+    const [showNameInput, setShowNameInput] = useState(isWarmup);
     const [feedback, setFeedback] = useState<{ isCorrect: boolean; explanation: string } | null>(null);
     const [showQuiz, setShowQuiz] = useState(false);
 
-    const content = READING_TEXTS[sectionKey];
+    const isWarmupReading = activeSection === 'reading_warmup';
 
-    const handleNext = () => {
-      setFeedback(null);
-      setInputValue('');
-      if (currentQuestion < filteredQuestions.length - 1) {
-        setCurrentQuestion(prev => prev + 1);
-      } else {
-        setIsFinished(true);
-      }
-    };
+    if (activeSection === 'reading') {
+        return (
+          <div className="max-w-6xl mx-auto space-y-12">
+            {/* Warm-up Section */}
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 p-8 rounded-[40px] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/10"
+            >
+              <div className="flex items-center gap-6">
+                <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                  <Sparkles size={32} />
+                </div>
+                <div className="space-y-1 text-center md:text-left">
+                  <span className="bg-white/20 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Recommended Start</span>
+                  <h3 className="text-3xl font-black tracking-tight uppercase">Warm-up Reading</h3>
+                  <p className="font-bold text-white/70 italic text-sm">"Small positive changes lead to big improvements..."</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => navTo('reading_warmup')}
+                className="bg-white text-indigo-600 px-10 py-4 rounded-[2rem] font-black shadow-lg hover:bg-slate-50 transition-all active:scale-95 group flex items-center gap-2"
+              >
+                START WARM-UP <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+              </button>
+            </motion.div>
+
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-4">
+              <div>
+                <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-4 uppercase leading-none">READING MASTER</h2>
+                <p className="text-emerald-500 font-bold text-2xl uppercase tracking-[0.2em] pl-1">본문 이해와 독해 실력 향상</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <MenuCard 
+                title="EMOTIONAL HEALTH" 
+                tagline="Page 1: 감정 건강을 지키는 다양한 방법들에 대해 알아봅니다." 
+                variant="white" accent="emerald" 
+                icon={<Smile size={42} />} 
+                onClick={() => navTo('reading_p1')} 
+              />
+              <div className="space-y-4">
+                <MenuCard 
+                  title="JIHO'S STORY" 
+                  tagline="Page 2: 지호의 감사 일기가 가져온 긍정적 변화를 확인합니다." 
+                  variant="white" accent="orange" 
+                  icon={<MessageSquare size={42} />} 
+                  onClick={() => navTo('reading_p2_jiho')} 
+                />
+                <button 
+                  onClick={() => navTo('gratitude')}
+                  className="w-full p-6 bg-indigo-50 border border-indigo-100 rounded-[30px] flex items-center justify-between group hover:bg-indigo-100 transition-all shadow-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-rose-500 shadow-sm">
+                      <Heart size={20} fill="currentColor" />
+                    </div>
+                    <span className="font-black text-indigo-900 tracking-tight text-sm">나의 감사 일기 쓰기</span>
+                  </div>
+                  <ArrowRight size={18} className="text-indigo-300 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <MenuCard 
+                  title="SOMI'S STORY" 
+                  tagline="Page 2: 소미가 힐링 아트를 통해 감정을 표현하는 방법을 배웁니다." 
+                  variant="white" accent="indigo" 
+                  icon={<Palette size={42} />} 
+                  onClick={() => navTo('reading_p2_somi')} 
+                />
+                <button 
+                  onClick={() => navTo('zentangle')}
+                  className="w-full p-6 bg-indigo-50 border border-indigo-100 rounded-[30px] flex items-center justify-between group hover:bg-indigo-100 transition-all shadow-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-500 shadow-sm">
+                      <Palette size={20} />
+                    </div>
+                    <span className="font-black text-indigo-900 tracking-tight text-sm">나의 젠탱글 그리기</span>
+                  </div>
+                  <ArrowRight size={18} className="text-indigo-300 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+    }
 
     if (isFinished) return (
       <ResultCard 
         score={score} 
         total={filteredQuestions.length} 
+        userName={isWarmupReading ? userName : undefined}
         onRestart={() => { 
           setIsFinished(false); 
           setShowQuiz(false); 
@@ -2902,6 +3028,7 @@ function ResultCard({
           setScore(0);
           setFeedback(null);
           setInputValue('');
+          if (isWarmupReading) setShowNameInput(true);
         }} 
         onGoHome={() => navTo('dashboard')} 
       />
@@ -2921,17 +3048,40 @@ function ResultCard({
                   <BookOpen className="text-white" size={32} />
                 </div>
                 <div>
-                  <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-2 uppercase">{content.title}</h2>
-                  <p className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-lg">Main Text Analysis</p>
+                  <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-2 uppercase leading-none">{content.title}</h2>
+                  <p className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-lg">{isWarmupReading ? "Preparation for Part 2" : "Main Text Analysis"}</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowQuiz(true)}
                 className="bg-emerald-500 hover:bg-emerald-600 text-white px-10 py-5 rounded-3xl font-black text-xl shadow-xl shadow-emerald-100 transition-all active:scale-95 flex items-center gap-3"
               >
-                QUIZ START <Zap size={20} fill="currentColor" />
+                {isWarmupReading ? "START ACTIVITY" : "QUIZ START"} <Zap size={20} fill="currentColor" />
               </button>
             </div>
+
+            {isWarmupReading && (
+              <div className="mb-12 p-8 bg-amber-50 rounded-[40px] border border-amber-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
+                  <Volume2 size={40} />
+                </div>
+                <div className="space-y-4 text-center md:text-left flex-1">
+                  <h4 className="text-2xl font-black text-amber-900 uppercase tracking-tight">Watch the TED Talk</h4>
+                  <p className="text-amber-800 font-bold leading-relaxed">
+                    이 글의 바탕이 된 David Steindl-Rast 신부님의 강연을 영상으로 만나보세요. <br/>
+                    감사함이 어떻게 우리를 행복으로 이끄는지 더 깊이 이해할 수 있습니다.
+                  </p>
+                  <a 
+                    href="https://www.ted.com/talks/david_steindl_rast_want_to_be_happy_be_grateful?utm_campaign=tedspread&utm_medium=referral&utm_source=tedcomshare" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-amber-100 transition-all active:scale-95 border border-amber-200"
+                  >
+                    TED 강연 영상 보기 <ArrowRight size={18} />
+                  </a>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
               <div className="space-y-6">
@@ -2942,7 +3092,7 @@ function ResultCard({
                   <h4 className="text-xl font-black text-slate-800 tracking-tight">ORIGINAL TEXT</h4>
                 </div>
                 <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 min-h-[300px] shadow-inner relative group">
-                  <p className="text-2xl font-black text-slate-700 leading-relaxed tracking-tight break-words">
+                  <p className="text-2xl font-black text-slate-700 leading-relaxed tracking-tight break-words whitespace-pre-wrap">
                     {content.text}
                   </p>
                   <button 
@@ -2963,7 +3113,7 @@ function ResultCard({
                   <h4 className="text-xl font-black text-slate-800 tracking-tight">KOREAN TRANSLATION</h4>
                 </div>
                 <div className="bg-orange-50/30 p-10 rounded-[40px] border border-orange-100 min-h-[300px] shadow-sm">
-                  <p className="text-xl font-bold text-slate-600 leading-relaxed break-words">
+                  <p className="text-xl font-bold text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
                     {content.translation}
                   </p>
                 </div>
@@ -2976,6 +3126,138 @@ function ResultCard({
               </div>
               <p className="text-emerald-800 font-bold text-lg">본문을 충분히 읽고 이해하셨나요? 이해가 되었다면 오른쪽 상단의 <b>QUIZ START</b> 버튼을 눌러보세요!</p>
             </div>
+          </motion.div>
+        </div>
+      );
+    }
+
+    if (!showQuiz) {
+      return (
+        <div className="max-w-5xl mx-auto space-y-12">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white p-16 rounded-[60px] shadow-2xl border border-slate-100 relative overflow-hidden"
+          >
+            <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-emerald-500 rounded-3xl flex items-center justify-center shadow-lg shadow-emerald-200">
+                  <BookOpen className="text-white" size={32} />
+                </div>
+                <div>
+                  <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-2 uppercase">{content.title}</h2>
+                  <p className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-lg">{isWarmup ? "Preparation for Part 2" : "Main Text Analysis"}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowQuiz(true)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-10 py-5 rounded-3xl font-black text-xl shadow-xl shadow-emerald-100 transition-all active:scale-95 flex items-center gap-3"
+              >
+                {isWarmup ? "START ACTIVITY" : "QUIZ START"} <Zap size={20} fill="currentColor" />
+              </button>
+            </div>
+
+            {isWarmup && (
+              <div className="mb-12 p-8 bg-amber-50 rounded-[40px] border border-amber-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
+                  <Volume2 size={40} />
+                </div>
+                <div className="space-y-4 text-center md:text-left flex-1">
+                  <h4 className="text-2xl font-black text-amber-900 uppercase tracking-tight">Watch the TED Talk</h4>
+                  <p className="text-amber-800 font-bold leading-relaxed">
+                    이 글의 바탕이 된 David Steindl-Rast 신부님의 강연을 영상으로 만나보세요. <br/>
+                    감사함이 어떻게 우리를 행복으로 이끄는지 더 깊이 이해할 수 있습니다.
+                  </p>
+                  <a 
+                    href="https://www.ted.com/talks/david_steindl_rast_want_to_be_happy_be_grateful?utm_campaign=tedspread&utm_medium=referral&utm_source=tedcomshare" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-amber-100 transition-all active:scale-95 border border-amber-200"
+                  >
+                    TED 강연 영상 보기 <ArrowRight size={18} />
+                  </a>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                    <Star className="text-emerald-500" size={16} fill="currentColor" />
+                  </span>
+                  <h4 className="text-xl font-black text-slate-800 tracking-tight">ORIGINAL TEXT</h4>
+                </div>
+                <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 min-h-[300px] shadow-inner relative group">
+                  <p className="text-2xl font-black text-slate-700 leading-relaxed tracking-tight break-words whitespace-pre-wrap">
+                    {content.text}
+                  </p>
+                  <button 
+                    onClick={() => handleSpeak(content.text)}
+                    className="absolute bottom-6 right-6 p-4 bg-white text-emerald-500 rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-90"
+                    title="전체 본문 듣기"
+                  >
+                    <Volume2 size={24} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                    <Search className="text-orange-500" size={16} />
+                  </span>
+                  <h4 className="text-xl font-black text-slate-800 tracking-tight">KOREAN TRANSLATION</h4>
+                </div>
+                <div className="bg-orange-50/30 p-10 rounded-[40px] border border-orange-100 min-h-[300px] shadow-sm">
+                  <p className="text-xl font-bold text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
+                    {content.translation}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-12 p-8 bg-emerald-50 rounded-3xl border border-emerald-100 flex items-center gap-6">
+              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm border border-emerald-100">
+                <CheckCircle2 size={24} />
+              </div>
+              <p className="text-emerald-800 font-bold text-lg">본문을 충분히 읽고 이해하셨나요? 이해가 되었다면 오른쪽 상단의 <b>QUIZ START</b> 버튼을 눌러보세요!</p>
+            </div>
+          </motion.div>
+        </div>
+      );
+    }
+
+    if (showQuiz && isWarmup && showNameInput) {
+      return (
+        <div className="max-w-3xl mx-auto py-20">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white p-16 rounded-[60px] shadow-2xl border border-slate-100 text-center space-y-10"
+          >
+            <div className="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+              <User size={48} />
+            </div>
+            <div className="space-y-4">
+              <h2 className="text-4xl font-black text-slate-800 uppercase tracking-tight italic">Who is reading today?</h2>
+              <p className="text-slate-500 font-bold text-lg">퀴즈를 시작하기 전에 이름을 알려주세요!</p>
+            </div>
+            <input 
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="당신의 이름을 입력하세요..."
+              className="w-full p-8 text-2xl font-black rounded-3xl border-2 border-slate-100 focus:border-indigo-500 focus:outline-none transition-all shadow-inner bg-slate-50/30 text-center"
+              onKeyDown={(e) => e.key === 'Enter' && userName && setShowNameInput(false)}
+            />
+            <button 
+              onClick={() => setShowNameInput(false)}
+              disabled={!userName}
+              className="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition disabled:opacity-50 active:scale-95"
+            >
+              퀴즈 시작하기
+            </button>
           </motion.div>
         </div>
       );
@@ -2995,6 +3277,16 @@ function ResultCard({
       );
     }
 
+    const handleNext = () => {
+      setFeedback(null);
+      setInputValue('');
+      if (currentQuestion < filteredQuestions.length - 1) {
+        setCurrentQuestion(prev => prev + 1);
+      } else {
+        setIsFinished(true);
+      }
+    };
+
     return (
       <div className="max-w-5xl mx-auto space-y-12">
         <div className="bg-white p-16 rounded-[60px] shadow-2xl border border-slate-100 flex flex-col min-h-[800px] relative overflow-hidden">
@@ -3010,7 +3302,7 @@ function ResultCard({
                <span className="text-slate-300 font-bold tracking-widest uppercase text-[10px]">P.{activeSection.includes('p1') ? '1' : '2'} / {sectionKey.toUpperCase()}</span>
                <button 
                 onClick={handleNext}
-                className="text-slate-400 hover:text-emerald-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-emerald-50"
+                className="text-slate-400 font-bold text-xs hover:text-emerald-500 transition-colors"
                >
                 SKIP
                </button>
@@ -3030,7 +3322,6 @@ function ResultCard({
                   <button 
                     onClick={() => handleSpeak(q.question)}
                     className="p-3 text-slate-300 hover:text-emerald-600 hover:bg-slate-50 rounded-full transition-all active:scale-90 shrink-0"
-                    title="Listen to question"
                   >
                     <Volume2 size={24} />
                   </button>
@@ -3074,21 +3365,21 @@ function ResultCard({
                       placeholder="정답을 입력하신 후 Enter 또는 버튼을 누르세요..."
                       disabled={!!feedback}
                       onKeyDown={(e) => e.key === 'Enter' && (() => {
-                       if (feedback) return;
-                       const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
-                       if (isCorrect) setScore(prev => prev + 1);
-                       setFeedback({ isCorrect, explanation: q.explanation });
-                    })()}
+                         if (feedback) return;
+                         const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
+                         if (isCorrect) setScore(prev => prev + 1);
+                         setFeedback({ isCorrect, explanation: q.explanation });
+                      })()}
                       className="w-full p-8 text-2xl font-black rounded-3xl border-2 border-slate-100 focus:border-emerald-500 focus:outline-none transition-all shadow-inner bg-slate-50/30 text-center"
                    />
                    {!feedback && (
                       <button 
                         onClick={() => {
-                          if (feedback) return;
-                          const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
-                          if (isCorrect) setScore(prev => prev + 1);
-                          setFeedback({ isCorrect, explanation: q.explanation });
-                       }}
+                           if (feedback) return;
+                           const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
+                           if (isCorrect) setScore(prev => prev + 1);
+                           setFeedback({ isCorrect, explanation: q.explanation });
+                        }}
                         disabled={!inputValue}
                         className="w-full py-6 bg-emerald-500 text-white rounded-3xl font-black text-xl shadow-xl shadow-emerald-100 hover:bg-emerald-600 transition disabled:opacity-50 active:scale-95"
                       >
@@ -3137,9 +3428,6 @@ function ResultCard({
                       >
                         {currentQuestion < filteredQuestions.length - 1 ? "NEXT QUESTION" : "SEE RESULTS"} <ChevronRight size={24} />
                       </button>
-                    </div>
-                    <div className={`absolute -bottom-10 -right-10 opacity-5 scale-150 rotate-12 ${feedback.isCorrect ? "text-emerald-500" : "text-rose-500"}`}>
-                       {feedback.isCorrect ? <Trophy size={200} /> : <Brain size={200} />}
                     </div>
                   </motion.div>
                )}
@@ -3893,7 +4181,7 @@ function ResultCard({
                         {/* Reaction & Comment Section for Personal View */}
                         <div className="mt-8 pt-6 border-t border-slate-50 flex flex-col gap-4">
                           <div className="flex flex-wrap gap-2">
-                             {['👍', '❤️', '👏', '🔥', '✨', '😊'].map(emoji => (
+                             {['👍', '❤️', '👏', '🔥', '✨', '😊', '😭', '💪'].map(emoji => (
                                <button 
                                   key={emoji}
                                   onClick={() => handleReaction(entry.id, emoji)}
@@ -4046,7 +4334,7 @@ function ResultCard({
                      <div className="mt-8 pt-6 border-t border-slate-50 flex flex-col gap-4">
                         {/* Reactions */}
                         <div className="flex flex-wrap gap-2">
-                           {['👍', '❤️', '👏', '🔥', '✨', '😊'].map(emoji => (
+                           {['👍', '❤️', '👏', '🔥', '✨', '😊', '😭', '💪'].map(emoji => (
                              <button 
                                 key={emoji}
                                 onClick={() => handleReaction(entry.id, emoji)}
@@ -4111,11 +4399,9 @@ function ResultCard({
     const [zentangleCommentInput, setZentangleCommentInput] = useState<{ [id: string]: string }>({});
 
     const imageTemplates = [
-        { id: 'template1', label: '도안 1', src: 'https://images.unsplash.com/photo-1544376798-89aa6b82c6cd?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
-        { id: 'template2', label: '도안 2', src: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
-        { id: 'template3', label: '도안 3', src: 'https://images.unsplash.com/photo-1444464666168-49d633b867ad?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
-        { id: 'template4', label: '도안 4', src: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
-        { id: 'template5', label: '도안 5', src: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
+        { id: 'heart', label: 'Heart', src: heartTemplate, exampleSrc: heartExample, source: '출처: 사용자 제공 이미지' },
+        { id: 'template_dog', label: '도안 1', src: dogTemplate, exampleSrc: dogExample, source: '출처: 사용자 제공 이미지' },
+        { id: 'template_cat', label: '도안 2', src: catTemplate, exampleSrc: catExample, source: '출처: 사용자 제공 이미지' },
     ];
 
     const drawTemplate = (templateId: string) => {
@@ -4187,23 +4473,6 @@ function ResultCard({
                 ctx.lineTo(w / 2 + Math.cos(angle) * w * 0.45, h / 2 + Math.sin(angle) * h * 0.45);
                 ctx.stroke();
             }
-        } else if (templateId === 'heart') {
-            // Simple heart shape
-            ctx.beginPath();
-            const centerX = w / 2;
-            const centerY = h / 2 + 50;
-            const size = 250;
-            
-            ctx.moveTo(centerX, centerY);
-            ctx.bezierCurveTo(centerX - size/2, centerY - size/2, centerX - size, centerY + size/3, centerX, centerY + size);
-            ctx.bezierCurveTo(centerX + size, centerY + size/3, centerX + size/2, centerY - size/2, centerX, centerY);
-            ctx.stroke();
-
-            // Inner divisions
-            ctx.beginPath();
-            ctx.moveTo(centerX - size/2, centerY + size/4);
-            ctx.lineTo(centerX + size/2, centerY + size/4);
-            ctx.stroke();
         }
 
         ctx.restore();
@@ -4361,18 +4630,18 @@ function ResultCard({
             <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase whitespace-nowrap leading-none">Zentangle Collection</h2>
             <p className="text-xl font-bold text-slate-400">Zen Art for Emotional Healing & Mindfulness</p>
           </div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-3 mb-1 flex-nowrap">
             <button 
                 onClick={() => setViewMode('draw')}
-                className={`px-3 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all ${viewMode === 'draw' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:text-slate-600'}`}
+                className={`px-6 py-3 rounded-2xl font-black text-sm md:text-lg uppercase tracking-widest transition-all whitespace-nowrap ${viewMode === 'draw' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:text-slate-600'}`}
             >
                 {showKorean ? "나의 그림" : "MY DRAWING"}
             </button>
             <button 
                 onClick={() => setViewMode('diary')}
-                className={`px-3 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all ${viewMode === 'diary' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:text-slate-600'}`}
+                className={`px-6 py-3 rounded-2xl font-black text-sm md:text-lg uppercase tracking-widest transition-all whitespace-nowrap ${viewMode === 'diary' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:text-slate-600'}`}
             >
-                {showKorean ? "학급 그림장" : "CLASS DRAWING"}
+                {showKorean ? "학급 그림장" : "CLASS DRAWINGS"}
             </button>
           </div>
         </div>
@@ -4429,14 +4698,14 @@ function ResultCard({
 
                     <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
                         <div className="p-8 bg-slate-50 border-r border-slate-100 space-y-8 w-full md:w-80">
-                            <div>
+                             <div className="max-w-[200px]">
                                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Your Name</p>
                                 <input 
                                     type="text"
                                     value={authorName}
                                     onChange={(e) => setAuthorName(e.target.value)}
                                     placeholder={showKorean ? "이름을 입력하세요" : "Enter your name"}
-                                    className="w-full bg-white px-6 py-3 rounded-2xl border border-slate-200 font-black text-slate-700 outline-none focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
+                                    className="w-full bg-white px-4 py-2 rounded-xl border border-slate-200 font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm text-sm"
                                 />
                             </div>
 
@@ -4447,7 +4716,6 @@ function ResultCard({
                                         { id: 'none', label: 'Blank' },
                                         { id: 'sections', label: 'Sections' },
                                         { id: 'mandala', label: 'Mandala' },
-                                        { id: 'heart', label: 'Heart' },
                                         ...imageTemplates
                                     ].map(t => (
                                         <button 
@@ -4460,9 +4728,19 @@ function ResultCard({
                                     ))}
                                 </div>
                                 {selectedTemplate.startsWith('template') && (
-                                    <p className="text-[10px] font-bold text-slate-400 italic mb-4">
-                                        Source: {imageTemplates.find(t => t.id === selectedTemplate)?.source}
-                                    </p>
+                                    <div className="mt-4 p-4 bg-white rounded-2xl border border-indigo-100 shadow-sm">
+                                        <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-3">{showKorean ? "예시 작품" : "Example Art"}</p>
+                                        <div className="relative aspect-square rounded-xl overflow-hidden bg-slate-50 border border-slate-100">
+                                            <img 
+                                                src={imageTemplates.find(t => t.id === selectedTemplate)?.exampleSrc} 
+                                                alt="Example"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                        <p className="text-[10px] font-bold text-slate-400 italic mt-3">
+                                            Source: {imageTemplates.find(t => t.id === selectedTemplate)?.source}
+                                        </p>
+                                    </div>
                                 )}
                             </div>
 
@@ -4566,7 +4844,7 @@ function ResultCard({
                                         
                                         {/* Reactions */}
                                         <div className="flex gap-2">
-                                            {['❤️', '✨', '👏', '🎨'].map(emoji => (
+                                            {['❤️', '✨', '👏', '🎨', '😭', '🙌'].map(emoji => (
                                                 <button 
                                                     key={emoji}
                                                     onClick={() => handleReaction(entry.id, emoji)}
@@ -4633,9 +4911,9 @@ function ResultCard({
                 <p>2. [현재완료 진행형] 익히기</p>
                 <p>3. [so 형/부 that ~] 구문 익히기</p>
               </div>
-              <div className="flex gap-4 pt-4">
-                 <button className="bg-white text-[#4C51BF] px-10 py-5 rounded-3xl font-black text-xl shadow-xl hover:bg-slate-50 transition-all active:scale-95">GO! TODAYS MISSION</button>
-                 <button className="bg-white/10 backdrop-blur-md border border-white/20 px-10 py-5 rounded-3xl font-black text-xl hover:bg-white/20 transition-all text-white">MY STATS</button>
+              <div className="flex flex-col gap-3 pt-4 items-start">
+                 <button className="bg-white text-[#4C51BF] px-6 py-4 rounded-xl font-black text-lg md:text-xl shadow-xl hover:bg-slate-50 transition-all active:scale-95 whitespace-nowrap">GO! TODAYS MISSION</button>
+                 <button className="bg-white/10 backdrop-blur-md border border-white/20 px-6 py-4 rounded-xl font-black text-lg md:text-xl hover:bg-white/20 transition-all text-white whitespace-nowrap">MY STATS</button>
               </div>
            </div>
            <div className="absolute bottom-8 right-12 opacity-20 scale-[2.5] grayscale-0 brightness-200 pointer-events-none">
