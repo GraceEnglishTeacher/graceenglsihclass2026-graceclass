@@ -21,12 +21,19 @@ import {
   Send,
   Heart,
   User,
-  RefreshCw
+  RefreshCw,
+  Edit,
+  Trash2,
+  Brush,
+  Palette,
+  Eraser,
+  Undo,
+  Languages
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Types ---
-type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude';
+type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude' | 'zentangle';
 
 interface Comment {
   id: string;
@@ -43,6 +50,18 @@ interface GratitudeEntry {
   soThatSentence?: string;
   author?: string;
   avatar?: string;
+  reactions?: { [emoji: string]: number };
+  comments?: Comment[];
+  contentKo?: string;
+  ppcSentenceKo?: string;
+  soThatSentenceKo?: string;
+}
+
+interface ZentangleEntry {
+  id: string;
+  author: string;
+  imageData: string;
+  date: string;
   reactions?: { [emoji: string]: number };
   comments?: Comment[];
 }
@@ -909,6 +928,7 @@ export default function App() {
           </div>
           <SidebarBtn icon={<PenTool size={20} />} label="WRITING MASTER" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
           <SidebarBtn icon={<Heart size={20} />} label="MY GRATITUDE DIARY" active={activeSection === 'gratitude'} onClick={() => navTo('gratitude')} />
+          <SidebarBtn icon={<Palette size={20} />} label="DRAWING ZENTANGLE" active={activeSection === 'zentangle'} onClick={() => navTo('zentangle')} />
           <div className="pt-10 pb-4">
              <div className="flex items-center gap-4 pl-4 mb-8">
                 <BookOpen className="text-indigo-300" size={20} />
@@ -1048,6 +1068,9 @@ export default function App() {
                     handleSpeak={handleSpeak}
                     navTo={navTo}
                   />
+                )}
+                {activeSection === 'zentangle' && (
+                  <ZentangleView />
                 )}
              </motion.div>
           </AnimatePresence>
@@ -1679,13 +1702,18 @@ function ResultCard({
     const [inputValue, setInputValue] = useState('');
     const [feedback, setFeedback] = useState<{ isCorrect: boolean; explanation: string } | null>(null);
     const [showIntro, setShowIntro] = useState(true);
+    const [mistakes, setMistakes] = useState<number[]>([]);
 
     const handleSubmitSubjective = () => {
       if (feedback) return;
       const q = filteredQuestions[currentQuestion];
       const isCorrect = checkSubjectiveAnswer(inputValue, q.answer, q.question);
       
-      if (isCorrect) setScore(prev => prev + 1);
+      if (isCorrect) {
+        setScore(prev => prev + 1);
+      } else {
+        setMistakes(prev => prev.includes(currentQuestion) ? prev : [...prev, currentQuestion]);
+      }
       setFeedback({ isCorrect, explanation: q.explanation });
     };
 
@@ -1693,7 +1721,11 @@ function ResultCard({
       if (feedback) return;
       setInputValue(ans);
       const isCorrect = ans === filteredQuestions[currentQuestion].answer;
-      if (isCorrect) setScore(prev => prev + 1);
+      if (isCorrect) {
+        setScore(prev => prev + 1);
+      } else {
+        setMistakes(prev => prev.includes(currentQuestion) ? prev : [...prev, currentQuestion]);
+      }
       setFeedback({ isCorrect, explanation: filteredQuestions[currentQuestion].explanation });
     };
 
@@ -1776,271 +1808,212 @@ function ResultCard({
       );
     }
 
+    const q = filteredQuestions[currentQuestion];
+
     if (isFinished) return (
-      <ResultCard 
-        score={score} 
-        total={filteredQuestions.length} 
-        onRestart={() => {
-          setIsFinished(false);
-          setCurrentQuestion(0);
-          setFeedback(null);
-          setScore(0);
-          setInputValue('');
-        }} 
-        onGoHome={() => navTo('dashboard')} 
-      />
+      <div className="max-w-5xl mx-auto space-y-12">
+        <ResultCard 
+          score={score} 
+          total={filteredQuestions.length} 
+          onRestart={() => {
+            setIsFinished(false);
+            setCurrentQuestion(0);
+            setFeedback(null);
+            setScore(0);
+            setInputValue('');
+            setMistakes([]);
+          }} 
+          onGoHome={() => navTo('dashboard')} 
+        />
+
+        {mistakes.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white p-12 rounded-[50px] shadow-2xl border border-slate-100"
+          >
+             <h3 className="text-3xl font-black text-slate-800 mb-8 flex items-center gap-3">
+                <AlertCircle className="text-rose-500" /> 오답 리뷰 (Review Mistakes)
+             </h3>
+             <div className="space-y-6">
+                {mistakes.map((idx) => {
+                  const questionData = filteredQuestions[idx];
+                  return (
+                    <div key={idx} className="bg-slate-50 p-8 rounded-3xl border border-slate-100 space-y-4">
+                       <div className="flex justify-between items-start">
+                          <p className="text-rose-500 font-black text-sm uppercase tracking-widest px-4 py-1 bg-rose-50 rounded-full inline-block">Question {idx + 1}</p>
+                          <button 
+                            onClick={() => {
+                              setCurrentQuestion(idx);
+                              setIsFinished(false);
+                              setFeedback(null);
+                              setInputValue('');
+                            }}
+                            className="text-indigo-600 font-black text-sm flex items-center gap-2 hover:underline"
+                          >
+                            <RotateCcw size={16} /> 다시 풀어보기
+                          </button>
+                       </div>
+                       <p className="text-xl font-black text-slate-800">{questionData.question}</p>
+                       <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                          <p className="text-emerald-700 font-bold">정답: {questionData.answer}</p>
+                       </div>
+                       <p className="text-slate-500 font-bold italic">{questionData.explanation}</p>
+                    </div>
+                  );
+                })}
+             </div>
+          </motion.div>
+        )}
+      </div>
     );
 
-    const q = filteredQuestions && filteredQuestions.length > 0 ? filteredQuestions[currentQuestion] : null;
-
-    if (!q) {
-      return (
-        <div className="text-center py-20 bg-white rounded-[50px] shadow-2xl border border-slate-100">
-          <h2 className="text-4xl font-black text-slate-800 mb-4">No questions found!</h2>
-          <p className="text-slate-500 mb-8">Grammar section "{sectionKey}" appears to be empty.</p>
-          <button onClick={() => navTo('dashboard')} className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black">Go Back</button>
-        </div>
-      );
-    }
-
     return (
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="bg-white p-12 rounded-[50px] shadow-2xl border border-slate-100 min-h-[600px] flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-slate-100">
-            <motion.div initial={{ width: 0 }} animate={{ width: `${((currentQuestion + 1) / filteredQuestions.length) * 100}%` }} className="h-full bg-indigo-500"></motion.div>
+      <div className="max-w-4xl mx-auto space-y-12">
+        <div className="bg-white p-12 rounded-[50px] shadow-2xl border border-slate-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-slate-100">
+             <motion.div initial={{ width: 0 }} animate={{ width: `${((currentQuestion + 1) / filteredQuestions.length) * 100}%` }} className="h-full bg-indigo-500"></motion.div>
           </div>
           
-          <div className="flex justify-between items-center mb-8">
-            <div className="flex items-center gap-3">
-              <span className="bg-slate-100 text-slate-500 px-5 py-2 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center gap-1">
-                QUEST {currentQuestion + 1} / {filteredQuestions.length}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-               <Trophy size={20} className="text-yellow-500" />
-               <span className="font-black text-slate-400 text-sm">SCORE: {score}</span>
-            </div>
-          </div>
-
-          <div className="space-y-10 flex-1">
-             <div className="space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <h3 className="text-3xl font-black text-slate-800 leading-tight tracking-tighter italic">
-                    Q: {q.question}
-                  </h3>
-                  <button 
-                    onClick={() => handleSpeak(q.question)}
-                    className="p-3 text-slate-300 hover:text-indigo-600 hover:bg-slate-50 rounded-full transition-all active:scale-90 shrink-0"
-                    title="Listen to question"
-                  >
-                    <Volume2 size={24} />
-                  </button>
-                </div>
-                {q.question_ko && (
-                  <p className="text-xl font-bold text-slate-400">
-                    질문: {q.question_ko}
-                  </p>
-                )}
-             </div>
-
-             {q.type === 'choice' ? (
-                <div className="grid grid-cols-1 gap-4">
-                   {q.options?.map((opt, i) => (
-                      <motion.button
-                        key={i}
-                        whileHover={feedback === null ? { scale: 1.02, x: 10 } : {}}
-                        whileTap={feedback === null ? { scale: 0.98 } : {}}
-                        onClick={() => handleChoiceAnswer(opt)}
-                        disabled={feedback !== null}
-                        className={`p-6 rounded-3xl text-left font-black text-xl border-2 transition-all flex items-center justify-between group ${
-                          feedback === null 
-                            ? "bg-white border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/30 text-slate-700" 
-                            : feedback.isCorrect && opt === q.answer 
-                              ? "bg-emerald-50 border-emerald-500 text-emerald-700" 
-                              : !feedback.isCorrect && opt === q.answer 
-                                ? "bg-emerald-50 border-emerald-500 text-emerald-700"
-                                : !feedback.isCorrect && inputValue === opt
-                                  ? "bg-rose-50 border-rose-500 text-rose-700"
-                                  : "bg-white border-slate-100 text-slate-300 opacity-50"
-                        }`}
-                      >
-                         <span>{opt}</span>
-                         {feedback === null && <ChevronRight className="opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all text-indigo-400" />}
-                      </motion.button>
-                   ))}
-                </div>
-             ) : (
-                <div className="space-y-6">
-                   <div className="relative">
-                      <input 
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Type your answer here..."
-                        onKeyDown={(e) => e.key === 'Enter' && handleSubmitSubjective()}
-                        disabled={feedback !== null}
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-3xl p-8 text-2xl font-black text-slate-700 placeholder:text-slate-200 focus:outline-none focus:border-indigo-300 focus:bg-white transition-all shadow-inner"
-                      />
-                      {!feedback && (
-                        <button 
-                          onClick={handleSubmitSubjective}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-indigo-600 text-white p-4 rounded-2xl shadow-lg hover:bg-indigo-700 transition active:scale-90"
-                        >
-                          <Send size={24} />
-                        </button>
-                      )}
-                   </div>
-                   <p className="text-center text-slate-300 font-bold text-sm italic">
-                     * 대소문자나 문장 부호(마침표 등)는 채점에 영향을 주지 않습니다.
-                   </p>
-                </div>
-             )}
-          </div>
-
-          <AnimatePresence>
-            {feedback && (
-              <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 20, opacity: 0 }}
+          <div className="flex justify-between items-center mb-10">
+             <span className="bg-indigo-100 text-indigo-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center gap-1">
+               QUEST {currentQuestion + 1} / {filteredQuestions.length}
+             </span>
+             <button 
                 onClick={handleNext}
-                className={`mt-8 p-10 rounded-[40px] border-4 cursor-pointer hover:scale-[1.01] transition-transform ${
-                  feedback.isCorrect 
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" 
-                    : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"
-                } shadow-2xl relative overflow-hidden group`}
-              >
-                 <div className="relative z-10">
+                className="text-slate-400 hover:text-indigo-600 font-black text-sm transition-colors flex items-center gap-1 group"
+             >
+                SKIP <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+             </button>
+          </div>
+
+          <div className="space-y-8">
+            <h3 className="text-3xl font-black text-slate-800 tracking-tighter leading-tight italic">
+              {q.question}
+            </h3>
+            {q.question_ko && (
+              <p className="text-xl font-bold text-slate-400">
+                {q.question_ko}
+              </p>
+            )}
+
+            {q.type === 'choice' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {q.options?.map((opt, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleChoiceAnswer(opt)}
+                    disabled={!!feedback}
+                    className={`p-8 text-xl font-black rounded-3xl border-2 transition-all text-left flex items-center justify-between group ${
+                      feedback
+                        ? opt === q.answer
+                          ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg shadow-emerald-100"
+                          : inputValue === opt
+                            ? "bg-rose-50 border-rose-500 text-rose-700 shadow-lg shadow-rose-100"
+                            : "bg-white border-slate-100 text-slate-300"
+                        : "bg-white border-slate-100 text-slate-700 hover:border-indigo-500 hover:shadow-xl active:scale-95"
+                    }`}
+                  >
+                    <span>{opt}</span>
+                    {feedback && opt === q.answer && <CheckCircle2 className="text-emerald-500" />}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <input 
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  placeholder="정답을 입력하세요 (Type your answer...)"
+                  disabled={!!feedback}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSubmitSubjective()}
+                  className="w-full p-8 text-2xl font-black rounded-3xl border-2 border-slate-100 focus:border-indigo-500 focus:outline-none transition-all shadow-inner bg-slate-50/30 text-center"
+                />
+                {!feedback && (
+                  <button 
+                    onClick={handleSubmitSubjective}
+                    disabled={!inputValue}
+                    className="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition disabled:opacity-50 active:scale-95"
+                  >
+                    제출 및 확인 (Submit)
+                  </button>
+                )}
+              </div>
+            )}
+
+            <AnimatePresence>
+              {feedback && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`mt-10 p-10 rounded-[40px] border-4 ${
+                    feedback.isCorrect 
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" 
+                      : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"
+                  } shadow-2xl relative overflow-hidden`}
+                >
+                  <div className="relative z-10">
                     <div className="flex items-center gap-4 mb-6">
                       <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${feedback.isCorrect ? "bg-emerald-500" : "bg-rose-500"}`}>
                         {feedback.isCorrect ? <CheckCircle2 className="text-white" size={32} /> : <AlertCircle className="text-white" size={32} />}
                       </div>
                       <div>
-                        <h4 className="text-4xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Check the Tip! 💪"}</h4>
+                        <h4 className="text-3xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Check Again! 💪"}</h4>
                         {!feedback.isCorrect && (
-                          <div className="flex items-center gap-2 mt-2">
-                            <span className="text-sm font-black uppercase tracking-widest opacity-60">CORRECT ANSWER:</span>
-                            <p className="text-2xl font-black text-rose-600 underline decoration-rose-300 underline-offset-8 decoration-4">
-                              {q.answer}
-                            </p>
-                          </div>
+                           <p className="text-lg font-bold opacity-80 mt-1">정답: <span className="underline underline-offset-4 decoration-2">{q.answer}</span></p>
                         )}
                       </div>
                     </div>
-                    <div className="bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow-inner group-hover:bg-white/80 transition-colors">
-                      <p className="text-lg font-bold leading-relaxed">{feedback.explanation}</p>
+                    
+                    <div className="bg-white/60 backdrop-blur-sm p-8 rounded-3xl border border-white/50 shadow-inner">
+                      <p className="text-xl font-bold leading-relaxed">{feedback.explanation}</p>
                     </div>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                      className={`mt-8 w-full py-5 rounded-2xl font-black text-xl shadow-xl transition active:scale-95 flex items-center justify-center gap-3 ${
-                        feedback.isCorrect 
-                          ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200" 
-                          : "bg-rose-500 hover:bg-rose-600 text-white shadow-rose-200"
-                      }`}
-                    >
-                      {currentQuestion === filteredQuestions.length - 1 ? "FINISH MODULE" : "NEXT QUESTION"} <ArrowRight size={24} />
-                    </button>
-                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    );
-  };
-  const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
-    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'story'>('menu');
-    const [currentIdx, setCurrentIdx] = useState(0);
-    const [scrambled, setScrambled] = useState<string[]>([]);
-    const [userOrder, setUserOrder] = useState<string[]>([]);
-    const [feedback, setFeedback] = useState<boolean | null>(null);
-    const [isTypingMode, setIsTypingMode] = useState(false);
-    const [typedAnswer, setTypedAnswer] = useState('');
 
-    const filteredQuestions = useMemo(() => {
-      return [...WRITING_DATA];
-    }, []);
-
-    useEffect(() => {
-      if (subSection === 'practice' && filteredQuestions[currentIdx]) {
-        setScrambled([...filteredQuestions[currentIdx].scrambled].sort(() => Math.random() - 0.5));
-        setUserOrder([]);
-        setFeedback(null);
-        setTypedAnswer('');
-      }
-    }, [subSection, currentIdx, filteredQuestions]);
-
-    useEffect(() => {
-      if (!isTypingMode && scrambled.length === 0 && userOrder.length > 0 && feedback === null && subSection === 'practice') {
-        checkAnswer();
-      }
-    }, [scrambled, userOrder, feedback, isTypingMode, subSection]);
-
-    const handleWordClick = (word: string, fromUser: boolean) => {
-             {q.type === 'choice' ? (
-                <div className="grid grid-cols-1 gap-4">
-                   {q.options?.map((opt, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleChoiceAnswer(opt)}
-                        disabled={!!feedback}
-                        className={`p-6 text-xl font-black rounded-3xl border-2 transition-all text-left flex items-center justify-between group ${
-                           feedback ? (opt === q.answer ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg" : "bg-white text-slate-300") : "bg-white text-slate-700 hover:border-indigo-500 hover:shadow-xl active:scale-95"
+                    <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                      {!feedback.isCorrect && (
+                        <button 
+                          onClick={() => {
+                            setFeedback(null);
+                            setInputValue('');
+                          }}
+                          className="flex-1 py-5 rounded-2xl font-black text-xl bg-white border-2 border-rose-200 text-rose-500 hover:bg-rose-50 transition active:scale-95 flex items-center justify-center gap-3"
+                        >
+                          <RotateCcw size={24} /> 다시 도전하기 (Retry)
+                        </button>
+                      )}
+                      <button 
+                        onClick={handleNext}
+                        className={`flex-1 py-5 rounded-2xl font-black text-xl shadow-xl transition active:scale-95 flex items-center justify-center gap-3 ${
+                          feedback.isCorrect 
+                            ? "bg-emerald-500 hover:bg-emerald-600 text-white shadow-emerald-200" 
+                            : "bg-rose-500 hover:bg-rose-600 text-white shadow-rose-200"
                         }`}
                       >
-                         <span>{opt}</span>
-                         {feedback && opt === q.answer && <CheckCircle2 className="text-emerald-500" />}
+                        {currentQuestion < filteredQuestions.length - 1 ? "NEXT QUESTION" : "SEE RESULTS"} <ChevronRight size={24} />
                       </button>
-                   ))}
-                </div>
-             ) : (
-                <div className="space-y-6">
-                   <input 
-                      type="text" 
-                      value={inputValue} 
-                      onChange={(e) => setInputValue(e.target.value)} 
-                      placeholder="정답을 입력하신 후 Enter 또는 버튼을 누르세요..." 
-                      disabled={!!feedback} 
-                      onKeyDown={(e) => e.key === 'Enter' && handleSubmitSubjective()} 
-                      className="w-full p-8 text-2xl font-black rounded-3xl border-2 border-slate-100 focus:border-indigo-500 focus:outline-none transition-all shadow-inner bg-slate-50/30 text-center placeholder:text-slate-200" 
-                   />
-                   {!feedback && (
-                      <button onClick={handleSubmitSubjective} disabled={!inputValue} className="w-full py-6 bg-indigo-600 text-white rounded-3xl font-black text-xl shadow-xl hover:bg-indigo-700 transition active:scale-95">제출 및 확인</button>
-                   )}
-                </div>
-             )}
-
-             <AnimatePresence>
-                {feedback && (
-                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`mt-10 p-10 rounded-[40px] border-4 cursor-pointer hover:scale-[1.01] transition-transform ${feedback.isCorrect ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"} shadow-2xl relative overflow-hidden`}>
-                     <div className="relative z-10">
-                       <div className="flex items-center gap-4 mb-6">
-                         <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${feedback.isCorrect ? "bg-emerald-500" : "bg-rose-500"}`}>
-                           {feedback.isCorrect ? <CheckCircle2 className="text-white" size={32} /> : <AlertCircle className="text-white" size={32} />}
-                         </div>
-                         <h4 className="text-3xl font-black tracking-tighter uppercase">{feedback.isCorrect ? "Perfect! ✨" : "Check Again! 💪"}</h4>
-                       </div>
-                       <div className="bg-white/60 backdrop-blur-sm p-8 rounded-3xl border border-white/50 shadow-inner"><p className="text-xl font-bold leading-relaxed">{feedback.explanation}</p></div>
-                       <button onClick={handleNext} className={`mt-8 w-full py-5 rounded-2xl font-black text-xl text-white shadow-xl flex items-center justify-center gap-3 active:scale-95 ${feedback.isCorrect ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-200" : "bg-rose-500 hover:bg-rose-600 shadow-rose-200"}`}>
-                         {currentQuestion < filteredQuestions.length - 1 ? "NEXT QUESTION" : "SEE RESULTS"} <ChevronRight size={24} />
-                       </button>
-                     </div>
-                   </motion.div>
-                )}
-             </AnimatePresence>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
     );
   };
+
   const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
-    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'story'>('menu');
+    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'review' | 'story'>('menu');
     const [currentIdx, setCurrentIdx] = useState(0);
     const [userOrder, setUserOrder] = useState<string[]>([]);
     const [scrambled, setScrambled] = useState<string[]>([]);
     const [feedback, setFeedback] = useState<boolean | null>(null);
     const [isTypingMode, setIsTypingMode] = useState(false);
     const [typedAnswer, setTypedAnswer] = useState('');
+    const [alreadyScored, setAlreadyScored] = useState<number[]>([]);
+    const [wrongAnswers, setWrongAnswers] = useState<number[]>([]);
+    const [showAnswerIdx, setShowAnswerIdx] = useState<number | null>(null);
 
     const filteredQuestions = WRITING_DATA;
 
@@ -2051,6 +2024,7 @@ function ResultCard({
         setUserOrder([]);
         setFeedback(null);
         setTypedAnswer('');
+        setShowAnswerIdx(null);
       }
     }, [currentIdx, subSection]);
 
@@ -2077,9 +2051,19 @@ function ResultCard({
            if (newOrder.length === q.scrambled.length) {
               setTimeout(() => {
                  const isCorrect = normalizeStr(newOrder.join(' ')) === normalizeStr(q.correct);
-                 if (isCorrect) setScore(s => s + 1);
                  setFeedback(isCorrect);
-                 handleSpeak(isCorrect ? "Perfect" : "Try again");
+                 if (isCorrect) {
+                   if (!alreadyScored.includes(currentIdx)) {
+                     setScore(s => s + 1);
+                     setAlreadyScored(prev => [...prev, currentIdx]);
+                   }
+                   handleSpeak("Perfect");
+                 } else {
+                    if (!wrongAnswers.includes(currentIdx)) {
+                      setWrongAnswers(prev => [...prev, currentIdx]);
+                    }
+                    handleSpeak("Try again");
+                 }
               }, 300);
            }
            return newOrder;
@@ -2092,26 +2076,33 @@ function ResultCard({
       let isCorrect = false;
       
       if (isTypingMode) {
-        // Only require typing the arranged words correctly
         const normInput = normalizeStr(typedAnswer);
         const normCorrect = normalizeStr(q.correct);
         const fullSent = `${q.prefix || ""} ${q.correct} ${q.suffix || ""}`;
         const normFull = normalizeStr(fullSent);
-        
         isCorrect = normInput === normCorrect || normInput === normFull;
       } else {
         isCorrect = normalizeStr(userOrder.join(' ')) === normalizeStr(q.correct);
       }
       
       setFeedback(isCorrect);
-      if (isCorrect) setScore(prev => prev + 1);
+      if (isCorrect) {
+        if (!alreadyScored.includes(currentIdx)) {
+           setScore(prev => prev + 1);
+           setAlreadyScored(prev => [...prev, currentIdx]);
+        }
+      } else {
+        if (!wrongAnswers.includes(currentIdx)) {
+          setWrongAnswers(prev => [...prev, currentIdx]);
+        }
+      }
     };
 
     const nextLevel = () => {
       if (currentIdx < filteredQuestions.length - 1) {
         setCurrentIdx(prev => prev + 1);
       } else {
-        setSubSection('story');
+        setSubSection('review');
       }
     };
 
@@ -2156,6 +2147,95 @@ function ResultCard({
       );
     }
 
+    if (subSection === 'review') {
+      return (
+        <div className="max-w-5xl mx-auto space-y-12">
+          <div className="bg-white p-16 rounded-[60px] shadow-2xl border border-slate-100 min-h-[600px]">
+            <div className="text-center space-y-6 mb-12">
+               <div className="inline-flex items-center justify-center w-24 h-24 bg-orange-100 text-orange-600 rounded-full mb-4">
+                  <Trophy size={48} />
+               </div>
+               <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase">MISSION COMPLETED!</h2>
+               <p className="text-2xl font-bold text-slate-400">당신의 학습 결과를 확인해보세요.</p>
+               <div className="flex justify-center gap-12 mt-8">
+                  <div className="text-center">
+                    <p className="text-slate-400 text-sm font-black uppercase tracking-widest mb-1">Total Score</p>
+                    <p className="text-5xl font-black text-orange-500">{score} / {filteredQuestions.length}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-slate-400 text-sm font-black uppercase tracking-widest mb-1">Accuracy</p>
+                    <p className="text-5xl font-black text-indigo-500">{Math.round((score / filteredQuestions.length) * 100)}%</p>
+                  </div>
+               </div>
+            </div>
+
+            <div className="space-y-6">
+              <h3 className="text-2xl font-black text-slate-700 flex items-center gap-3">
+                <BookOpen className="text-indigo-500" /> 오답 노트 (Incorrect Answers)
+              </h3>
+              
+              {wrongAnswers.length === 0 ? (
+                <div className="bg-emerald-50 p-10 rounded-3xl border border-emerald-100 text-center">
+                  <p className="text-xl font-bold text-emerald-600">축하합니다! 모든 문제를 완벽하게 맞혔습니다. ✨</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                   {wrongAnswers.map((idx) => {
+                     const item = filteredQuestions[idx];
+                     return (
+                       <div key={idx} className="bg-slate-50 p-8 rounded-3xl border border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all hover:shadow-md">
+                          <div className="space-y-2 flex-1">
+                             <p className="text-slate-400 font-bold text-sm tracking-widest uppercase">Sentence {idx + 1}</p>
+                             <p className="text-xl font-black text-slate-800">"{item.translation}"</p>
+                             <p className="text-lg font-bold text-indigo-600">
+                                {item.prefix ? item.prefix + " " : ""}{item.correct}{item.suffix ? " " + item.suffix : ""}
+                             </p>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              setCurrentIdx(idx);
+                              setSubSection('practice');
+                              setFeedback(null);
+                              setUserOrder([]);
+                              setScrambled([...item.scrambled].sort());
+                              setShowAnswerIdx(null);
+                            }}
+                            className="px-8 py-4 bg-white border-2 border-indigo-100 text-indigo-600 rounded-2xl font-black hover:bg-indigo-50 transition active:scale-95 flex items-center gap-2 whitespace-nowrap self-start md:self-center"
+                          >
+                            <RotateCcw size={18} /> 다시 도전하기
+                          </button>
+                       </div>
+                     );
+                   })}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-16 flex flex-col md:flex-row gap-4">
+               <button 
+                onClick={() => {
+                  setSubSection('menu');
+                  setScore(0);
+                  setCurrentIdx(0);
+                  setWrongAnswers([]);
+                  setAlreadyScored([]);
+                }}
+                className="flex-1 py-6 bg-slate-100 text-slate-500 rounded-3xl font-black text-xl hover:bg-slate-200 transition"
+               >
+                 메뉴로 돌아가기
+               </button>
+               <button 
+                onClick={() => setSubSection('story')}
+                className="flex-1 py-6 bg-indigo-600 text-white rounded-3xl font-black text-xl hover:bg-indigo-700 transition shadow-xl shadow-indigo-100"
+               >
+                 MY STORY 만들러 가기 <ChevronRight className="inline ml-1" />
+               </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
 
     const q = filteredQuestions[currentIdx];
@@ -2179,10 +2259,15 @@ function ResultCard({
                <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Writing Practice</span>
                <span className="text-slate-300 font-bold tracking-widest uppercase text-xs">Sentence {currentIdx + 1} / {filteredQuestions.length}</span>
                <button 
-                onClick={nextLevel}
+                onClick={() => {
+                   if (!wrongAnswers.includes(currentIdx) && !alreadyScored.includes(currentIdx)) {
+                      setWrongAnswers(prev => [...prev, currentIdx]);
+                   }
+                   nextLevel();
+                }}
                 className="ml-4 text-slate-400 hover:text-orange-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-orange-50"
                >
-                SKIP
+                 SKIP
                </button>
                <button 
                 onClick={() => setIsTypingMode(!isTypingMode)}
@@ -2271,17 +2356,18 @@ function ResultCard({
                   {feedback !== null && (feedback ? (
                     <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6 w-full max-w-2xl mx-auto">
                        <div 
-                        onClick={nextLevel}
-                        className="bg-emerald-100 text-emerald-700 p-8 rounded-[40px] border-4 border-emerald-200 block shadow-xl relative group cursor-pointer hover:scale-[1.01] transition-transform"
+                        className={`${showAnswerIdx === currentIdx ? "bg-indigo-50 border-indigo-200 text-indigo-700" : "bg-emerald-100 border-emerald-200 text-emerald-700"} p-8 rounded-[40px] border-4 block shadow-xl relative group`}
                        >
-                          <p className="text-4xl font-black tracking-tighter mb-4">PERFECT! ✨</p>
+                          <p className="text-4xl font-black tracking-tighter mb-4">
+                             {showAnswerIdx === currentIdx ? "ANSWER CHECK! 💡" : "PERFECT! ✨"}
+                          </p>
                           <div className="flex items-center justify-center gap-3 mb-6 bg-white/40 p-4 rounded-2xl border border-white/40">
                             <p className="font-bold text-xl">
                               {q.prefix ? `${q.prefix} ` : ""}{q.correct}{q.suffix ? ` ${q.suffix}` : ""}
                             </p>
                             <button 
                               onClick={() => handleSpeak(`${q.prefix || ""} ${q.correct} ${q.suffix || ""}`)}
-                              className="p-2 text-emerald-400 hover:text-emerald-700 hover:bg-white/50 rounded-full transition-all active:scale-90"
+                              className={`p-2 rounded-full transition-all active:scale-90 ${showAnswerIdx === currentIdx ? "text-indigo-400 hover:text-indigo-700" : "text-emerald-400 hover:text-emerald-700"} hover:bg-white/50`}
                             >
                               <Volume2 size={20} />
                             </button>
@@ -2290,15 +2376,15 @@ function ResultCard({
                             <motion.div 
                               initial={{ opacity: 0, y: 15 }}
                               animate={{ opacity: 1, y: 0 }}
-                              className="mt-8 p-8 bg-white/90 rounded-[40px] text-left border-2 border-emerald-100 shadow-xl backdrop-blur-md"
+                              className={`mt-8 p-8 bg-white/90 rounded-[40px] text-left border-2 ${showAnswerIdx === currentIdx ? "border-indigo-100" : "border-emerald-100"} shadow-xl backdrop-blur-md`}
                             >
                               <div className="flex items-center gap-3 mb-4">
-                                <div className="bg-emerald-500 text-white p-2 rounded-xl shadow-lg shadow-emerald-200">
+                                <div className={`${showAnswerIdx === currentIdx ? "bg-indigo-500" : "bg-emerald-500"} text-white p-2 rounded-xl shadow-lg`}>
                                   <BookOpen size={20} />
                                 </div>
                                 <div>
-                                  <span className="font-black text-emerald-600 text-sm uppercase tracking-[0.2em] block leading-none">Grammar Deep Dive</span>
-                                  <span className="text-[10px] text-emerald-400 font-bold">핵심 문법 파고들기</span>
+                                  <span className={`font-black ${showAnswerIdx === currentIdx ? "text-indigo-600" : "text-emerald-600"} text-sm uppercase tracking-[0.2em] block leading-none`}>Grammar Deep Dive</span>
+                                  <span className={`text-[10px] ${showAnswerIdx === currentIdx ? "text-indigo-400" : "text-emerald-400"} font-bold`}>핵심 문법 파고들기</span>
                                 </div>
                               </div>
                               <p className="text-lg font-bold text-slate-700 leading-relaxed">
@@ -2307,28 +2393,37 @@ function ResultCard({
                             </motion.div>
                           )}
                        </div>
-                       <button onClick={nextLevel} className="block mx-auto bg-slate-800 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-black transition active:scale-95 flex items-center gap-3">
-                          {currentIdx === WRITING_DATA.length - 1 ? "CREATE MY STORY" : "NEXT MISSION"} <ChevronRight size={24} />
-                       </button>
+                       <div className="flex flex-col md:flex-row justify-center gap-4">
+                          {(showAnswerIdx === currentIdx || wrongAnswers.includes(currentIdx)) && (
+                             <button 
+                               onClick={() => { setScrambled([...q.scrambled].sort()); setUserOrder([]); setFeedback(null); setShowAnswerIdx(null); setTypedAnswer(''); }} 
+                               className="bg-white border-2 border-slate-200 text-slate-500 px-10 py-5 rounded-3xl font-black hover:bg-slate-50 transition flex items-center justify-center gap-2"
+                             >
+                               <RotateCcw size={20} /> 다시 풀어보기
+                             </button>
+                          )}
+                          <button onClick={nextLevel} className="bg-slate-800 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-black transition active:scale-95 flex items-center justify-center gap-3">
+                             {currentIdx === WRITING_DATA.length - 1 ? "FINISH MISSION" : "NEXT MISSION"} <ChevronRight size={24} />
+                          </button>
+                       </div>
                     </motion.div>
                   ) : (
                     <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="space-y-6">
                        <div 
-                        onClick={nextLevel}
-                        className="bg-rose-50 text-rose-700 p-8 rounded-[40px] border-4 border-rose-100 inline-block cursor-pointer hover:scale-[1.01] transition-transform"
+                        className="bg-rose-50 text-rose-700 p-8 rounded-[40px] border-4 border-rose-100 inline-block"
                        >
                           <p className="text-3xl font-black tracking-tighter mb-2">TRY AGAIN! 💪</p>
                           <p className="font-bold">단어의 순서를 다시 한 번 생각해보세요.</p>
                        </div>
                        <div className="flex justify-center gap-4">
-                          <button onClick={() => { setScrambled([...q.scrambled].sort()); setUserOrder([]); setFeedback(null); }} className="bg-slate-100 text-slate-500 px-10 py-5 rounded-3xl font-black hover:bg-slate-200 transition">다시 하기</button>
-                          <button onClick={() => setFeedback(true)} className="bg-indigo-600 text-white px-10 py-5 rounded-3xl font-black hover:bg-indigo-700 transition">정답 보기</button>
+                          <button onClick={() => { setScrambled([...q.scrambled].sort()); setUserOrder([]); setFeedback(null); setTypedAnswer(''); }} className="bg-slate-100 text-slate-500 px-10 py-5 rounded-3xl font-black hover:bg-slate-200 transition">다시 하기</button>
+                          <button onClick={() => { setFeedback(true); setShowAnswerIdx(currentIdx); }} className="bg-indigo-600 text-white px-10 py-5 rounded-3xl font-black hover:bg-indigo-700 transition">정답 보기</button>
                        </div>
                        <button onClick={nextLevel} className="mt-4 block mx-auto bg-slate-800 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-black transition active:scale-95 flex items-center gap-3">
-                          {currentIdx === WRITING_DATA.length - 1 ? "CREATE MY STORY" : "NEXT MISSION"} <ChevronRight size={24} />
+                          {currentIdx === WRITING_DATA.length - 1 ? "FINISH MISSION" : "NEXT MISSION"} <ChevronRight size={24} />
                        </button>
                     </motion.div>
-                  )}
+                  ))}
                </AnimatePresence>
              </div>
           </div>
@@ -2340,13 +2435,176 @@ function ResultCard({
   const MyStoryView = ({ handleSpeak, navTo, onBack }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void; onBack: () => void }) => {
     const [sentencePPC, setSentencePPC] = useState('');
     const [sentenceSoThat, setSentenceSoThat] = useState('');
+    const [authorName, setAuthorName] = useState('');
     const [submitted, setSubmitted] = useState(false);
+    const [storyEntries, setStoryEntries] = useState<any[]>(() => {
+      try {
+        const saved = localStorage.getItem('mental_health_stories');
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    });
+    const [storyTab, setStoryTab] = useState<'build' | 'wall'>('build');
+    const [commentInput, setCommentInput] = useState<{[key: string]: string}>({});
 
     const handleSubmit = () => {
+      if (!authorName.trim()) {
+        alert("Please enter your name!");
+        return;
+      }
       if (sentencePPC.trim() && sentenceSoThat.trim()) {
+        const newEntry = {
+          id: Date.now().toString(),
+          author: authorName,
+          ppc: sentencePPC,
+          soThat: sentenceSoThat,
+          date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+          reactions: {},
+          comments: []
+        };
+        const updated = [newEntry, ...storyEntries];
+        setStoryEntries(updated);
+        localStorage.setItem('mental_health_stories', JSON.stringify(updated));
         setSubmitted(true);
       }
     };
+
+    const handleReaction = (id: string, emoji: string) => {
+      const updated = storyEntries.map(e => {
+        if (e.id === id) {
+          const reactions = { ...(e.reactions || {}) };
+          reactions[emoji] = (reactions[emoji] || 0) + 1;
+          return { ...e, reactions };
+        }
+        return e;
+      });
+      setStoryEntries(updated);
+      localStorage.setItem('mental_health_stories', JSON.stringify(updated));
+    };
+
+    const handleAddComment = (id: string) => {
+      const text = commentInput[id];
+      if (!text?.trim()) return;
+      const newComment = {
+        id: Date.now().toString(),
+        author: authorName || 'Anonymous',
+        text: text,
+        date: new Date().toISOString()
+      };
+      const updated = storyEntries.map(e => {
+        if (e.id === id) {
+          return { ...e, comments: [...(e.comments || []), newComment] };
+        }
+        return e;
+      });
+      setStoryEntries(updated);
+      setCommentInput({ ...commentInput, [id]: '' });
+      localStorage.setItem('mental_health_stories', JSON.stringify(updated));
+    };
+
+    if (storyTab === 'wall') {
+      return (
+        <div className="max-w-6xl mx-auto space-y-12 pb-20">
+          <div className="flex flex-col md:flex-row md:items-end justify-between border-b-4 border-indigo-500 pb-8 gap-6 h-full">
+            <div className="space-y-4">
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">My Class Mental Health Story</h2>
+              <p className="text-2xl font-black text-indigo-500 underline underline-offset-8 decoration-indigo-200">우리의 감정 건강 이야기 담벼락</p>
+            </div>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setStoryTab('build')}
+                className="bg-indigo-600 text-white px-10 py-5 rounded-[30px] font-black text-xl hover:bg-slate-800 transition shadow-xl flex items-center gap-3 active:scale-95"
+              >
+                <PenTool size={24} /> WRITE STORY
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <AnimatePresence initial={false}>
+              {storyEntries.length === 0 ? (
+                <div className="col-span-full py-32 text-center bg-white rounded-[60px] border-4 border-dashed border-slate-100 italic">
+                  <p className="text-slate-300 font-black text-2xl">아직 공유된 이야기가 없습니다. 첫 번째 이야기를 들려주세요!</p>
+                </div>
+              ) : (
+                storyEntries.map((entry, idx) => (
+                  <motion.div 
+                    key={entry.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="bg-white p-10 rounded-[50px] shadow-lg border border-slate-50 space-y-8 flex flex-col justify-between hover:shadow-2xl transition-all group"
+                  >
+                    <div className="space-y-8">
+                      <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-indigo-500 rounded-3xl flex items-center justify-center text-white font-black text-2xl shadow-lg ring-4 ring-indigo-50">
+                          {entry.author.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-black text-slate-800 text-xl leading-none mb-1">{entry.author}</p>
+                          <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{entry.date}</p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-5">
+                         <div className="bg-indigo-50/50 p-6 rounded-[35px] border-l-8 border-indigo-500 relative overflow-hidden">
+                            <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-3">Efforts (PPC)</span>
+                            <p className="text-xl font-bold text-indigo-950 leading-relaxed italic">"{entry.ppc}"</p>
+                         </div>
+                         <div className="bg-emerald-50/50 p-6 rounded-[35px] border-l-8 border-emerald-500 relative overflow-hidden">
+                            <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-3">Results (So ~ That)</span>
+                            <p className="text-xl font-bold text-emerald-950 leading-relaxed italic">"{entry.soThat}"</p>
+                         </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-slate-50 space-y-6">
+                      <div className="flex flex-wrap gap-2">
+                        {['👍', '❤️', '👏', '🔥', '✨'].map(emoji => (
+                          <button 
+                            key={emoji}
+                            onClick={() => handleReaction(entry.id, emoji)}
+                            className={`px-4 py-2 rounded-2xl text-sm font-black border transition-all flex items-center gap-2 ${entry.reactions?.[emoji] ? 'bg-indigo-50 border-indigo-100 text-indigo-600' : 'bg-slate-50 border-transparent text-slate-400 hover:bg-slate-100'}`}
+                          >
+                            <span>{emoji}</span>
+                            {entry.reactions?.[emoji] > 0 && <span>{entry.reactions[emoji]}</span>}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="space-y-4">
+                        {entry.comments?.length > 0 && (
+                          <div className="space-y-2 bg-slate-50/50 p-6 rounded-[30px] border border-slate-100 shadow-inner max-h-40 overflow-y-auto">
+                            {entry.comments.map((c: any) => (
+                              <div key={c.id} className="text-xs">
+                                <span className="font-black text-indigo-500 mr-2 uppercase tracking-tighter">{c.author}</span>
+                                <span className="text-slate-600 font-medium">{c.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <div className="relative">
+                          <input 
+                            type="text"
+                            value={commentInput[entry.id] || ''}
+                            onChange={(e) => setCommentInput({...commentInput, [entry.id]: e.target.value})}
+                            onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id)}
+                            placeholder="응원의 댓글을 남겨보세요..."
+                            className="w-full h-12 pl-5 pr-12 bg-slate-50 border-none rounded-2xl text-sm font-bold text-slate-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-300"
+                          />
+                          <button onClick={() => handleAddComment(entry.id)} className="absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500 hover:text-indigo-700 transition-colors"><Send size={20} /></button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="max-w-4xl mx-auto space-y-12 pb-20">
@@ -2361,11 +2619,35 @@ function ResultCard({
                 >
                   <RotateCcw size={28} className="-rotate-90" />
                 </button>
-                <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Final Step</span>
+                <div className="flex gap-3">
+                  <button 
+                    onClick={() => setStoryTab('wall')}
+                    className="bg-indigo-50 text-indigo-600 px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-indigo-100 transition-all active:scale-95 shadow-sm"
+                  >
+                    Class Stories ⮕
+                  </button>
+                  <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Final Step</span>
+                </div>
              </div>
              <div className="space-y-4">
                 <h2 className="text-5xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none mb-4">MY STORY<br/><span className="text-indigo-600">BUILDER</span></h2>
                 <p className="text-xl font-bold text-slate-400">학습한 핵심 어법을 활용하여 당신의 감정 건강 이야기를 만들어보세요.</p>
+             </div>
+
+             <div className="bg-slate-50 p-10 rounded-[45px] border border-slate-100 focus-within:border-indigo-300 transition-all flex items-center gap-6 shadow-inner">
+                <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-slate-400 shadow-sm border border-slate-100">
+                  <User size={32} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Writer Name (Required)</p>
+                  <input 
+                    type="text"
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                    placeholder="이름을 입력하세요 (e.g. Minji)"
+                    className="w-full bg-transparent border-none focus:ring-0 text-3xl font-black text-slate-700 placeholder:text-slate-200"
+                  />
+                </div>
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2390,12 +2672,12 @@ function ResultCard({
              <div className="space-y-10">
                 <div className="space-y-4">
                    <label className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">PART 1: YOUR EFFORTS</label>
-                   <div className="bg-slate-50 p-6 rounded-[35px] border border-slate-100 focus-within:border-indigo-300 transition-colors">
+                   <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 focus-within:border-indigo-300 transition-colors shadow-inner">
                       <textarea 
                          value={sentencePPC}
                          onChange={(e) => setSentencePPC(e.target.value)}
                          disabled={submitted}
-                         className="w-full bg-transparent border-none focus:ring-0 text-xl md:text-2xl font-black text-slate-700 placeholder:text-slate-200 h-24 p-2 cursor-auto"
+                         className="w-full bg-transparent border-none focus:ring-0 text-xl md:text-2xl font-black text-slate-700 placeholder:text-slate-200 h-28 p-2 cursor-auto"
                          placeholder="e.g. I have been eating healthy meals every day."
                       />
                    </div>
@@ -2403,12 +2685,12 @@ function ResultCard({
 
                 <div className="space-y-4">
                    <label className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">PART 2: THE RESULTS</label>
-                   <div className="bg-slate-50 p-6 rounded-[35px] border border-slate-100 focus-within:border-emerald-300 transition-colors">
+                   <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 focus-within:border-emerald-300 transition-colors shadow-inner">
                       <textarea 
                          value={sentenceSoThat}
                          onChange={(e) => setSentenceSoThat(e.target.value)}
                          disabled={submitted}
-                         className="w-full bg-transparent border-none focus:ring-0 text-xl md:text-2xl font-black text-slate-700 placeholder:text-slate-200 h-24 p-2"
+                         className="w-full bg-transparent border-none focus:ring-0 text-xl md:text-2xl font-black text-slate-700 placeholder:text-slate-200 h-28 p-2"
                          placeholder="e.g. I feel so energetic that I can focus better."
                       />
                    </div>
@@ -2417,18 +2699,32 @@ function ResultCard({
                 {!submitted ? (
                   <button 
                      onClick={handleSubmit}
-                     disabled={!sentencePPC.trim() || !sentenceSoThat.trim()}
-                     className="w-full py-7 bg-indigo-600 text-white rounded-[40px] font-black text-2xl shadow-2xl shadow-indigo-100 hover:bg-slate-800 transition active:scale-95 disabled:opacity-30"
+                     disabled={!authorName.trim() || !sentencePPC.trim() || !sentenceSoThat.trim()}
+                     className="w-full py-8 bg-indigo-600 text-white rounded-[45px] font-black text-3xl shadow-2xl shadow-indigo-100 hover:bg-slate-800 transition active:scale-95 disabled:opacity-30"
                    >
-                     FINISH MY STORY ✍️
+                     PUBLISH MY STORY ✍️
                    </button>
                 ) : (
-                  <button 
-                     onClick={() => setSubmitted(false)}
-                     className="w-full py-7 border-2 border-slate-200 text-slate-400 rounded-[40px] font-black text-2xl hover:bg-slate-50 transition active:scale-95"
-                   >
-                     EDIT STORY
-                   </button>
+                  <div className="space-y-6 text-center animate-in fade-in zoom-in-95 duration-500">
+                    <div className="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-emerald-100 mb-4">
+                      <CheckCircle2 size={40} />
+                    </div>
+                    <p className="text-2xl font-black text-slate-800 tracking-tighter">Your story has been shared with the class!</p>
+                    <div className="flex flex-col gap-4">
+                      <button 
+                        onClick={() => setStoryTab('wall')}
+                        className="w-full py-8 bg-indigo-600 text-white rounded-[45px] font-black text-3xl shadow-2xl shadow-indigo-100 hover:bg-slate-800 transition active:scale-95 flex items-center justify-center gap-4"
+                      >
+                        VIEW CLASS WALL <ArrowRight size={32} />
+                      </button>
+                      <button 
+                        onClick={() => setSubmitted(false)}
+                        className="w-full py-5 text-slate-400 font-extrabold hover:text-slate-600 transition"
+                      >
+                        MAKE AN EDIT
+                      </button>
+                    </div>
+                  </div>
                 )}
              </div>
           </div>
@@ -2437,52 +2733,49 @@ function ResultCard({
         <AnimatePresence>
           {submitted && (
             <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               className="space-y-8"
             >
-              <div className="bg-slate-900 p-8 md:p-12 rounded-[50px] text-white space-y-10 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 transition-transform">
-                  <PenTool size={120} />
+              <div className="bg-slate-900 p-12 md:p-20 rounded-[80px] text-white space-y-12 relative overflow-hidden group border-8 border-indigo-500/10 shadow-3xl">
+                <div className="absolute top-0 right-0 p-12 opacity-10 group-hover:rotate-12 group-hover:scale-110 transition-transform duration-700">
+                  <Sparkles size={200} />
                 </div>
 
                 <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                      <div className="px-6 py-2 bg-emerald-500 rounded-2xl font-black text-sm uppercase tracking-widest">
-                        MY JOURNAL
+                  <div className="flex items-center justify-between mb-12">
+                    <div className="flex items-center gap-6">
+                      <div className="px-8 py-3 bg-indigo-500 rounded-3xl font-black text-base uppercase tracking-widest shadow-lg">
+                        PUBLISHED STORY
                       </div>
-                      <h3 className="text-3xl font-black tracking-tighter">PUBLISHED STORY</h3>
+                      <h3 className="text-4xl font-black tracking-tighter">BY {authorName.toUpperCase()}</h3>
                     </div>
                   </div>
 
-                  <div className="space-y-6">
-                    <p className="text-3xl md:text-4xl font-black leading-tight tracking-tight underline decoration-indigo-500/50 underline-offset-8">
+                  <div className="space-y-10 max-w-3xl">
+                    <p className="text-4xl md:text-5xl font-black leading-tight tracking-tight border-b-4 border-indigo-500/30 pb-6">
                       {sentencePPC}
                     </p>
-                    <p className="text-3xl md:text-4xl font-black leading-tight tracking-tight text-[#ECC94B]">
+                    <p className="text-4xl md:text-5xl font-black leading-tight tracking-tight text-[#ECC94B] italic">
                       {sentenceSoThat}
                     </p>
                   </div>
 
-                  <div className="mt-12 flex gap-4">
+                  <div className="mt-16 flex flex-wrap gap-4">
                     <button 
                       onClick={() => handleSpeak(`${sentencePPC} ${sentenceSoThat}`)}
-                      className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl font-bold transition-all"
+                      className="flex items-center gap-3 bg-white text-slate-900 hover:bg-slate-100 px-10 py-5 rounded-[30px] font-black transition-all active:scale-95 shadow-xl"
                     >
-                      <Volume2 size={20} /> Listen to My Story
+                      <Volume2 size={24} /> LISTEN TO STORY
+                    </button>
+                    <button 
+                      onClick={() => navTo('dashboard')}
+                      className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-10 py-5 rounded-[30px] font-black transition-all active:scale-95 border border-white/20"
+                    >
+                      BACK TO HOME
                     </button>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex justify-center">
-                <button 
-                  onClick={() => navTo('dashboard')}
-                  className="bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black text-xl shadow-2xl hover:bg-indigo-700 transition active:scale-95 flex items-center gap-3"
-                >
-                  RETURN TO DASHBOARD <ArrowRight size={24} />
-                </button>
               </div>
             </motion.div>
           )}
@@ -2789,73 +3082,198 @@ function ResultCard({
     const [classEntries, setClassEntries] = useState<GratitudeEntry[]>(() => {
       try {
         const saved = localStorage.getItem('class_diary');
-        if (saved) return JSON.parse(saved);
-        
-        // Mock data for initial class diary
-        const mocks: GratitudeEntry[] = [
-          {
-            id: 'mock1',
-            author: 'Somi',
-            date: '2026년 5월 12일 화요일',
-            content: 'I saw a beautiful sunflower today. It was so bright that it made me smile.',
-            ppcSentence: 'I have been looking for sunflowers since morning.',
-            soThatSentence: 'The sun was so bright that I had to wear my hat.',
-            reactions: { '🌻': 5, '✨': 3 },
-            comments: [{ id: 'c1', author: 'Jiho', text: 'Great observation!', date: '2026-05-12' }]
-          },
-          {
-            id: 'mock2',
-            author: 'Jiho',
-            date: '2026년 5월 13일 수요일',
-            content: 'I finished my painting today! It was so hard that I almost stopped, but I did it.',
-            ppcSentence: 'I have been painting this picture for three days.',
-            soThatSentence: 'The brush moved so smoothly that it felt like dreaming.',
-            reactions: { '🎨': 8, '👏': 4 },
-            comments: []
-          },
-          {
-            id: 'mock3',
-            author: 'Minjun',
-            date: '2026년 5월 14일 목요일',
-            content: 'Playing soccer helped me feel better after a long day at school.',
-            ppcSentence: 'I have been playing soccer with my friends since 2 p.m.',
-            soThatSentence: 'I was so tired that I could focus only on the ball.',
-            reactions: { '⚽': 6, '🔥': 2 },
-            comments: [{ id: 'c2', author: 'Hana', text: 'Health is the best!', date: '2026-05-14' }]
-          },
-          {
-            id: 'mock4',
-            author: 'Hana',
-            date: '2026년 5월 14일 목요일',
-            content: 'Reading about the stars made me feel peaceful and small in a good way.',
-            ppcSentence: 'I have been reading this space book for a week.',
-            soThatSentence: 'The stars were so beautiful that I forgot all my stress.',
-            reactions: { '⭐': 10, '📚': 5 },
-            comments: []
-          },
-          {
-            id: 'mock5',
-            author: 'Doyun',
-            date: '2026년 5월 14일 목요일',
-            content: 'Listening to music is my favorite way to relax after studying.',
-            ppcSentence: 'I have been listening to lo-fi beats since evening.',
-            soThatSentence: 'The music was so calm that I fell asleep quickly.',
-            reactions: { '🎧': 7, '😴': 3 },
-            comments: []
-          }
-        ];
-        return mocks;
+        return saved ? JSON.parse(saved) : [];
       } catch {
         return [];
       }
     });
 
-    const [newEntry, setNewEntry] = useState('');
     const [authorName, setAuthorName] = useState('');
     const [ppcInput, setPpcInput] = useState('');
     const [soThatInput, setSoThatInput] = useState('');
+    const [gratitudeInput, setGratitudeInput] = useState('');
+    const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
     const [commentInput, setCommentInput] = useState<{ [id: string]: string }>({});
+    const [visibleTranslations, setVisibleTranslations] = useState<{ [key: string]: boolean }>({});
+    const [showKorean, setShowKorean] = useState(false);
+
+    const toggleTranslation = async (key: string) => {
+        // Find entry in either entries or classEntries
+        const personalEntry = entries.find(e => e.id === key);
+        const classEntry = classEntries.find(e => e.id === key);
+        const entry = personalEntry || classEntry;
+
+        if (!entry) {
+            setVisibleTranslations(prev => ({ ...prev, [key]: !prev[key] }));
+            return;
+        }
+
+        // If toggling ON and translation doesn't exist, fetch it
+        if (!visibleTranslations[key]) {
+            const needsTranslation = !entry.contentKo && (entry.content || entry.ppcSentence || entry.soThatSentence);
+            
+            if (needsTranslation) {
+                try {
+                    const textsToTranslate = [];
+                    const keys: string[] = [];
+                    
+                    if (entry.ppcSentence) { textsToTranslate.push(entry.ppcSentence); keys.push('ppcSentence'); }
+                    if (entry.soThatSentence) { textsToTranslate.push(entry.soThatSentence); keys.push('soThatSentence'); }
+                    if (entry.content) { textsToTranslate.push(entry.content); keys.push('content'); }
+
+                    const res = await fetch('/api/translate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ texts: textsToTranslate })
+                    });
+
+                    if (res.ok) {
+                        const { translatedTexts } = await res.json();
+                        const updates: any = {};
+                        keys.forEach((k, i) => {
+                            updates[`${k}Ko`] = translatedTexts[i];
+                        });
+
+                        // Update states
+                        const updateInList = (list: GratitudeEntry[]) => list.map(e => e.id === key ? { ...e, ...updates } : e);
+                        
+                        setEntries(prev => {
+                            const updated = updateInList(prev);
+                            // Sync personal entries to localStorage
+                            if (personalEntry) {
+                                localStorage.setItem('gratitude_diary', JSON.stringify(updated));
+                            }
+                            return updated;
+                        });
+                        
+                        setClassEntries(prev => updateInList(prev));
+                    }
+                } catch (err) {
+                    console.error("Translation error:", err);
+                }
+            }
+        }
+
+        setVisibleTranslations(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    const ExampleBox = ({ id, en, ko, colorClass }: { id: string, en: React.ReactNode, ko: string, colorClass: string }) => (
+        <div className={`${colorClass} p-4 rounded-2xl border transition-all relative group`}>
+            <p className="text-sm font-bold text-slate-600 italic leading-relaxed pr-8">"{en}"</p>
+            <p className="text-xs font-black text-slate-400 mt-2 border-t border-dashed pt-2 italic">
+                {ko}
+            </p>
+        </div>
+    );
   
+    useEffect(() => {
+      // User requested to delete all records from May 15th
+      // AND a specific record from May 17th mentioning peaceful morning
+      const cleanupDate = '5월 15일';
+      const targetPostDate = '5월 17일';
+      const targetContent = "I am grateful for this peaceful morning";
+      
+      const filterPost = (e: GratitudeEntry) => {
+        const isTargetDate = e.date.includes(cleanupDate);
+        const isSpecificPost = e.date.includes(targetPostDate) && e.content.includes(targetContent);
+        return !isTargetDate && !isSpecificPost;
+      };
+
+      setEntries(prev => {
+        const filtered = prev.filter(filterPost);
+        if (filtered.length !== prev.length) {
+          localStorage.setItem('gratitude_diary', JSON.stringify(filtered));
+        }
+        return filtered;
+      });
+
+      setClassEntries(prev => {
+        // First filter out May 15th records, 'sone', and 'some'
+        let updated = prev.filter(e => {
+            const isRemovedByDateOrAuthor = filterPost(e) === false || 
+                                           e.author?.toLowerCase() === 'sone' || 
+                                           e.author?.toLowerCase() === 'some' || 
+                                           e.author?.toLowerCase() === 'anonymous';
+            return !isRemovedByDateOrAuthor;
+        });
+        
+        // Specific records to add/ensure
+        const seedEntries: GratitudeEntry[] = [
+          {
+            id: 'seed-minjun',
+            author: 'minjun',
+            content: "When I'm stressed, I exercise. My stress was so huge that I started running. I have been running for thirty minutes to feel refreshed. Exercise is a great way to handle stress. I am thankful for my healthy body.",
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '❤️': 5 },
+            comments: []
+          },
+          {
+            id: 'seed-hana',
+            author: 'hana',
+            content: "When I feel stressed, I listen to music. The melodies are so sweet that they calm my mind. I have been listening to jazz since I got home to relax. I am grateful for the beautiful music.",
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '❤️': 7 },
+            comments: []
+          },
+          {
+            id: 'seed-doyun',
+            author: 'doyun',
+            content: "I often cook when I'm stressed. The smell of bread is so nice that it makes me happy. I have been baking bread for two hours to forget my stress. I feel thankful for the delicious smell.",
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '❤️': 4 },
+            comments: []
+          },
+          {
+            id: 'seed-somi',
+            author: 'somi',
+            content: "I draw when I'm under stress. The paper is so white that I want to fill it with patterns. I have been drawing zentangles for an hour to calm down. I am grateful for this peaceful time.",
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '❤️': 6 },
+            comments: []
+          },
+          {
+            id: 'seed-jiho',
+            author: 'jiho',
+            content: "When I'm stressed, I play with my dog. He is so energetic that he makes me active. I have been playing catch with him all afternoon. I am thankful for my energetic puppy.",
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '👍': 8 },
+            comments: []
+          },
+          {
+            id: 'seed-sujin',
+            author: 'sujin',
+            content: "Reading is my way to handle stress. The book is so exciting that I am completely absorbed in it. I have been reading this adventure story for three hours. I am grateful for the interesting book.",
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '✨': 6 },
+            comments: []
+          },
+          {
+            id: 'seed-taeyang',
+            author: 'taeyang',
+            content: "I take a walk when I'm stressed. The park is so quiet that I can think clearly. I have been walking along the river for an hour. I feel thankful for the fresh air.",
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '📚': 9 },
+            comments: []
+          }
+        ];
+
+        // Replace or add these entries
+        seedEntries.forEach(seed => {
+          const index = updated.findIndex(e => e.id === seed.id || (e.author?.toLowerCase() === seed.author.toLowerCase()));
+          if (index !== -1) {
+            updated[index] = seed;
+          } else {
+            updated = [seed, ...updated];
+          }
+        });
+
+        if (JSON.stringify(updated) !== JSON.stringify(prev)) {
+          localStorage.setItem('class_diary', JSON.stringify(updated));
+        }
+        return updated;
+      });
+    }, []);
+
     const refreshData = () => {
       try {
         const savedPersonal = localStorage.getItem('gratitude_diary');
@@ -2868,88 +3286,153 @@ function ResultCard({
     };
 
     const handleSave = () => {
-      if (!newEntry.trim() && !ppcInput.trim() && !soThatInput.trim()) return;
-      const entry: GratitudeEntry = {
-        id: Date.now().toString(),
-        author: authorName.trim() || 'Anonymous',
-        date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-        content: newEntry,
-        ppcSentence: ppcInput,
-        soThatSentence: soThatInput,
-        reactions: {},
-        comments: []
-      };
-      
-      // Update personal entries
-      const updatedPersonal = [entry, ...entries];
-      setEntries(updatedPersonal);
-      localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
-      
-      // Also add to class diary
-      const updatedClass = [entry, ...classEntries];
-      setClassEntries(updatedClass);
-      localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+      if (!authorName.trim()) {
+        alert(showKorean ? "이름을 입력해주세요!" : "Please enter your name!");
+        return;
+      }
+      if (!gratitudeInput.trim() && !ppcInput.trim() && !soThatInput.trim()) return;
 
-      setNewEntry('');
+      if (editingEntryId) {
+        // Update existing entry
+        const updateEntry = (e: GratitudeEntry) => {
+          if (e.id === editingEntryId) {
+            return {
+              ...e,
+              author: authorName.trim(),
+              content: gratitudeInput,
+              ppcSentence: ppcInput,
+              soThatSentence: soThatInput
+            };
+          }
+          return e;
+        };
+
+        const updatedPersonal = entries.map(updateEntry);
+        setEntries(updatedPersonal);
+        localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
+
+        const updatedClass = classEntries.map(updateEntry);
+        setClassEntries(updatedClass);
+        localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+
+        setEditingEntryId(null);
+      } else {
+        // Create new entry
+        const entry: GratitudeEntry = {
+          id: Date.now().toString(),
+          author: authorName.trim(),
+          date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+          content: gratitudeInput,
+          ppcSentence: ppcInput,
+          soThatSentence: soThatInput,
+          reactions: {},
+          comments: []
+        };
+        
+        // Update personal entries
+        const updatedPersonal = [entry, ...entries];
+        setEntries(updatedPersonal);
+        localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
+        
+        // Also add to class diary
+        const updatedClass = [entry, ...classEntries];
+        setClassEntries(updatedClass);
+        localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+      }
+
+      setGratitudeInput('');
+      setAuthorName('');
+      setPpcInput('');
+      setSoThatInput('');
+    };
+
+    const handleEdit = (entry: GratitudeEntry) => {
+      setViewTab('my');
+      setEditingEntryId(entry.id);
+      setAuthorName(entry.author || '');
+      setGratitudeInput(entry.content);
+      setPpcInput(entry.ppcSentence || '');
+      setSoThatInput(entry.soThatSentence || '');
+      // Scroll to form with delay to ensure tab is mounted
+      setTimeout(() => {
+        document.getElementById('gratitude-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    };
+
+    const cancelEdit = () => {
+      setEditingEntryId(null);
+      setGratitudeInput('');
       setAuthorName('');
       setPpcInput('');
       setSoThatInput('');
     };
   
     const handleDelete = (id: string, isClass: boolean = false) => {
-      if (isClass) {
-        const updated = classEntries.filter(e => e.id !== id);
-        setClassEntries(updated);
-        localStorage.setItem('class_diary', JSON.stringify(updated));
-      } else {
-        const updated = entries.filter(e => e.id !== id);
-        setEntries(updated);
-        localStorage.setItem('gratitude_diary', JSON.stringify(updated));
-      }
+      if (!window.confirm('기록을 삭제하시겠습니까?')) return;
+      
+      const updatedPersonal = entries.filter(e => e.id !== id);
+      const updatedClass = classEntries.filter(e => e.id !== id);
+      
+      setEntries(updatedPersonal);
+      setClassEntries(updatedClass);
+      
+      localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
+      localStorage.setItem('class_diary', JSON.stringify(updatedClass));
     };
 
-    const handleReaction = (id: string, emoji: string, isClass: boolean = false) => {
-      const targetState = isClass ? classEntries : entries;
-      const setter = isClass ? setClassEntries : setEntries;
-      const storageKey = isClass ? 'class_diary' : 'gratitude_diary';
-
-      const updated = targetState.map(e => {
+    const handleReaction = (id: string, emoji: string) => {
+      const updateEntry = (e: GratitudeEntry) => {
         if (e.id === id) {
           const reactions = { ...(e.reactions || {}) };
           reactions[emoji] = (reactions[emoji] || 0) + 1;
           return { ...e, reactions };
         }
         return e;
+      };
+
+      setEntries(prev => {
+        const updated = prev.map(updateEntry);
+        localStorage.setItem('gratitude_diary', JSON.stringify(updated));
+        return updated;
       });
-      setter(updated);
-      localStorage.setItem(storageKey, JSON.stringify(updated));
+
+      setClassEntries(prev => {
+        const updated = prev.map(updateEntry);
+        localStorage.setItem('class_diary', JSON.stringify(updated));
+        return updated;
+      });
     };
 
-    const handleAddComment = (id: string, isClass: boolean = false) => {
+    const handleAddComment = (id: string) => {
       const text = commentInput[id];
       if (!text || !text.trim()) return;
 
-      const targetState = isClass ? classEntries : entries;
-      const setter = isClass ? setClassEntries : setEntries;
-      const storageKey = isClass ? 'class_diary' : 'gratitude_diary';
+      const comment = { 
+        id: Date.now().toString(), 
+        author: 'Me', 
+        text, 
+        date: new Date().toISOString().split('T')[0] 
+      };
 
-      const updated = targetState.map(e => {
+      const updateEntry = (e: GratitudeEntry) => {
         if (e.id === id) {
-          const comments = [
-            ...(e.comments || []),
-            { 
-              id: Date.now().toString(), 
-              author: 'Me', 
-              text, 
-              date: new Date().toISOString().split('T')[0] 
-            }
-          ];
-          return { ...e, comments };
+          return { ...e, comments: [...(e.comments || []), comment] };
         }
         return e;
+      };
+
+      setEntries(prev => {
+        const updated = prev.map(updateEntry);
+        localStorage.setItem('gratitude_diary', JSON.stringify(updated));
+        return updated;
       });
-      setter(updated);
-      localStorage.setItem(storageKey, JSON.stringify(updated));
+
+      setClassEntries(prev => {
+        const updated = prev.map(updateEntry);
+        localStorage.setItem('class_diary', JSON.stringify(updated));
+        return updated;
+      });
+
       setCommentInput({ ...commentInput, [id]: '' });
     };
   
@@ -2976,6 +3459,7 @@ function ResultCard({
         {viewTab === 'my' ? (
           <>
             <motion.div 
+              id="gratitude-form"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white p-12 rounded-[60px] shadow-2xl border border-rose-100 relative overflow-hidden max-w-4xl mx-auto"
@@ -2988,16 +3472,38 @@ function ResultCard({
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase">My Gratitude Diary</h2>
-                        <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg">마음 건강과 감사의 조각들을 기록하세요</p>
+                      <div className="flex flex-col gap-4">
+                        <div>
+                          <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase whitespace-nowrap">My Gratitude Diary</h2>
+                          <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg whitespace-nowrap">
+                            마음 건강을 위해 감사의 일기를 작성하세요.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => {
+                              if (window.confirm(viewTab === 'my' ? '정말로 모든 개인 기록을 삭제하시겠습니까?' : '정말로 모든 학급 기록을 삭제하시겠습니까?')) {
+                                if (viewTab === 'my') {
+                                  setEntries([]);
+                                  localStorage.removeItem('gratitude_diary');
+                                } else {
+                                  setClassEntries([]);
+                                  localStorage.removeItem('class_diary');
+                                }
+                              }
+                            }}
+                            className="p-2 bg-slate-50 border border-slate-100 text-slate-400 hover:text-white hover:bg-rose-500 hover:border-rose-500 rounded-xl transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest px-4"
+                          >
+                            <Trash2 size={12} /> Clear All
+                          </button>
+                          <button 
+                            onClick={refreshData}
+                            className="p-2 bg-slate-50 border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-200 rounded-xl transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest px-4"
+                          >
+                            <RefreshCw size={12} /> Refresh Diary
+                          </button>
+                        </div>
                       </div>
-                      <button 
-                        onClick={refreshData}
-                        className="p-4 bg-white border border-rose-100 text-rose-400 hover:text-rose-600 hover:border-rose-200 rounded-[2rem] transition-all shadow-sm flex items-center gap-3 font-black text-xs uppercase tracking-widest px-8"
-                      >
-                        <RefreshCw size={18} /> Refresh Diary
-                      </button>
                     </div>
                   </div>
                   <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100 focus-within:border-rose-200 transition-all flex items-center gap-3">
@@ -3022,12 +3528,28 @@ function ResultCard({
                       </h4>
                       <span className="text-[10px] font-black bg-indigo-50 text-indigo-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: have been -ing</span>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <ExampleBox 
+                            id="ppc-1" 
+                            en={<span>I <span className="text-indigo-600 font-black">have been feeling</span> stressed lately.</span>} 
+                            ko="최근에 스트레스를 받아왔어요." 
+                            colorClass="bg-indigo-50/50 border-indigo-100/50" 
+                        />
+                        <ExampleBox 
+                            id="ppc-2" 
+                            en={<span>I <span className="text-indigo-600 font-black">have been taking</span> a walk every morning to clear my mind.</span>} 
+                            ko="매일 아침 산책을 하며 마음을 정리해왔어요." 
+                            colorClass="bg-indigo-50/50 border-indigo-100/50" 
+                        />
+                    </div>
+
                     <div className="bg-slate-50 p-6 rounded-[30px] border border-slate-100 focus-within:border-indigo-200 transition-colors">
                       <input 
                         type="text"
                         value={ppcInput}
                         onChange={(e) => setPpcInput(e.target.value)}
-                        placeholder="최근 어떤 기분을 느껴왔나요? (예: I have been feeling peaceful lately.)"
+                        placeholder="How have you been feeling lately?"
                         className="w-full bg-transparent border-none focus:ring-0 text-lg font-bold text-slate-700 placeholder:text-slate-200"
                       />
                     </div>
@@ -3042,12 +3564,28 @@ function ResultCard({
                       </h4>
                       <span className="text-[10px] font-black bg-emerald-50 text-emerald-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: so ~ that ...</span>
                     </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <ExampleBox 
+                            id="st-1" 
+                            en={<span>Listening to music is <span className="text-emerald-600 font-black">so</span> sweet <span className="text-emerald-600 font-black">that</span> I feel relaxed.</span>} 
+                            ko="음악을 듣는 것은 너무 달콤해서 마음이 편안해져요." 
+                            colorClass="bg-emerald-50/50 border-emerald-100/50" 
+                        />
+                        <ExampleBox 
+                            id="st-2" 
+                            en={<span>I exercise <span className="text-emerald-600 font-black">so</span> hard <span className="text-emerald-600 font-black">that</span> I feel refreshed.</span>} 
+                            ko="운동을 아주 열심히 해서 기분이 상쾌해요." 
+                            colorClass="bg-emerald-50/50 border-emerald-100/50" 
+                        />
+                    </div>
+
                     <div className="bg-slate-50 p-6 rounded-[30px] border border-slate-100 focus-within:border-emerald-200 transition-colors">
                       <input 
                         type="text"
                         value={soThatInput}
                         onChange={(e) => setSoThatInput(e.target.value)}
-                        placeholder="스트레스 해소를 위해 무엇을 하나요? (예: I was so stressed that I went for a walk.)"
+                        placeholder="How do you relieve your stress?"
                         className="w-full bg-transparent border-none focus:ring-0 text-lg font-bold text-slate-700 placeholder:text-slate-200"
                       />
                     </div>
@@ -3076,18 +3614,33 @@ function ResultCard({
                              <p className="text-sm font-black text-slate-600 uppercase tracking-tighter">Guide: Stress Management & Gratitude</p>
                              <p className="text-base font-bold text-slate-500 leading-relaxed italic">
                                "I <span className="text-indigo-500">have been practicing</span> deep breathing to stay calm. 
-                               I was <span className="text-emerald-500">so relaxed</span> after breathing <span className="text-emerald-500">that</span> I could focus better. 
+                               I am <span className="text-emerald-500">so relaxed</span> after breathing <span className="text-emerald-500">that</span> I <span className="text-emerald-500">can</span> focus better. 
                                I am <span className="text-rose-500">grateful</span> for this peaceful morning."
                              </p>
                           </div>
                        </div>
                     </div>
 
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <ExampleBox 
+                            id="grat-1" 
+                            en={<span>I am <span className="text-rose-600 font-black">so thankful that</span> I have a happy family.</span>} 
+                            ko="행복한 가족이 있어서 너무 감사해요." 
+                            colorClass="bg-rose-50/50 border-rose-100/50" 
+                        />
+                        <ExampleBox 
+                            id="grat-2" 
+                            en={<span>The weather is <span className="text-rose-600 font-black">so beautiful that</span> I feel happy.</span>} 
+                            ko="날씨가 너무 아름다워서 행복해요." 
+                            colorClass="bg-rose-50/50 border-rose-100/50" 
+                        />
+                    </div>
+
                     <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 focus-within:border-rose-200 transition-colors shadow-inner">
                       <textarea 
-                          value={newEntry}
-                          onChange={(e) => setNewEntry(e.target.value)}
-                          placeholder="오늘 하루 있었던 가장 감사한 일을 자유롭게 써보세요. 위의 예시를 참고하면 더 좋아요!"
+                          value={gratitudeInput}
+                          onChange={(e) => setGratitudeInput(e.target.value)}
+                          placeholder="What are you thankful for today?"
                           className="w-full bg-transparent border-none focus:ring-0 text-xl font-bold text-slate-700 placeholder:text-slate-200 h-32 p-1 resize-none"
                       />
                     </div>
@@ -3095,26 +3648,50 @@ function ResultCard({
     
                   <button 
                     onClick={handleSave}
-                    disabled={!newEntry.trim() && !ppcInput.trim() && !soThatInput.trim()}
+                    disabled={!authorName.trim() || (!gratitudeInput.trim() && !ppcInput.trim() && !soThatInput.trim())}
                     className="w-full py-6 bg-rose-500 text-white rounded-3xl font-black text-2xl shadow-xl shadow-rose-100 hover:bg-rose-600 transition active:scale-95 disabled:opacity-30 flex items-center justify-center gap-3"
                   >
-                    마음 기록 완료 <PenTool size={24} />
+                    {editingEntryId ? "수정 완료" : "마음 기록 완료"} <PenTool size={24} />
                   </button>
+                  {editingEntryId && (
+                    <button 
+                      onClick={cancelEdit}
+                      className="w-full py-4 text-slate-400 font-bold hover:text-slate-600 transition"
+                    >
+                      취소하기
+                    </button>
+                  )}
                 </div>
               </div>
             </motion.div>
       
             <div className="space-y-6 max-w-4xl mx-auto">
               <div className="flex justify-between items-center px-4">
-                <h3 className="text-2xl font-black text-slate-800 flex items-center gap-3 tracking-tighter">
-                  <FileText className="text-rose-500" /> 저장된 감사 기록들
-                </h3>
-                <button 
-                  onClick={refreshData}
-                  className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
-                >
-                  <RefreshCw size={16} /> Refresh
-                </button>
+                <div className="flex items-center gap-6">
+                  <h3 className="text-2xl font-black text-slate-800 flex items-center gap-3 tracking-tighter">
+                    <FileText className="text-rose-500" /> My Gratitude Records
+                  </h3>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => {
+                      if (window.confirm(showKorean ? "정말로 모든 감사 기록을 삭제하시겠습니까?" : "Are you sure you want to delete all gratitude records?")) {
+                        setEntries([]);
+                        localStorage.removeItem('gratitude_diary');
+                      }
+                    }}
+                    className="p-3 bg-white border border-slate-100 text-slate-300 hover:text-rose-500 hover:border-rose-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
+                    title="Clear All"
+                  >
+                    <Trash2 size={16} /> {showKorean ? "모두 삭제" : "Clear All"}
+                  </button>
+                  <button 
+                    onClick={refreshData}
+                    className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
+                  >
+                    <RefreshCw size={16} /> Refresh
+                  </button>
+                </div>
               </div>
               
               <AnimatePresence initial={false}>
@@ -3124,7 +3701,11 @@ function ResultCard({
                     animate={{ opacity: 1 }}
                     className="bg-white p-20 rounded-[50px] border-2 border-dashed border-slate-100 text-center"
                   >
-                    <p className="text-slate-300 font-black text-xl italic">아직 기록된 마음 일기가 없습니다. 첫 기록을 남겨보세요!</p>
+                    <p className="text-slate-300 font-black text-xl italic whitespace-pre-line">
+                      {showKorean 
+                        ? "아직 기록된 마음 일기가 없습니다.\n첫 기록을 남겨보세요!" 
+                        : "No saved gratitude records yet.\nStart writing your first one!"}
+                    </p>
                   </motion.div>
                 ) : (
                   <div className="grid grid-cols-1 gap-6">
@@ -3143,12 +3724,30 @@ function ResultCard({
                               <div className="w-12 h-1 bg-rose-100 rounded-full"></div>
                            </div>
                            <div className="flex gap-2">
+
                               <button 
                                 onClick={() => handleSpeak(`${entry.ppcSentence}. ${entry.soThatSentence}. ${entry.content}`)}
                                 className="p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all"
+                                title="Listen"
                               >
                                 <Volume2 size={24} />
                               </button>
+                              <button 
+                                onClick={() => handleEdit(entry)}
+                                className="flex items-center gap-2 p-3 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-all font-black text-sm"
+                                title="Edit"
+                              >
+                                <Edit size={24} />
+                                <span>{showKorean ? "수정" : "EDIT"}</span>
+                              </button>
+                              <button 
+                                onClick={() => handleDelete(entry.id)}
+                                className="p-3 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-2xl transition-all"
+                                title="Delete"
+                              >
+                                <Trash2 size={24} />
+                              </button>
+
                            </div>
                         </div>
     
@@ -3156,23 +3755,56 @@ function ResultCard({
                           {(entry.ppcSentence || entry.soThatSentence) && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               {entry.ppcSentence && (
-                                <div className="bg-indigo-50/50 p-5 rounded-3xl border border-indigo-100/50">
-                                  <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.15em] block mb-2">Mental Status (PPC)</span>
-                                  <p className="text-lg font-bold text-slate-700 italic">"{entry.ppcSentence}"</p>
+                                <div className="bg-indigo-50/80 p-5 rounded-3xl border-2 border-indigo-100 shadow-sm relative overflow-hidden">
+                                  <span className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.15em] block mb-2">
+                                    {(visibleTranslations[entry.id] || showKorean) ? "현재상태 (PPC)" : "Mental Status (PPC)"}
+                                  </span>
+                                  <p className="text-lg font-bold text-indigo-900 italic leading-snug">"{entry.ppcSentence}"</p>
+                                  {visibleTranslations[entry.id] && (
+                                    <motion.div 
+                                      initial={{ opacity: 0, y: 10 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      className="mt-3 pt-3 border-t border-indigo-100 text-sm font-bold text-indigo-400"
+                                    >
+                                      {entry.ppcSentenceKo || "번역 중..."}
+                                    </motion.div>
+                                  )}
                                 </div>
                               )}
                               {entry.soThatSentence && (
-                                <div className="bg-emerald-50/50 p-5 rounded-3xl border border-emerald-100/50">
-                                  <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.15em] block mb-2">Stress Management (So~That)</span>
-                                  <p className="text-lg font-bold text-slate-700 italic">"{entry.soThatSentence}"</p>
+                                <div className="bg-emerald-50/80 p-5 rounded-3xl border-2 border-emerald-100 shadow-sm relative overflow-hidden">
+                                  <span className="text-[11px] font-black text-emerald-600 uppercase tracking-[0.15em] block mb-2">
+                                    {(visibleTranslations[entry.id] || showKorean) ? "스트레스 관리 (So~That)" : "Stress Management (So~That)"}
+                                  </span>
+                                  <p className="text-lg font-bold text-emerald-900 italic leading-snug">"{entry.soThatSentence}"</p>
+                                  {visibleTranslations[entry.id] && (
+                                    <motion.div 
+                                      initial={{ opacity: 0, y: 10 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      className="mt-3 pt-3 border-t border-emerald-100 text-sm font-bold text-emerald-400"
+                                    >
+                                      {entry.soThatSentenceKo || "번역 중..."}
+                                    </motion.div>
+                                  )}
                                 </div>
                               )}
                             </div>
                           )}
                           
-                          <div className="pl-4 border-l-4 border-rose-100">
-                            <span className="text-[10px] font-black text-rose-400 uppercase tracking-[0.15em] block mb-2">Gratitude Notes</span>
-                            <p className="text-2xl font-black text-slate-800 leading-tight">{entry.content}</p>
+                          <div className="pl-6 border-l-8 border-rose-500 bg-rose-50/30 p-6 rounded-r-[32px] relative overflow-hidden">
+                            <span className="text-[11px] font-black text-rose-600 uppercase tracking-[0.15em] block mb-2">
+                              {(visibleTranslations[entry.id] || showKorean) ? "감사 메모" : "Gratitude Notes"}
+                            </span>
+                            <p className="text-2xl font-black text-rose-950 leading-tight">{entry.content}</p>
+                            {visibleTranslations[entry.id] && (
+                                <motion.div 
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="mt-4 pt-4 border-t border-rose-100 text-lg font-black text-rose-400 italic"
+                                >
+                                  {entry.contentKo || "번역 중..."}
+                                </motion.div>
+                              )}
                           </div>
                         </div>
 
@@ -3182,7 +3814,7 @@ function ResultCard({
                              {['👍', '❤️', '👏', '🔥', '✨', '😊'].map(emoji => (
                                <button 
                                   key={emoji}
-                                  onClick={() => handleReaction(entry.id, emoji, false)}
+                                  onClick={() => handleReaction(entry.id, emoji)}
                                   className={`px-3 py-1.5 rounded-xl text-sm font-bold border transition-all flex items-center gap-1.5 ${entry.reactions?.[emoji] ? 'bg-rose-50 border-rose-100 text-rose-600' : 'bg-slate-50 border-transparent text-slate-400 hover:bg-slate-100'}`}
                                >
                                   <span>{emoji}</span>
@@ -3206,11 +3838,11 @@ function ResultCard({
                                   type="text"
                                   value={commentInput[entry.id] || ''}
                                   onChange={(e) => setCommentInput({...commentInput, [entry.id]: e.target.value})}
-                                  onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id, false)}
-                                  placeholder="나의 생각이나 댓글을 남겨보세요..."
+                                  onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id)}
+                                  placeholder={showKorean ? "나의 생각이나 댓글을 남겨보세요..." : "Write a comment or share your thoughts..."}
                                   className="w-full h-10 pl-4 pr-10 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-600 focus:ring-2 focus:ring-rose-100 transition-all"
                                 />
-                                <button onClick={() => handleAddComment(entry.id, false)} className="absolute right-2 top-1/2 -translate-y-1/2 text-rose-400 p-1"><Send size={16} /></button>
+                                <button onClick={() => handleAddComment(entry.id)} className="absolute right-2 top-1/2 -translate-y-1/2 text-rose-400 p-1"><Send size={16} /></button>
                              </div>
                           </div>
                         </div>
@@ -3224,8 +3856,8 @@ function ResultCard({
         ) : (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center space-y-4 relative">
-              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">Our Class Wall</h2>
-              <p className="text-indigo-500 font-black uppercase tracking-[0.2em] text-xl italic underline underline-offset-8 decoration-indigo-200 decoration-4">우리 반 친구들의 마음 기록장</p>
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">Our Class Diary</h2>
+              <p className="text-indigo-500 font-black uppercase tracking-[0.2em] text-xl italic underline underline-offset-8 decoration-indigo-200 decoration-4">우리 반 친구들의 감사 기록장</p>
               <button 
                 onClick={refreshData}
                 className="absolute right-0 top-0 p-3 bg-white border border-slate-100 text-slate-400 hover:text-indigo-500 hover:border-indigo-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
@@ -3236,7 +3868,9 @@ function ResultCard({
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <AnimatePresence initial={false}>
-                {classEntries.map((entry, idx) => (
+                {Array.from(new Map([...classEntries, ...entries].map(entry => [entry.id, entry])).values())
+                  .sort((a, b) => Number(b.id) - Number(a.id))
+                  .map((entry, idx) => (
                   <motion.div 
                     key={entry.id}
                     layout
@@ -3256,17 +3890,72 @@ function ResultCard({
                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{entry.date.split('요일')[0]}</p>
                             </div>
                           </div>
+                          <div className="flex flex-col gap-2 items-end">
+
+                             <button 
+                               onClick={() => handleEdit(entry)}
+                               className="flex items-center gap-1.5 p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all font-black text-xs"
+                               title="Edit"
+                             >
+                               <Edit size={18} />
+                               <span>{showKorean ? "수정" : "EDIT"}</span>
+                             </button>
+                             <button 
+                               onClick={() => handleSpeak(`${entry.ppcSentence}. ${entry.soThatSentence}. ${entry.content}`)}
+                               className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                               title="Listen"
+                             >
+                               <Volume2 size={18} />
+                             </button>
+                          </div>
                         </div>
 
                         <div className="space-y-4">
-                           <div className="space-y-2">
-                             <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Health & Gratitude</p>
-                             <p className="text-xl font-bold text-slate-700 leading-tight">"{entry.content}"</p>
+                           <div className="space-y-2 border-l-8 border-rose-500 pl-4 bg-rose-50/50 py-4 pr-4 rounded-r-3xl">
+                             <span className="inline-block px-2 py-0.5 bg-rose-600 text-white text-[9px] font-black rounded uppercase tracking-widest mb-1">Gratitude</span>
+                             <p className="text-xl font-bold text-rose-950 leading-tight">"{entry.content}"</p>
+                             {visibleTranslations[entry.id] && (
+                               <motion.p 
+                                 initial={{ opacity: 0, height: 0 }}
+                                 animate={{ opacity: 1, height: 'auto' }}
+                                 className="text-xs font-black text-rose-400 italic pt-2 mt-2 border-t border-rose-100"
+                               >
+                                 {entry.contentKo || "번역 중..."}
+                               </motion.p>
+                             )}
                            </div>
                            {(entry.ppcSentence || entry.soThatSentence) && (
-                             <div className="space-y-2 pt-4 border-t border-slate-50">
-                               {entry.ppcSentence && <p className="text-xs text-slate-400 italic">...{entry.ppcSentence}</p>}
-                               {entry.soThatSentence && <p className="text-xs text-slate-400 italic">...{entry.soThatSentence}</p>}
+                             <div className="space-y-3 pt-4 border-t border-slate-50">
+                               {entry.ppcSentence && (
+                                 <div className="bg-indigo-50 p-4 rounded-2xl border-l-8 border-indigo-400">
+                                   <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1">Current Status (PPC)</p>
+                                   <p className="text-sm text-indigo-900 font-bold italic leading-relaxed">"{entry.ppcSentence}"</p>
+                                   {visibleTranslations[entry.id] && (
+                                     <motion.p 
+                                       initial={{ opacity: 0, height: 0 }}
+                                       animate={{ opacity: 1, height: 'auto' }}
+                                       className="text-[10px] font-bold text-indigo-400 pt-2 mt-2 border-t border-indigo-100"
+                                     >
+                                       {entry.ppcSentenceKo || "번역 중..."}
+                                     </motion.p>
+                                   )}
+                                 </div>
+                               )}
+                               {entry.soThatSentence && (
+                                 <div className="bg-emerald-50 p-4 rounded-2xl border-l-8 border-emerald-400">
+                                   <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1">Stress Management (So~That)</p>
+                                   <p className="text-sm text-emerald-900 font-bold italic leading-relaxed">"{entry.soThatSentence}"</p>
+                                   {visibleTranslations[entry.id] && (
+                                     <motion.p 
+                                       initial={{ opacity: 0, height: 0 }}
+                                       animate={{ opacity: 1, height: 'auto' }}
+                                       className="text-[10px] font-bold text-emerald-400 pt-2 mt-2 border-t border-emerald-100"
+                                     >
+                                       {entry.soThatSentenceKo || "번역 중..."}
+                                     </motion.p>
+                                   )}
+                                 </div>
+                               )}
                              </div>
                            )}
                         </div>
@@ -3278,7 +3967,7 @@ function ResultCard({
                            {['👍', '❤️', '👏', '🔥', '✨', '😊'].map(emoji => (
                              <button 
                                 key={emoji}
-                                onClick={() => handleReaction(entry.id, emoji, true)}
+                                onClick={() => handleReaction(entry.id, emoji)}
                                 className={`px-3 py-1.5 rounded-xl text-sm font-bold border transition-all flex items-center gap-1.5 ${entry.reactions?.[emoji] ? 'bg-indigo-50 border-indigo-100 text-indigo-600 scale-105 shadow-sm' : 'bg-slate-50 border-transparent text-slate-400 hover:bg-slate-100'}`}
                              >
                                 <span>{emoji}</span>
@@ -3304,12 +3993,12 @@ function ResultCard({
                                 type="text"
                                 value={commentInput[entry.id] || ''}
                                 onChange={(e) => setCommentInput({...commentInput, [entry.id]: e.target.value})}
-                                onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id, true)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id)}
                                 placeholder="댓글을 남겨주세요..."
                                 className="w-full h-10 pl-4 pr-10 bg-slate-50 border-none rounded-2xl text-xs font-bold text-slate-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-300"
                               />
                               <button 
-                                onClick={() => handleAddComment(entry.id, true)}
+                                onClick={() => handleAddComment(entry.id)}
                                 className="absolute right-2 top-1/2 -translate-y-1/2 text-indigo-400 hover:text-indigo-600 transition-colors p-1"
                               >
                                 <Send size={16} />
@@ -3326,6 +4015,525 @@ function ResultCard({
       </div>
     );
   };
+
+  const ZentangleView = () => {
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [color, setColor] = useState('#000000');
+    const [lineWidth, setLineWidth] = useState(2);
+    const [showKorean, setShowKorean] = useState(false);
+    const [authorName, setAuthorName] = useState('');
+    const [entries, setEntries] = useState<ZentangleEntry[]>([]);
+    const [selectedTemplate, setSelectedTemplate] = useState<string>('none');
+    const [viewMode, setViewMode] = useState<'draw' | 'diary'>('draw');
+    const [zentangleCommentInput, setZentangleCommentInput] = useState<{ [id: string]: string }>({});
+
+    const imageTemplates = [
+        { id: 'template1', label: '도안 1', src: 'https://images.unsplash.com/photo-1544376798-89aa6b82c6cd?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
+        { id: 'template2', label: '도안 2', src: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
+        { id: 'template3', label: '도안 3', src: 'https://images.unsplash.com/photo-1444464666168-49d633b867ad?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
+        { id: 'template4', label: '도안 4', src: 'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
+        { id: 'template5', label: '도안 5', src: 'https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?auto=format&fit=crop&q=80&w=400', source: '출처: https://blog.naver.com/jimin_' },
+    ];
+
+    const drawTemplate = (templateId: string) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Clear first
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (templateId === 'none') return;
+
+        // Handle image templates
+        const imgTemplate = imageTemplates.find(t => t.id === templateId);
+        if (imgTemplate) {
+            const img = new Image();
+            img.src = imgTemplate.src;
+            img.onload = () => {
+                // Ensure the context state is reset before drawing image
+                ctx.setLineDash([]);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                // Restore current brush settings
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+            };
+            return;
+        }
+
+        ctx.save();
+        ctx.strokeStyle = '#e2e8f0'; // Light gray for guide lines
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]); // Dashed lines for guide
+
+        const w = canvas.width;
+        const h = canvas.height;
+
+        if (templateId === 'sections') {
+            // Random-ish sections
+            ctx.beginPath();
+            ctx.moveTo(w * 0.1, h * 0.1);
+            ctx.quadraticCurveTo(w * 0.5, h * 0.2, w * 0.9, h * 0.15);
+            ctx.quadraticCurveTo(w * 0.8, h * 0.6, w * 0.85, h * 0.9);
+            ctx.quadraticCurveTo(w * 0.4, h * 0.8, w * 0.15, h * 0.85);
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(w * 0.1, h * 0.1);
+            ctx.lineTo(w * 0.85, h * 0.9);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(w * 0.9, h * 0.15);
+            ctx.lineTo(w * 0.15, h * 0.85);
+            ctx.stroke();
+        } else if (templateId === 'mandala') {
+            // Concentric circles
+            for (let r = 1; r <= 3; r++) {
+                ctx.beginPath();
+                ctx.arc(w / 2, h / 2, (w / 2) * (r / 3.5), 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            // Radiating lines
+            for (let a = 0; a < 8; a++) {
+                ctx.beginPath();
+                ctx.moveTo(w / 2, h / 2);
+                const angle = (a * Math.PI) / 4;
+                ctx.lineTo(w / 2 + Math.cos(angle) * w * 0.45, h / 2 + Math.sin(angle) * h * 0.45);
+                ctx.stroke();
+            }
+        } else if (templateId === 'heart') {
+            // Simple heart shape
+            ctx.beginPath();
+            const centerX = w / 2;
+            const centerY = h / 2 + 50;
+            const size = 250;
+            
+            ctx.moveTo(centerX, centerY);
+            ctx.bezierCurveTo(centerX - size/2, centerY - size/2, centerX - size, centerY + size/3, centerX, centerY + size);
+            ctx.bezierCurveTo(centerX + size, centerY + size/3, centerX + size/2, centerY - size/2, centerX, centerY);
+            ctx.stroke();
+
+            // Inner divisions
+            ctx.beginPath();
+            ctx.moveTo(centerX - size/2, centerY + size/4);
+            ctx.lineTo(centerX + size/2, centerY + size/4);
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    };
+
+    const handleTemplateSelect = (id: string) => {
+        setSelectedTemplate(id);
+        drawTemplate(id);
+    };
+
+    useEffect(() => {
+        // User requested to delete all 3 existing posts in "Our Class Zentangle Drawings"
+        // We'll perform a one-time cleanup of the zentangle_wall storage
+        if (!localStorage.getItem('zentangle_cleanup_v1')) {
+            localStorage.removeItem('zentangle_wall');
+            localStorage.setItem('zentangle_cleanup_v1', 'true');
+            setEntries([]);
+        } else {
+            // Load entries from localStorage if already cleaned or for subsequent sessions
+            const saved = localStorage.getItem('zentangle_wall');
+            if (saved) {
+                try {
+                    setEntries(JSON.parse(saved));
+                } catch (e) {
+                    console.error("Failed to parse zentangle entries", e);
+                }
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = lineWidth;
+    }, [color, lineWidth]);
+
+    const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const clientX = ('touches' in e) ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        const clientY = ('touches' in e) ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        setIsDrawing(true);
+    };
+
+    const draw = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isDrawing) return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const clientX = ('touches' in e) ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        const clientY = ('touches' in e) ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    };
+
+    const stopDrawing = () => {
+        setIsDrawing(false);
+    };
+
+    const clearCanvas = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
+    const saveToWall = () => {
+        if (!authorName.trim()) {
+            alert(showKorean ? "이름을 입력해주세요!" : "Please enter your name!");
+            return;
+        }
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const imageData = canvas.toDataURL('image/png');
+        const newEntry: ZentangleEntry = {
+            id: Date.now().toString(),
+            author: authorName,
+            imageData: imageData,
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: { '❤️': 0 }
+        };
+
+        const updated = [newEntry, ...entries];
+        setEntries(updated);
+        localStorage.setItem('zentangle_wall', JSON.stringify(updated));
+        
+        // Reset name for next person or just confirmation
+        alert(showKorean ? "학급 그림장에 저장되었습니다!" : "Saved to Our Class Drawings!");
+    };
+
+    const handleReaction = (entryId: string, emoji: string) => {
+        const updated = entries.map(e => {
+            if (e.id === entryId) {
+                const reactions = { ...e.reactions };
+                reactions[emoji] = (reactions[emoji] || 0) + 1;
+                return { ...e, reactions };
+            }
+            return e;
+        });
+        setEntries(updated);
+        localStorage.setItem('zentangle_wall', JSON.stringify(updated));
+    };
+
+    const handleAddZentangleComment = (entryId: string) => {
+        const text = zentangleCommentInput[entryId];
+        if (!text?.trim()) return;
+
+        const newComment: Comment = {
+            id: Date.now().toString(),
+            author: authorName || (showKorean ? '익명 친구' : 'Anonymous friend'),
+            text: text,
+            date: new Date().toISOString()
+        };
+
+        const updated = entries.map(e => {
+            if (e.id === entryId) {
+                return { ...e, comments: [...(e.comments || []), newComment] };
+            }
+            return e;
+        });
+
+        setEntries(updated);
+        setZentangleCommentInput({ ...zentangleCommentInput, [entryId]: '' });
+        localStorage.setItem('zentangle_wall', JSON.stringify(updated));
+    };
+
+    return (
+        <div className="space-y-8 pb-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-slate-100 pb-6 gap-4">
+          <div className="space-y-2">
+            <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase whitespace-nowrap leading-none">Zentangle Collection</h2>
+            <p className="text-xl font-bold text-slate-400">Zen Art for Emotional Healing & Mindfulness</p>
+          </div>
+          <div className="flex items-center gap-2 mb-1">
+            <button 
+                onClick={() => setViewMode('draw')}
+                className={`px-3 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all ${viewMode === 'draw' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:text-slate-600'}`}
+            >
+                {showKorean ? "나의 그림" : "MY DRAWING"}
+            </button>
+            <button 
+                onClick={() => setViewMode('diary')}
+                className={`px-3 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all ${viewMode === 'diary' ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-100 text-slate-400 hover:text-slate-600'}`}
+            >
+                {showKorean ? "학급 그림장" : "CLASS DRAWING"}
+            </button>
+          </div>
+        </div>
+
+            {viewMode === 'draw' ? (
+                <>
+                    {/* How-to moved to top */}
+                    <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-50 space-y-8">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-3xl font-black text-slate-800 tracking-tight uppercase">{showKorean ? "젠탱글 그리는 방법" : "HOW TO CREATE A ZENTANGLE"}</h3>
+                            <button 
+                                onClick={() => setShowKorean(!showKorean)}
+                                className="flex items-center gap-2 bg-indigo-50 text-indigo-600 px-6 py-2 rounded-2xl font-black hover:bg-indigo-100 transition-all"
+                            >
+                                <Languages size={20} /> {showKorean ? "English" : "한글"}
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div className="space-y-4">
+                                <div className="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-600">
+                                    <Palette size={24} />
+                                </div>
+                                <h4 className="text-xl font-black text-slate-800">{showKorean ? "1단계: 집중" : "Step 1: Focus"}</h4>
+                                <p className="text-slate-500 font-medium leading-relaxed">
+                                    {showKorean 
+                                        ? "각 획에 긴장을 풀고 집중하세요. 젠탱글에는 실수가 없습니다." 
+                                        : "Relax and focus on each stroke. There are no mistakes in Zentangle."}
+                                </p>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600">
+                                    <Brush size={24} />
+                                </div>
+                                <h4 className="text-xl font-black text-slate-800">{showKorean ? "2단계: 패턴" : "Step 2: Pattern"}</h4>
+                                <p className="text-slate-500 font-medium leading-relaxed">
+                                    {showKorean 
+                                        ? "단순한 패턴을 반복하세요. 마음을 진정시키고 스트레스를 줄여줍니다." 
+                                        : "Repeat simple patterns. It helps calm the mind and reduce stress."}
+                                </p>
+                            </div>
+                            <div className="space-y-4">
+                                <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600">
+                                    <Heart size={24} />
+                                </div>
+                                <h4 className="text-xl font-black text-slate-800">{showKorean ? "3단계: 감상" : "Step 3: Appreciate"}</h4>
+                                <p className="text-slate-500 font-medium leading-relaxed">
+                                    {showKorean 
+                                        ? "작품을 감상하세요. 당신의 마음 상태를 반영합니다." 
+                                        : "Appreciate your creation. It reflects your state of mind."}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
+                        <div className="p-8 bg-slate-50 border-r border-slate-100 space-y-8 w-full md:w-80">
+                            <div>
+                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Your Name</p>
+                                <input 
+                                    type="text"
+                                    value={authorName}
+                                    onChange={(e) => setAuthorName(e.target.value)}
+                                    placeholder={showKorean ? "이름을 입력하세요" : "Enter your name"}
+                                    className="w-full bg-white px-6 py-3 rounded-2xl border border-slate-200 font-black text-slate-700 outline-none focus:ring-4 focus:ring-indigo-100 transition-all shadow-sm"
+                                />
+                            </div>
+
+                            <div>
+                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">{showKorean ? "도안 선택" : "Select Template"}</p>
+                                <div className="grid grid-cols-2 gap-3 mb-2">
+                                    {[
+                                        { id: 'none', label: 'Blank' },
+                                        { id: 'sections', label: 'Sections' },
+                                        { id: 'mandala', label: 'Mandala' },
+                                        { id: 'heart', label: 'Heart' },
+                                        ...imageTemplates
+                                    ].map(t => (
+                                        <button 
+                                            key={t.id}
+                                            onClick={() => handleTemplateSelect(t.id)}
+                                            className={`p-3 rounded-xl border font-black text-xs transition-all ${selectedTemplate === t.id ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg' : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300'}`}
+                                        >
+                                            {t.label}
+                                        </button>
+                                    ))}
+                                </div>
+                                {selectedTemplate.startsWith('template') && (
+                                    <p className="text-[10px] font-bold text-slate-400 italic mb-4">
+                                        Source: {imageTemplates.find(t => t.id === selectedTemplate)?.source}
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col gap-4">
+                                <button 
+                                    onClick={clearCanvas}
+                                    className="flex items-center justify-center gap-2 bg-rose-500 text-white px-6 py-3 rounded-2xl font-black shadow-lg hover:bg-rose-600 transition-all active:scale-95"
+                                >
+                                    <Trash2 size={20} /> CLEAR ALL
+                                </button>
+                                <button 
+                                    onClick={() => window.print()}
+                                    className="flex items-center justify-center gap-2 bg-slate-800 text-white px-6 py-3 rounded-2xl font-black shadow-lg hover:bg-slate-900 transition-all active:scale-95"
+                                >
+                                    PRINT ART
+                                </button>
+                            </div>
+
+                            <button 
+                                onClick={saveToWall}
+                                className="w-full flex items-center justify-center gap-3 bg-indigo-600 text-white px-6 py-4 rounded-3xl font-black shadow-xl hover:bg-indigo-700 transition-all active:scale-95 group"
+                            >
+                                <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                {showKorean ? "학급 그림장에 공유" : "SHARE TO DRAWINGS"}
+                            </button>
+                        </div>
+
+                        <div className="flex-1 bg-slate-100 p-8 flex flex-col items-center justify-center overflow-hidden">
+                            <div className="bg-white p-4 shadow-inner rounded-lg ring-1 ring-slate-200 relative">
+                                <canvas 
+                                    ref={canvasRef}
+                                    width={600}
+                                    height={600}
+                                    className="bg-white cursor-crosshair max-w-full h-auto"
+                                    onMouseDown={startDrawing}
+                                    onMouseMove={draw}
+                                    onMouseUp={stopDrawing}
+                                    onMouseLeave={stopDrawing}
+                                    onTouchStart={startDrawing}
+                                    onTouchMove={draw}
+                                    onTouchEnd={stopDrawing}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="border-b border-slate-200 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div className="space-y-2">
+                            <h3 className="text-4xl font-black text-slate-800 tracking-tight uppercase whitespace-nowrap leading-none">Our Class Zentangle Drawings</h3>
+                            <p className="text-lg font-bold text-slate-400 italic">Appreciate and comment on your classmates' artwork</p>
+                        </div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <button 
+                                onClick={() => {
+                                    if (window.confirm(showKorean ? "정말로 모든 젠탱글 기록을 삭제하시겠습니까?" : "Are you sure you want to delete all Zentangle records?")) {
+                                        setEntries([]);
+                                        localStorage.removeItem('zentangle_wall');
+                                    }
+                                }}
+                                className="px-3 py-1.5 bg-slate-50 text-slate-400 hover:text-rose-500 border border-slate-100 rounded-xl transition-all flex items-center gap-2 font-black text-[9px] uppercase tracking-widest shadow-sm"
+                            >
+                                <Trash2 size={10} /> CLEAR ALL
+                            </button>
+                            <div className="px-3 py-1.5 bg-slate-50 border border-slate-100 rounded-xl flex items-center gap-2 font-black text-[9px] uppercase tracking-widest text-slate-400 shadow-sm">
+                               <span className="text-indigo-600 font-black">{entries.length}</span> MASTERPIECES
+                            </div>
+                        </div>
+                    </div>
+
+                    {entries.length === 0 ? (
+                        <div className="bg-white/50 border-2 border-dashed border-slate-200 rounded-[40px] p-20 text-center">
+                            <Palette className="mx-auto text-slate-300 mb-4" size={48} />
+                            <p className="text-xl font-bold text-slate-400">Be the first to share your art!</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {entries.map((entry) => (
+                                <motion.div 
+                                    key={entry.id}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-white rounded-[40px] shadow-xl overflow-hidden border border-slate-100 flex flex-col group hover:shadow-2xl transition-all"
+                                >
+                                    <div className="aspect-square bg-slate-50 p-6 flex items-center justify-center relative overflow-hidden">
+                                         <img src={entry.imageData} alt={`Zentangle by ${entry.author}`} className="max-w-full max-h-full shadow-lg rounded-lg transform group-hover:scale-105 transition-transform duration-500" />
+                                    </div>
+                                    <div className="p-8 space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-black text-sm">
+                                                    {entry.author.slice(0, 1).toUpperCase()}
+                                                </div>
+                                                <div>
+                                                    <p className="text-lg font-black text-slate-800">{entry.author}</p>
+                                                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{entry.date}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Reactions */}
+                                        <div className="flex gap-2">
+                                            {['❤️', '✨', '👏', '🎨'].map(emoji => (
+                                                <button 
+                                                    key={emoji}
+                                                    onClick={() => handleReaction(entry.id, emoji)}
+                                                    className="bg-slate-50 hover:bg-slate-100 px-4 py-2 rounded-2xl text-lg transition-all flex items-center gap-2 border border-slate-100 active:scale-90"
+                                                >
+                                                    {emoji} <span className="text-sm font-black text-slate-600">{(entry.reactions || {})[emoji] || 0}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Comments - New for Zentangle */}
+                                        <div className="space-y-4 pt-4 border-t border-slate-50">
+                                            {entry.comments && entry.comments.length > 0 && (
+                                                <div className="space-y-2">
+                                                    {entry.comments.slice(-3).map(c => (
+                                                        <div key={c.id} className="bg-slate-50 p-3 rounded-xl text-sm">
+                                                            <span className="font-black text-indigo-600 mr-2">{c.author}</span>
+                                                            <span className="text-slate-600">{c.text}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <div className="relative">
+                                                <input 
+                                                    type="text"
+                                                    value={zentangleCommentInput[entry.id] || ''}
+                                                    onChange={(e) => setZentangleCommentInput({...zentangleCommentInput, [entry.id]: e.target.value})}
+                                                    onKeyDown={(e) => e.key === 'Enter' && handleAddZentangleComment(entry.id)}
+                                                    placeholder={showKorean ? "댓글 작성..." : "Add comment..."}
+                                                    className="w-full bg-slate-50 border-none rounded-2xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-100 transition-all font-bold placeholder:text-slate-200"
+                                                />
+                                                <button 
+                                                    onClick={() => handleAddZentangleComment(entry.id)}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500 hover:text-indigo-700"
+                                                >
+                                                    <Send size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
 
   const DashboardView = ({ navTo }: { navTo: (s: Section) => void }) => (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
