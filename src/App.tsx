@@ -28,12 +28,13 @@ import {
   Palette,
   Eraser,
   Undo,
-  Languages
+  Languages,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Types ---
-type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude' | 'zentangle';
+type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude' | 'zentangle';
 
 interface Comment {
   id: string;
@@ -359,7 +360,7 @@ const GRAMMAR_DATA: GrammarQuestion[] = [
   },
   {
     id: 26, type: 'choice', section: 'so_that',
-    question: "다음 두 문장을 'so ~ that'을 사용하여 연결할 때 빈칸에 알맞은 것은? 'It was a very cold day. We stayed indoors.' -> It was ______ cold ______ we stayed indoors.",
+    question: "다음 두 문장을 한 문장으로 만들 때, 빈칸에 알맞은 것은? 'It was a very cold day. We stayed indoors.' -> It was ______ cold ______ we stayed indoors.",
     options: ["so - that", "too - to", "very - that", "so - as"],
     answer: "so - that",
     explanation: "결과를 나타내는 so ~ that 구문을 사용합니다."
@@ -927,8 +928,6 @@ export default function App() {
              </div>
           </div>
           <SidebarBtn icon={<PenTool size={20} />} label="WRITING MASTER" active={activeSection === 'writing'} onClick={() => navTo('writing')} />
-          <SidebarBtn icon={<Heart size={20} />} label="MY GRATITUDE DIARY" active={activeSection === 'gratitude'} onClick={() => navTo('gratitude')} />
-          <SidebarBtn icon={<Palette size={20} />} label="DRAWING ZENTANGLE" active={activeSection === 'zentangle'} onClick={() => navTo('zentangle')} />
           <div className="pt-10 pb-4">
              <div className="flex items-center gap-4 pl-4 mb-8">
                 <BookOpen className="text-indigo-300" size={20} />
@@ -942,20 +941,38 @@ export default function App() {
                    <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p1' ? "bg-white" : "bg-white/10"}`}></div>
                    Emotional Health (Page 1)
                 </button>
-                <button 
-                  onClick={() => navTo('reading_p2_jiho')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_jiho' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
-                >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_jiho' ? "bg-white" : "bg-white/10"}`}></div>
-                   Jiho: Gratitude (Page 2)
-                </button>
-                <button 
-                  onClick={() => navTo('reading_p2_somi')}
-                  className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_somi' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
-                >
-                   <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_somi' ? "bg-white" : "bg-white/10"}`}></div>
-                   Somi: Healing Art (Page 2)
-                </button>
+                <div className="space-y-1">
+                  <button 
+                    onClick={() => navTo('reading_p2_jiho')}
+                    className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_jiho' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
+                  >
+                     <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_jiho' ? "bg-white" : "bg-white/10"}`}></div>
+                     Jiho: Gratitude (Page 2)
+                  </button>
+                  <button 
+                    onClick={() => navTo('gratitude')}
+                    className={`w-full flex items-center gap-4 px-12 py-2 rounded-xl font-black text-xs transition-all ${activeSection === 'gratitude' ? "text-white bg-indigo-500/30" : "text-indigo-400 hover:text-white"}`}
+                  >
+                     <Heart size={14} className={activeSection === 'gratitude' ? "text-rose-400" : ""} />
+                     감사 일기 쓰기 (Gratitude)
+                  </button>
+                </div>
+                <div className="space-y-1">
+                  <button 
+                    onClick={() => navTo('reading_p2_somi')}
+                    className={`w-full flex items-center gap-4 px-8 py-3 rounded-2xl font-black transition-all ${activeSection === 'reading_p2_somi' ? "bg-emerald-500 text-white shadow-xl translate-x-1" : "text-indigo-200 hover:text-white hover:bg-white/5"}`}
+                  >
+                     <div className={`w-2 h-2 rounded-full ${activeSection === 'reading_p2_somi' ? "bg-white" : "bg-white/10"}`}></div>
+                     Somi: Healing Art (Page 2)
+                  </button>
+                  <button 
+                    onClick={() => navTo('zentangle')}
+                    className={`w-full flex items-center gap-4 px-12 py-2 rounded-xl font-black text-xs transition-all ${activeSection === 'zentangle' ? "text-white bg-indigo-500/30" : "text-indigo-400 hover:text-white"}`}
+                  >
+                     <Palette size={14} className={activeSection === 'zentangle' ? "text-indigo-400" : ""} />
+                     젠탱글 그리기 (Zentangle)
+                  </button>
+                </div>
              </div>
           </div>
         </nav>
@@ -1052,7 +1069,7 @@ export default function App() {
                     handleSpeak={handleSpeak}
                   />
                 )}
-                {(activeSection === 'reading_p1' || activeSection === 'reading_p2_jiho' || activeSection === 'reading_p2_somi') && (
+                {(activeSection === 'reading' || activeSection === 'reading_p1' || activeSection === 'reading_p2_jiho' || activeSection === 'reading_p2_somi') && (
                   <ReadingView 
                     activeSection={activeSection}
                     isFinished={isFinished}
@@ -2785,6 +2802,71 @@ function ResultCard({
   };
 
     const ReadingView = ({ activeSection, isFinished, setIsFinished, score, setScore, navTo, handleSpeak }: { activeSection: Section; isFinished: boolean; setIsFinished: (v: boolean) => void; score: number; setScore: React.Dispatch<React.SetStateAction<number>>; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
+    if (activeSection === 'reading') {
+      return (
+        <div className="max-w-6xl mx-auto space-y-12">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
+            <div>
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-4 uppercase">READING MASTER</h2>
+              <p className="text-emerald-500 font-bold text-2xl uppercase tracking-[0.2em] pl-1">본문 이해와 독해 실력 향상</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <MenuCard 
+              title="EMOTIONAL HEALTH" 
+              tagline="Page 1: 감정 건강을 지키는 다양한 방법들에 대해 알아봅니다." 
+              variant="white" accent="emerald" 
+              icon={<Smile size={42} />} 
+              onClick={() => navTo('reading_p1')} 
+            />
+            <div className="space-y-4">
+              <MenuCard 
+                title="JIHO'S GRATITUDE" 
+                tagline="Page 2: 지호의 감사 일기가 가져온 긍정적 변화를 확인합니다." 
+                variant="white" accent="orange" 
+                icon={<MessageSquare size={42} />} 
+                onClick={() => navTo('reading_p2_jiho')} 
+              />
+              <button 
+                onClick={() => navTo('gratitude')}
+                className="w-full p-6 bg-indigo-50 border border-indigo-100 rounded-[30px] flex items-center justify-between group hover:bg-indigo-100 transition-all shadow-sm"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-rose-500 shadow-sm">
+                    <Heart size={20} fill="currentColor" />
+                  </div>
+                  <span className="font-black text-indigo-900 tracking-tight">나의 감사 일기로 이동하기</span>
+                </div>
+                <ArrowRight size={20} className="text-indigo-300 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <MenuCard 
+                title="SOMI'S HEALING ART" 
+                tagline="Page 2: 소미가 힐링 아트를 통해 감정을 표현하는 방법을 배웁니다." 
+                variant="white" accent="indigo" 
+                icon={<Palette size={42} />} 
+                onClick={() => navTo('reading_p2_somi')} 
+              />
+              <button 
+                onClick={() => navTo('zentangle')}
+                className="w-full p-6 bg-indigo-50 border border-indigo-100 rounded-[30px] flex items-center justify-between group hover:bg-indigo-100 transition-all shadow-sm"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-indigo-500 shadow-sm">
+                    <Palette size={20} />
+                  </div>
+                  <span className="font-black text-indigo-900 tracking-tight">나의 젠탱글 그리기로 이동하기</span>
+                </div>
+                <ArrowRight size={20} className="text-indigo-300 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     const isP1 = activeSection === 'reading_p1';
     const sectionKey = isP1 ? 'p1' : activeSection === 'reading_p2_jiho' ? 'p2_jiho' : 'p2_somi' as keyof typeof READING_TEXTS;
     const filteredQuestions = useMemo(() => {
@@ -4575,8 +4657,8 @@ function ResultCard({
              icon={<PenTool size={42} />} onClick={() => navTo('writing')} 
            />
            <MenuCard 
-             title="READING" tagline="How to Protect Your Emotional Health" variant="white" accent="emerald" 
-             icon={<BookOpen size={42} />} onClick={() => navTo('reading_p1')} 
+             title="READING" tagline="본문 입체 분석 및 독해 챌린지" variant="white" accent="emerald" 
+             icon={<BookOpen size={42} />} onClick={() => navTo('reading')} 
            />
         </div>
       </div>
