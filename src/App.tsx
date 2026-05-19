@@ -2060,8 +2060,11 @@ function ResultCard({
   };
 
   const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
-    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'review' | 'story'>('menu');
+    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'review' | 'story'>('story');
     const [currentIdx, setCurrentIdx] = useState(0);
+
+    if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
+
     const [userOrder, setUserOrder] = useState<string[]>([]);
     const [scrambled, setScrambled] = useState<string[]>([]);
     const [feedback, setFeedback] = useState<boolean | null>(null);
@@ -2292,7 +2295,8 @@ function ResultCard({
       );
     }
     
-    if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
+    // Previous story check removed here (moved to top)
+
 
   // --- Practice View (Word Scramble and Direct Typing) ---
   const q = filteredQuestions[currentIdx];
