@@ -2060,7 +2060,7 @@ function ResultCard({
   };
 
   const WritingView = ({ score, setScore, setIsFinished, navTo, handleSpeak }: { score: number; setScore: React.Dispatch<React.SetStateAction<number>>; setIsFinished: (v: boolean) => void; navTo: (s: Section) => void; handleSpeak: (t: string) => void; }) => {
-    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'review' | 'story'>('story');
+    const [subSection, setSubSection] = useState<'menu' | 'practice' | 'review' | 'story'>('menu');
     const [currentIdx, setCurrentIdx] = useState(0);
 
     if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
