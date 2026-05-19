@@ -31,7 +31,10 @@ import {
   Undo,
   Languages,
   Sparkles,
-  Menu
+  Menu,
+  Users,
+  Quote,
+  Clock
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import dogTemplate from './assets/images/puppy_cute_zentangle_template_1779095376379.png';
@@ -520,59 +523,100 @@ const WRITING_DATA: WritingQuestion[] = [
 
 const READING_DATA: ReadingQuestion[] = [
   // Warm-up Reading: Want to Be Happy?
-    {
-    id: 101, section: 'warmup', type: 'subjective',
+  {
+    id: 1001, 
+    section: 'warmup', 
+    type: 'subjective',
     question: "What do all people want according to the speaker? (All people want ...)",
+    question_ko: "연설자에 따르면 모든 사람들이 원하는 것은 무엇인가요? (모든 사람들은 ...을 원한다)",
     answer: "to be happy",
     explanation: "연설자는 모든 사람들이 공통적으로 '행복해지기를 원한다(all of us want to be happy)'고 말합니다."
   },
-    {
-    id: 102, section: 'warmup', type: 'subjective',
-    question: "According to the speaker, what makes people happy?",
+  {
+    id: 1002, 
+    section: 'warmup', 
+    type: 'subjective',
+    question: "According to the speaker, what makes people happy? (It's ________ makes people happy.)",
+    question_ko: "연설자에 따르면 무엇이 사람들을 행복하게 만드나요? (...이 사람들을 행복하게 만든다.)",
     answer: "gratefulness",
     explanation: "연설자는 행복이 우리를 감사하게 만드는 것이 아니라, '감사함(gratefulness)'이 우리를 행복하게 만든다고 강조합니다."
   },
   {
-    id: 103, section: 'warmup', type: 'subjective',
+    id: 1003, 
+    section: 'warmup', 
+    type: 'subjective',
     question: "Why are some rich or successful people not happy? (Because they want ...)",
+    question_ko: "왜 몇몇 부유하거나 성공한 사람들이 행복하지 않은가요? (왜냐하면 그들은 ...을 원하기 때문이다.)",
     answer: "something else or more of the same",
     explanation: "그들은 이미 가진 것에 만족하지 못하고 '다른 무언가나 혹은 같은 것을 더 많이' 원하기 때문입니다."
   },
   // Page 1: Protecting Your Emotional Health
   {
     id: 1, section: 'p1', type: 'subjective',
-    question: "According to the text, what is the first step to improve your emotional health? (Notice what makes you ______ or ______.)",
-    answer: "sad, happy | sad or happy",
-    explanation: "본문은 정서적 건강을 위해 자신을 슬프거나 기쁘게 만드는 것이 무엇인지 알아차리는 것부터 시작하라고 조언합니다."
+    question: "Emotional health is as important as _______ health. (One word)",
+    question_ko: "정서적 건강은 _____ 건강만큼이나 중요합니다. (한 단어)",
+    answer: "physical",
+    explanation: "본문 첫 문장에서 정서적 건강이 신체적(physical) 건강만큼 중요하다고 말합니다."
   },
   {
     id: 2, section: 'p1', type: 'subjective',
-    question: "If you keep negative feelings inside, they can cause problems in your __________. (One word)",
-    answer: "relationships",
-    explanation: "부정적인 감정은 사람 사이의 관계(relationships)에 문제를 일으킬 수 있다고 설명합니다."
+    question: "Improving emotional health starts with ________ what makes you feel sad or happy. (One word starting with 'n')",
+    question_ko: "정서적 건강을 향상시키는 것은 무엇이 당신을 슬프거나 기쁘게 만드는지 ________ 하는 것에서 시작됩니다. ('n'으로 시작하는 한 단어)",
+    answer: "noticing",
+    explanation: "자신의 감정을 알아차리는 것(noticing)이 시작 단계입니다."
   },
   {
-    id: 3, section: 'p1', type: 'subjective',
-    question: "Which of the following is essential for your emotional health? (Keep your body healthy by __________ regularly.)",
-    answer: "exercising",
-    explanation: "정기적인 운동은 신체 건강뿐만 아니라 정서적 건강에도 필수적입니다."
+    id: 3, section: 'p1', type: 'choice',
+    question: "What should you do when you notice your feelings, according to the text?",
+    question_ko: "본문에 따르면, 자신의 감정을 알아차렸을 때 무엇을 해야 하나요?",
+    options: ["Keep them secret", "Talk about them with someone you trust", "Try to forget them", "Exercise alone"],
+    answer: "Talk about them with someone you trust",
+    explanation: "신뢰하는 사람과 감정에 대해 이야기하라고 권장합니다."
   },
   {
     id: 4, section: 'p1', type: 'subjective',
-    question: "Complete the sentence: Humans are social _______ by nature. (One word)",
-    question_ko: "문장을 완성하세요: 인간은 본래 사회적 _____입니다. (한 단어)",
-    answer: "animals",
-    explanation: "인간은 사회적 동물(social animals)이라는 표현이 사용되었습니다."
+    question: "Keeping negative feelings inside can cause _______ in your relationships later. (One word)",
+    question_ko: "부정적인 감정을 내면에 담아두면 나중에 _____에 문제를 일으킬 수 있습니다. (한 단어)",
+    answer: "problems",
+    explanation: "내면에 감정을 쌓아두면 관계에 문제(problems)가 생길 수 있습니다."
   },
   {
     id: 5, section: 'p1', type: 'choice',
-    question: "Why is connecting with other people important according to the text?",
-    question_ko: "본문에 따르면 다른 사람들과 연결되는 것이 왜 중요한가요?",
-    options: ["To get new information", "To improve your emotional health", "To finish school work", "To be famous"],
-    answer: "To improve your emotional health",
-    explanation: "다른 사람들과의 긍정적인 관계를 맺는 것은 정서적 건강(emotional health)에 필수적입니다."
+    question: "What is essential to maintain your physical health for emotional wellness?",
+    question_ko: "정서적 건강을 위해 신체 건강을 유지하는 데 필수적인 것은 무엇인가요?",
+    options: ["Watching TV", "Exercising regularly and getting enough sleep", "Eating a lot of snacks", "Playing mobile games"],
+    answer: "Exercising regularly and getting enough sleep",
+    explanation: "규칙적인 운동과 충분한 수면이 필수적이라고 언급됩니다."
   },
-
+  {
+    id: 6, section: 'p1', type: 'subjective',
+    question: "To be emotionally healthy, you should maintain your physical health by ________ regularly. (One word)",
+    question_ko: "정서적으로 건강해지기 위해서는 정기적인 _____을 통해 신체 건강을 유지해야 합니다. (한 단어)",
+    answer: "exercising",
+    explanation: "정기적인 운동(exercising)이 신체 및 정서 건강에 도움이 됩니다."
+  },
+  {
+    id: 7, section: 'p1', type: 'subjective',
+    question: "Besides exercise, getting enough _______ is also necessary for physical health. (One word)",
+    question_ko: "운동 외에도, 신체 건강을 위해 충분한 _______이 필요합니다. (한 단어)",
+    answer: "sleep",
+    explanation: "충분한 수면(sleep) 역시 건강 유지의 필수 요소입니다."
+  },
+  {
+    id: 8, section: 'p1', type: 'subjective',
+    question: "Complete the sentence: Humans are social _______ by nature. (One word)",
+    question_ko: "문장을 완성하세요: 인간은 본래 사회적 _____입니다. (한 단어)",
+    answer: "animals",
+    explanation: "인간은 사회적 동물(social animals)이라는 점을 강조합니다."
+  },
+  {
+    id: 9, section: 'p1', type: 'choice',
+    question: "What is a necessary part of staying happy and strong?",
+    question_ko: "행복하고 강하게 지내기 위한 필수적인 부분은 무엇인가요?",
+    options: ["Staying home alone", "Connecting with other people", "Working all day", "Avoiding feelings"],
+    answer: "Connecting with other people",
+    explanation: "다른 사람들과 연결되는 것(connecting)이 필요하다고 설명합니다."
+  },
   // Page 2: Jiho's Case (Gratitude Diary)
   {
     id: 11, section: 'p2_jiho', type: 'choice',
@@ -590,64 +634,48 @@ const READING_DATA: ReadingQuestion[] = [
     explanation: "지호는 바위 사이에 핀 작은 꽃(flower)을 발견하고 활력을 얻었습니다."
   },
   {
-    id: 13, section: 'p2_jiho', type: 'choice',
-    question: "What was the result of Jiho remembering good moments in his diary?",
-    question_ko: "지호가 일기에 좋은 순간들을 기록한 결과는 무엇이었나요?",
-    options: ["He became a famous painter", "He won an art contest", "He feels so thankful that he smiles more often", "He decided to travel around the world"],
-    answer: "He feels so thankful that he smiles more often",
-    explanation: "일기를 통해 감사함을 느껴 더 자주 웃게 되었다고 말합니다."
-  },
-  {
-    id: 14, section: 'p2_jiho', type: 'subjective',
+    id: 13, section: 'p2_jiho', type: 'subjective',
     question: "Fill in the blank: Jiho used to _____ only on his problems. (One word)",
     question_ko: "빈칸을 채우세요: 지호는 예전에 자신의 문제에만 _____하곤 했습니다.",
     answer: "focus",
     explanation: "예전에는 문제에만 집중(focus)했었다는 과거의 습관을 언급합니다."
   },
   {
-    id: 15, section: 'p2_jiho', type: 'choice',
-    question: "Choose the correct phrase: Jiho _______ (write) his diary since last year.",
-    question_ko: "어법상 알맞은 문구를 고르세요: 지호는 작년부터 일기를 써오고 있다.",
-    options: ["has wrote", "writes", "is writing", "has been writing"],
-    answer: "has been writing",
-    explanation: "기간을 나타내는 since와 함께 지속성을 나타내는 현재완료 진행형이 쓰입니다."
+    id: 14, section: 'p2_jiho', type: 'choice',
+    question: "According to Jiho, why is writing a diary helpful?",
+    question_ko: "지호에 따르면, 일기를 쓰는 것이 왜 도움이 되나요?",
+    options: ["It helps him sleep better", "It is helpful for relieving stress", "It makes him a better painter", "It helps him remember vocabulary"],
+    answer: "It is helpful for relieving stress",
+    explanation: "지호는 일기를 쓰는 것이 스트레스 해소(relieving stress)에 도움이 된다고 명시합니다."
+  },
+  {
+    id: 15, section: 'p2_jiho', type: 'subjective',
+    question: "What does Jiho use to remember the good moments of his day?",
+    question_ko: "지호는 하루의 좋은 순간들을 기억하기 위해 무엇을 사용하나요?",
+    answer: "gratitude diary | diary",
+    explanation: "지호는 좋은 순간들을 기억하기 위해 감사 일기(gratitude diary)를 씁니다."
   },
   {
     id: 16, section: 'p2_jiho', type: 'subjective',
-    question: "What kind of small things does Jiho include in his journal? (Example: delicious ______)",
-    question_ko: "지호는 어떤 사소한 일들을 일기에 포함하나요? (예: 맛있는 _____ )",
-    answer: "lunch",
-    explanation: "맛있는 점심(lunch) 같은 일상의 사소한 행복을 기록합니다."
+    question: "Complete the sentence: Everything _______ after I started keeping a gratitude diary.",
+    question_ko: "문장을 완성하세요: 감사 일기를 쓰기 시작한 후에 모든 것이 _______.",
+    answer: "changed",
+    explanation: "감사 일기를 시작한 후 '모든 것이 변했다(everything changed)'고 말했습니다."
   },
   {
     id: 17, section: 'p2_jiho', type: 'choice',
-    question: "What is the ultimate result of Jiho's gratitude journal?",
-    question_ko: "지호의 감사 일기가 가져온 최종적인 결과는 무엇인가요?",
-    options: ["He became a famous writer", "He feels so thankful that he smiles more", "He got better grades in English", "He bought a new journal"],
-    answer: "He feels so thankful that he smiles more",
-    explanation: "너무 감사함을 느껴서 더 많이 웃게 되었다는 결과가 중요합니다."
+    question: "What action did Jiho take when he saw the flower?",
+    question_ko: "지호가 꽃을 보았을 때 어떤 행동을 했나요?",
+    options: ["He picked it up", "He drew a picture of it", "He took a picture with his phone", "He sat and watched it"],
+    answer: "He took a picture with his phone",
+    explanation: "꽃이 너무 아름다워서 휴대폰으로 사진을 찍었다고 언급합니다."
   },
   {
     id: 18, section: 'p2_jiho', type: 'subjective',
-    question: "Jiho says, 'I feel ____ relaxed ____ I can sleep well.' (Fill the blanks)",
-    question_ko: "지호는 '나는 매우 편안함을 느껴서 잠을 잘 수 있다'라고 합니다. (빈칸 채우기)",
-    answer: "so that",
-    explanation: "so + 형용사 + that 구문을 복습하는 문제입니다."
-  },
-  {
-    id: 19, section: 'p2_jiho', type: 'choice',
-    question: "When does Jiho write in his journal?",
-    question_ko: "지호는 언제 일기를 쓰나요?",
-    options: ["Right after waking up", "During lunch break", "Before going to bed", "While riding the bus"],
-    answer: "Before going to bed",
-    explanation: "지호는 잠자리에 들기 전 하루를 마무리하며 일기를 씁니다."
-  },
-  {
-    id: 20, section: 'p2_jiho', type: 'subjective',
-    question: "According to Jiho, 'Consistency is the ___ to mastering English and happiness.' (One word)",
-    question_ko: "지호에 따르면, '꾸준함은 영어와 행복을 정복하는 ____입니다.' (한 단어)",
-    answer: "key",
-    explanation: "꾸준함(Consistency)이 비결/열쇠(key)라는 뜻입니다."
+    question: "Jiho says he has known the _______ of gratitude for a long time. (One word)",
+    question_ko: "지호는 오랫동안 감사의 ____을 알고 있었다고 합니다. (한 단어)",
+    answer: "power",
+    explanation: "지호는 감사의 힘(power of gratitude)을 오랫동안 알고 있었다고 했습니다."
   },
 
   // Page 2: Somi's Case (Healing Art)
@@ -667,142 +695,63 @@ const READING_DATA: ReadingQuestion[] = [
     explanation: "그림에서 색상(colors)은 감정 표현의 주요 수단입니다."
   },
   {
-    id: 23, section: 'p2_somi', type: 'choice',
-    question: "Who suggested that Somi try painting as a hobby?",
-    question_ko: "누가 소미에게 취미로 그림을 그려보라고 제안했나요?",
-    options: ["Her parents", "Her teacher", "Her best friend", "Jiho"],
-    answer: "Her teacher",
-    explanation: "선생님의 권유로 시작했다는 배경이 본문에 등장합니다."
+    id: 23, section: 'p2_somi', type: 'subjective',
+    question: "How long did Somi work on her painting yesterday?",
+    question_ko: "소미는 어제 얼마나 오랫동안 그림을 그렸나요?",
+    answer: "hours",
+    explanation: "어제 몇 시간 동안(for hours) 그림을 그렸다고 언급합니다."
   },
   {
     id: 24, section: 'p2_somi', type: 'subjective',
-    question: "When Somi paints, she feels ____ calm ____ she forgets her stress. (Two words)",
-    question_ko: "소미가 그림을 그릴 때, 그녀는 너무 평온함을 느껴 스트레스를 잊습니다. (두 단어)",
-    answer: "so that",
-    explanation: "결과를 나타내는 so... that 구문입니다."
+    question: "Somi moved her brush so _______ that it felt like dreaming.",
+    question_ko: "소미는 붓을 너무 _______하게 움직여서 꿈을 꾸는 것 같았다.",
+    answer: "smoothly",
+    explanation: "붓을 매우 부드럽게(smoothly) 움직였다는 묘사가 있습니다."
   },
   {
-    id: 25, section: 'p2_somi', type: 'choice',
-    question: "Does Somi want to be a professional artist?",
-    question_ko: "소미는 전문적인 예술가가 되고 싶어 하나요?",
-    options: ["Yes, very much", "No, she just paints for herself", "She is already a professional", "She hasn't decided yet"],
-    answer: "No, she just paints for herself",
-    explanation: "완벽함이나 전업 작가를 추구하기보다 자신을 위해 그린다고 언급합니다."
+    id: 25, section: 'p2_somi', type: 'subjective',
+    question: "What does Somi consider painting as?",
+    question_ko: "소미는 그림 그리기를 무엇으로 여기나요?",
+    answer: "one of my greatest comforts | comfort",
+    explanation: "수년 동안 예술을 사랑했기에 그림 그리기를 가장 큰 위안(comfort) 중 하나로 여깁니다."
   },
   {
     id: 26, section: 'p2_somi', type: 'subjective',
-    question: "Somi _______ (paint) 'Healing Art' for six months now. (Use PPC)",
-    question_ko: "소미는 6개월 전부터 '힐링 아트'를 그려오고 있다. (현재완료 진행형 사용)",
-    answer: "has been painting",
-    explanation: "has been + V-ing 형태를 정확히 써야 합니다."
+    question: "According to the text, Somi has loved _______ for years.",
+    question_ko: "본문에 따르면, 소미는 수년 동안 _______를 사랑해 왔습니다.",
+    answer: "art",
+    explanation: "수년 동안 예술(art)을 사랑해 왔다고 언급합니다."
   },
   {
-    id: 27, section: 'p2_somi', type: 'choice',
-    question: "Why does Somi call her work 'Healing Art'?",
-    question_ko: "소미는 왜 자신의 작업을 '힐링 아트'라고 부르나요?",
-    options: ["Because she sells it to hospitals", "Because it makes her mind healthy and calm", "Because her teacher told her to", "Because she uses special medicine"],
-    answer: "Because it makes her mind healthy and calm",
-    explanation: "마음을 건강하고 평온하게 만들어주기 때문에 '힐링'이라는 표현을 씁니다."
+    id: 27, section: 'p2_somi', type: 'subjective',
+    question: "What can Somi let go of by expressing her emotions on paper?",
+    question_ko: "종이에 감정을 표현함으로써 소미는 무엇을 떨쳐낼 수 있나요?",
+    answer: "negative feelings",
+    explanation: "감정을 표현함으로써 부정적인 감정(negative feelings)을 떨쳐낼 수 있다고 합니다."
   },
   {
     id: 28, section: 'p2_somi', type: 'subjective',
-    question: "The colors Somi uses are usually _______ to make her feel happy. (Starting with 'b')",
-    question_ko: "소미가 행복감을 느끼기 위해 사용하는 색상들은 대개 _____합니다. ('b'로 시작)",
-    answer: "bright",
-    explanation: "밝은(bright) 색상들이 긍정적인 감정을 유도합니다."
+    question: "Somi says colors are like _______ that can express her inner world.",
+    question_ko: "소미는 색채가 자신의 내면 세계를 표현하는 _______와 같다고 말합니다.",
+    answer: "feelings",
+    explanation: "색채를 자신의 감정(feelings)에 비유하고 있습니다."
   },
   {
     id: 29, section: 'p2_somi', type: 'choice',
-    question: "What happens to Somi's mind while she is painting?",
-    question_ko: "소미가 그림을 그리는 동안 그녀의 마음 상태는 어떠한가요?",
-    options: ["It becomes busy", "It becomes noisy", "It becomes calm and peaceful", "It becomes angry"],
-    answer: "It becomes calm and peaceful",
-    explanation: "평온하고 평화로워진다는(calm and peaceful) 표현이 핵심입니다."
+    question: "Why has Somi been painting sunflowers lately?",
+    question_ko: "소미는 왜 최근에 해바라기를 그려오고 있나요?",
+    options: ["Because they are easy to draw", "Because they remind her of happy memories", "Because she wants to sell them", "Because they are her favorite flower"],
+    answer: "Because they remind her of happy memories",
+    explanation: "해바라기가 행복한 기억들을 떠올리게 해주기 때문에 그리고 있습니다."
   },
   {
     id: 30, section: 'p2_somi', type: 'subjective',
-    question: "Somi says, 'Don't worry about being a ______ artist.' (One word)",
-    question_ko: "소미는 '_______ 예술가가 되는 것에 대해 걱정하지 마세요'라고 말합니다. (한 단어)",
-    answer: "great",
-    explanation: "대단한(great) 예술가가 되어야 한다는 부담을 버리라는 조언입니다."
+    question: "Fill in the blank: Whenever I feel _____, I grab a brush and paint.",
+    question_ko: "빈칸을 채우세요: 기분이 _____ 때마다, 나는 붓을 잡고 그림을 그린다.",
+    answer: "down",
+    explanation: "기분이 울적할(down) 때마다 그림을 그린다고 설명합니다."
   },
 
-  // Additional Page 1 Questions (IDs 31-40)
-  {
-    id: 31, section: 'p1', type: 'choice',
-    question: "What is described as a natural part of our lives in the text?",
-    question_ko: "본문에서 우리 삶의 자연스러운 부분으로 묘사된 것은 무엇인가요?",
-    options: ["Winning a lottery", "Stress", "Failure", "Sleep"],
-    answer: "Stress",
-    explanation: "스트레스는 우리 삶에서 피할 수 없는 자연스러운 반응으로 설명됩니다."
-  },
-  {
-    id: 32, section: 'p1', type: 'subjective',
-    question: "To manage stress well, we should first identify the _______ of it. (One word)",
-    question_ko: "스트레스를 잘 관리하려면, 먼저 그것의 ______를 파악해야 합니다. (한 단어)",
-    answer: "source",
-    explanation: "스트레스의 원인이나 근원(source/cause)을 아는 것이 중요합니다."
-  },
-  {
-    id: 33, section: 'p1', type: 'choice',
-    question: "What physical change occurs when we are under stress?",
-    question_ko: "우리가 스트레스를 받을 때 어떤 신체적 변화가 일어나나요?",
-    options: ["Hair turns blue", "Heart beats faster", "Height increases", "Hunger disappears"],
-    answer: "Heart beats faster",
-    explanation: "스트레스 상황에서 심장 박동이 빨라지는 신체적 반응이 일어납니다."
-  },
-  {
-    id: 34, section: 'p1', type: 'subjective',
-    question: "Positive stress can provide us with the _______ to finish difficult tasks. (One word starting with 'e')",
-    question_ko: "긍정적인 스트레스는 어려운 일을 마칠 수 있는 ______를 제공할 수 있습니다. ('e'로 시작하는 한 단어)",
-    answer: "energy",
-    explanation: "적절한 스트레스는 에너지(energy)와 활력을 줍니다."
-  },
-  {
-    id: 35, section: 'p1', type: 'choice',
-    question: "Choose the correct preposition: 'Focus _______ the things you can control.'",
-    question_ko: "알맞은 전치사를 고르세요: '당신이 통제할 수 있는 일들에 집중하세요.'",
-    options: ["in", "at", "on", "with"],
-    answer: "on",
-    explanation: "focus on은 '~에 집중하다'라는 뜻의 숙어입니다."
-  },
-  {
-    id: 36, section: 'p1', type: 'subjective',
-    question: "When stress is too much, it can _______ our health. (One word starting with 'h')",
-    question_ko: "스트레스가 너무 심하면, 우리의 건강을 ______할 수 있습니다. ('h'로 시작하는 한 단어)",
-    answer: "harm",
-    explanation: "과도한 스트레스는 건강을 해치게(harm) 됩니다."
-  },
-  {
-    id: 37, section: 'p1', type: 'choice',
-    question: "Which of the following is NOT mentioned as a stress management tip?",
-    question_ko: "다음 중 스트레스 관리 팁으로 언급되지 않은 것은 무엇인가요?",
-    options: ["Listening to music", "Taking deep breaths", "Buying expensive things", "Exercising regularly"],
-    answer: "Buying expensive things",
-    explanation: "본문에서는 음악 감상, 호흡, 운동 등은 권장하지만 쇼핑은 언급되지 않았습니다."
-  },
-  {
-    id: 38, section: 'p1', type: 'subjective',
-    question: "The phrase 'so... that' is used to show a _______ and its result. (One word)",
-    question_ko: "'so... that' 구문은 ______와 그 결과를 나타내기 위해 사용됩니다. (한 단어)",
-    answer: "cause",
-    explanation: "원인(cause)과 결과의 관계를 표현할 때 사용하는 구문입니다."
-  },
-  {
-    id: 39, section: 'p1', type: 'choice',
-    question: "What is the benefit of deep breathing?",
-    question_ko: "심호흡의 이점은 무엇인가요?",
-    options: ["It makes you taller", "It calms your body and mind", "It helps you run faster", "It improves your math skills"],
-    answer: "It calms your body and mind",
-    explanation: "심호흡은 신체와 마음을 진정시키는 효과가 있습니다."
-  },
-  {
-    id: 40, section: 'p1', type: 'subjective',
-    question: "Don't let stress _______ your life. (One word starting with 'c')",
-    question_ko: "스트레스가 당신의 삶을 ______하게 두지 마세요. ('c'로 시작하는 한 단어)",
-    answer: "control",
-    explanation: "스트레스가 삶을 지배(control)하지 않도록 관리해야 한다는 메시지입니다."
-  },
 
   // Additional Jiho's Case Questions (IDs 41-45)
   {
@@ -819,14 +768,6 @@ const READING_DATA: ReadingQuestion[] = [
     question_ko: "일기를 쓰는 것은 지호가 삶의 ______인 면을 보게 도와줍니다. ('p'로 시작하는 한 단어)",
     answer: "positive",
     explanation: "감사 일기는 긍정적인(positive) 관점을 갖게 해줍니다."
-  },
-  {
-    id: 43, section: 'p2_jiho', type: 'choice',
-    question: "How does Jiho feel now compared to before starting the journal?",
-    question_ko: "일기를 시작하기 전과 비교하여 지호는 현재 어떻게 느끼나요?",
-    options: ["More negative", "More positive", "More tired", "More angry"],
-    answer: "More positive",
-    explanation: "지호는 일기를 쓴 후 더 긍정적인(positive) 기분을 갖게 되었다고 했습니다."
   }
 ];
 
@@ -2351,201 +2292,221 @@ function ResultCard({
       );
     }
 
-    if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
+  // --- Practice View (Word Scramble and Direct Typing) ---
+  const q = filteredQuestions[currentIdx];
+  const qCorrectFull = `${q.prefix || ""} ${q.correct} ${q.suffix || ""}`;
 
-    const q = filteredQuestions[currentIdx];
+  return (
+    <div className="max-w-5xl mx-auto space-y-12">
+      {/* Level Indicators */}
+      <div className="flex flex-wrap gap-3 scrollbar-hide py-2">
+        {filteredQuestions.map((_, i) => {
+          const isDone = alreadyScored.includes(i) || wrongAnswers.includes(i);
+          return (
+            <button
+              key={i}
+              onClick={() => {
+                setCurrentIdx(i);
+                setFeedback(null);
+                setTypedAnswer('');
+                setSubSection('practice');
+              }}
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center font-black transition-all ${
+                i === currentIdx
+                  ? "bg-slate-800 text-white shadow-xl scale-110"
+                  : isDone
+                  ? (alreadyScored.includes(i) ? "bg-indigo-50 text-indigo-500" : "bg-rose-50 text-rose-500")
+                  : "bg-white text-slate-300 border border-slate-100 hover:bg-slate-50"
+              }`}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
+      </div>
 
-    return (
-      <div className="max-w-5xl mx-auto space-y-12">
-        <div className="bg-white p-16 rounded-[60px] shadow-2xl border border-slate-100 flex flex-col min-h-[850px] relative overflow-visible">
-          <div className="absolute top-0 left-0 w-full h-2 bg-slate-100">
-             <motion.div initial={{ width: 0 }} animate={{ width: `${((currentIdx + 1) / filteredQuestions.length) * 100}%` }} className="h-full bg-orange-500"></motion.div>
+      <motion.div 
+        key={currentIdx}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="bg-white p-12 md:p-20 rounded-[60px] shadow-3xl border border-slate-50 relative overflow-hidden"
+      >
+        <div className="absolute top-0 right-0 p-12 opacity-[0.03] rotate-12 -z-0">
+          <PenTool size={200} />
+        </div>
+
+        <div className="relative z-10 space-y-12">
+          {/* Controls */}
+          <div className="flex justify-between items-center mb-8">
+            <div className="flex items-center gap-3">
+              <span className="px-5 py-2 bg-slate-800 text-white rounded-xl font-black text-xs uppercase tracking-widest">Sentence {currentIdx + 1}</span>
+              <span className="hidden md:inline-block px-5 py-2 bg-indigo-50 text-indigo-500 rounded-xl font-black text-xs uppercase tracking-widest">{q.hint}</span>
+            </div>
+            <button 
+              onClick={() => {
+                setIsTypingMode(!isTypingMode);
+                setFeedback(null);
+                setUserOrder([]);
+                setScrambled([...q.scrambled].sort());
+                setTypedAnswer('');
+              }}
+              className={`px-6 py-3 rounded-2xl font-black text-sm flex items-center gap-2 transition-all shadow-sm ${isTypingMode ? "bg-amber-400 text-slate-900" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`}
+            >
+              {isTypingMode ? <Zap size={18} fill="currentColor" /> : <Edit size={18} />}
+              {isTypingMode ? "SWITCH TO BLOCKS" : "DIRECT TYPING"}
+            </button>
           </div>
 
-          <div className="flex justify-between items-center mb-12">
+          {/* Translation */}
+          <div className="space-y-4">
              <div className="flex items-center gap-3">
-               <button 
-                 onClick={() => setSubSection('menu')}
-                 className="p-3 bg-slate-50 text-slate-400 hover:text-orange-600 rounded-2xl transition-all active:scale-90 mr-2"
-                 title="Back to menu"
-               >
-                 <RotateCcw size={20} className="-rotate-90" />
-               </button>
-               <span className="bg-orange-100 text-orange-600 px-6 py-2 rounded-2xl font-black text-sm uppercase tracking-widest">Writing Practice</span>
-               <span className="text-slate-300 font-bold tracking-widest uppercase text-xs">Sentence {currentIdx + 1} / {filteredQuestions.length}</span>
-               <button 
-                onClick={() => {
-                   if (!wrongAnswers.includes(currentIdx) && !alreadyScored.includes(currentIdx)) {
-                      setWrongAnswers(prev => [...prev, currentIdx]);
-                   }
-                   nextLevel();
-                }}
-                className="ml-4 text-slate-400 hover:text-orange-600 font-black text-xs transition-colors py-1 px-3 rounded-lg hover:bg-orange-50"
-               >
-                 SKIP
-               </button>
-               <button 
-                onClick={() => setIsTypingMode(!isTypingMode)}
-                className={`ml-2 font-black text-xs py-1 px-3 rounded-lg transition-all ${isTypingMode ? "bg-orange-600 text-white" : "text-slate-400 hover:bg-orange-50"}`}
-               >
-                {isTypingMode ? "USE BLOCKS" : "TYPE ANSWER"}
-               </button>
+               <div className="w-2 h-2 rounded-full bg-slate-300"></div>
+               <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Korean Translation</p>
              </div>
-             <div className="flex items-center gap-2">
-                <Trophy size={20} className="text-yellow-500" />
-                <span className="font-black text-slate-400 text-sm">SCORE: {score}</span>
-             </div>
+             <p className="text-4xl md:text-5xl font-black text-slate-800 leading-tight tracking-tight">
+               "{q.translation}"
+             </p>
           </div>
 
-          <div className="space-y-12 flex-1">
-             <div className="space-y-6 text-center">
-                <p className="text-4xl font-black text-slate-800 tracking-tighter leading-tight">
-                  "{q.translation}"
-                </p>
-                <div className="flex items-center justify-center gap-2 text-indigo-500 font-bold bg-indigo-50 py-3 px-6 rounded-2xl border border-indigo-100 inline-block mx-auto">
-                   <Star size={18} /> {q.hint}
-                </div>
-             </div>
+          {/* Prefix (if exists) */}
+          {q.prefix && (
+            <div className="py-4 border-b-2 border-slate-50">
+              <p className="text-2xl font-black text-slate-400 italic">{q.prefix} ...</p>
+            </div>
+          )}
 
-             <div className="space-y-8">
-                {/* Answer Area */}
-                <div className="bg-slate-50 p-10 rounded-[40px] border-2 border-dashed border-slate-200 min-h-[140px] flex flex-wrap gap-x-3 gap-y-4 justify-center items-center shadow-inner relative group">
-                   {isTypingMode ? (
-                     <input 
-                       type="text"
-                       value={typedAnswer}
-                       onChange={(e) => setTypedAnswer(e.target.value)}
-                       placeholder="여기에 문장을 직접 입력하세요..."
-                       disabled={feedback !== null}
-                       onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
-                       className="w-full bg-transparent border-none text-3xl font-black text-slate-700 focus:outline-none text-center placeholder:text-slate-200"
-                       autoFocus
-                     />
-                   ) : (
-                     <>
-                       {userOrder.length === 0 && !q.prefix && !q.suffix && <p className="text-slate-300 font-black italic select-none">아래 단어들을 클릭하여 문장을 완성하세요.</p>}
-                       
-                       {q.prefix && (
-                         <div className="text-3xl font-black text-slate-400 mr-2 border-b-4 border-slate-200 pb-1">
-                           {q.prefix}
-                         </div>
-                       )}
+          {/* Answer Display */}
+          <div className="min-h-[140px] flex flex-wrap items-center gap-4 p-10 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200 shadow-inner relative group">
+            {isTypingMode ? (
+              <input 
+                type="text"
+                value={typedAnswer}
+                onChange={(e) => setTypedAnswer(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+                placeholder="여기에 직접 영작하여 입력하세요..."
+                className="w-full bg-transparent border-none focus:ring-0 text-3xl font-black text-slate-700 placeholder:text-slate-200"
+              />
+            ) : (
+              userOrder.length === 0 ? (
+                <p className="text-slate-200 font-black text-2xl italic">아래 단어 블록을 클릭하여 문장을 만드세요.</p>
+              ) : (
+                userOrder.map((word, i) => (
+                  <motion.button
+                    layoutId={`word-${word}-${i}`}
+                    key={`user-${i}`}
+                    onClick={() => handleWordClick(word, true)}
+                    className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-2xl shadow-xl shadow-indigo-200 transition-all hover:-translate-y-1"
+                  >
+                    {word}
+                  </motion.button>
+                ))
+              )
+            )}
+            {feedback !== null && (
+               <motion.div 
+                 initial={{ opacity: 0, scale: 0.9 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 className={`absolute -top-6 right-6 px-10 py-4 rounded-3xl font-black text-xl shadow-2xl flex items-center gap-3 ${feedback ? "bg-emerald-500 text-white" : "bg-rose-500 text-white"}`}
+               >
+                 {feedback ? <CheckCircle2 size={32} /> : <Zap size={32} fill="currentColor" />}
+                 {feedback ? "PRRFECT!" : "TRY AGAIN!"}
+               </motion.div>
+            )}
+          </div>
 
-                       {userOrder.map((word, i) => (
-                          <motion.button
-                            key={`user-${i}-${word}`}
-                            layoutId={`word-${word}-${i}`}
-                            onClick={() => handleWordClick(word, true)}
-                            className={`px-6 py-3 rounded-2xl font-black text-lg shadow-md transition-all active:scale-90 ${feedback === null ? "bg-white text-slate-700 hover:bg-rose-50" : "bg-white/50 text-slate-400"}`}
-                          >
-                             {word}
-                          </motion.button>
-                       ))}
+          {/* Suffix (if exists) */}
+          {q.suffix && (
+            <div className="py-4 border-t-2 border-slate-50">
+              <p className="text-2xl font-black text-slate-400 italic">... {q.suffix}</p>
+            </div>
+          )}
 
-                       {q.suffix && (
-                         <div className="text-3xl font-black text-slate-400 ml-2 border-b-4 border-slate-200 pb-1">
-                           {q.suffix}
-                         </div>
-                       )}
-                     </>
-                   )}
-                </div>
-
-                {/* Scrambled Words */}
-                <div className={`flex flex-wrap gap-3 justify-center ${feedback !== null ? "opacity-30 pointer-events-none" : ""}`}>
-                   {scrambled.map((word, i) => (
-                      <motion.button
-                        key={`scrambled-${currentIdx}-${i}-${word}`}
-                        layoutId={`word-${word}-${i}`}
-                        onClick={() => handleWordClick(word, false)}
-                        className="bg-slate-800 text-white px-6 py-3 rounded-2xl font-black text-lg shadow-xl hover:bg-slate-700 hover:-translate-y-1 transition-all active:scale-95"
-                      >
-                         {word}
-                      </motion.button>
-                   ))}
-                </div>
-             </div>
-
-             <div className="pt-8 text-center">
-               <AnimatePresence mode="wait">
-                  {feedback !== null && (feedback ? (
-                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-6 w-full max-w-2xl mx-auto">
-                       <div 
-                        className={`${showAnswerIdx === currentIdx ? "bg-indigo-50 border-indigo-200 text-indigo-700" : "bg-emerald-100 border-emerald-200 text-emerald-700"} p-8 rounded-[40px] border-4 block shadow-xl relative group`}
-                       >
-                          <p className="text-4xl font-black tracking-tighter mb-4">
-                             {showAnswerIdx === currentIdx ? "ANSWER CHECK! 💡" : "PERFECT! ✨"}
-                          </p>
-                          <div className="flex items-center justify-center gap-3 mb-6 bg-white/40 p-4 rounded-2xl border border-white/40">
-                            <p className="font-bold text-xl">
-                              {q.prefix ? `${q.prefix} ` : ""}{q.correct}{q.suffix ? ` ${q.suffix}` : ""}
-                            </p>
-                            <button 
-                              onClick={() => handleSpeak(`${q.prefix || ""} ${q.correct} ${q.suffix || ""}`)}
-                              className={`p-2 rounded-full transition-all active:scale-90 ${showAnswerIdx === currentIdx ? "text-indigo-400 hover:text-indigo-700" : "text-emerald-400 hover:text-emerald-700"} hover:bg-white/50`}
-                            >
-                              <Volume2 size={20} />
-                            </button>
-                          </div>
-                          {q.grammarNote && (
-                            <motion.div 
-                              initial={{ opacity: 0, y: 15 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className={`mt-8 p-8 bg-white/90 rounded-[40px] text-left border-2 ${showAnswerIdx === currentIdx ? "border-indigo-100" : "border-emerald-100"} shadow-xl backdrop-blur-md`}
-                            >
-                              <div className="flex items-center gap-3 mb-4">
-                                <div className={`${showAnswerIdx === currentIdx ? "bg-indigo-500" : "bg-emerald-500"} text-white p-2 rounded-xl shadow-lg`}>
-                                  <BookOpen size={20} />
-                                </div>
-                                <div>
-                                  <span className={`font-black ${showAnswerIdx === currentIdx ? "text-indigo-600" : "text-emerald-600"} text-sm uppercase tracking-[0.2em] block leading-none`}>Grammar Deep Dive</span>
-                                  <span className={`text-[10px] ${showAnswerIdx === currentIdx ? "text-indigo-400" : "text-emerald-400"} font-bold`}>핵심 문법 파고들기</span>
-                                </div>
-                              </div>
-                              <p className="text-lg font-bold text-slate-700 leading-relaxed">
-                                {q.grammarNote}
-                              </p>
-                            </motion.div>
-                          )}
-                       </div>
-                       <div className="flex flex-col md:flex-row justify-center gap-4">
-                          {(showAnswerIdx === currentIdx || wrongAnswers.includes(currentIdx)) && (
-                             <button 
-                               onClick={() => { setScrambled([...q.scrambled].sort()); setUserOrder([]); setFeedback(null); setShowAnswerIdx(null); setTypedAnswer(''); }} 
-                               className="bg-white border-2 border-slate-200 text-slate-500 px-10 py-5 rounded-3xl font-black hover:bg-slate-50 transition flex items-center justify-center gap-2"
-                             >
-                               <RotateCcw size={20} /> 다시 풀어보기
-                             </button>
-                          )}
-                          <button onClick={nextLevel} className="bg-slate-800 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-black transition active:scale-95 flex items-center justify-center gap-3">
-                             {currentIdx === WRITING_DATA.length - 1 ? "FINISH MISSION" : "NEXT MISSION"} <ChevronRight size={24} />
-                          </button>
-                       </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="space-y-6">
-                       <div 
-                        className="bg-rose-50 text-rose-700 p-8 rounded-[40px] border-4 border-rose-100 inline-block"
-                       >
-                          <p className="text-3xl font-black tracking-tighter mb-2">TRY AGAIN! 💪</p>
-                          <p className="font-bold">단어의 순서를 다시 한 번 생각해보세요.</p>
-                       </div>
-                       <div className="flex justify-center gap-4">
-                          <button onClick={() => { setScrambled([...q.scrambled].sort()); setUserOrder([]); setFeedback(null); setTypedAnswer(''); }} className="bg-slate-100 text-slate-500 px-10 py-5 rounded-3xl font-black hover:bg-slate-200 transition">다시 하기</button>
-                          <button onClick={() => { setFeedback(true); setShowAnswerIdx(currentIdx); }} className="bg-indigo-600 text-white px-10 py-5 rounded-3xl font-black hover:bg-indigo-700 transition">정답 보기</button>
-                       </div>
-                       <button onClick={nextLevel} className="mt-4 block mx-auto bg-slate-800 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-black transition active:scale-95 flex items-center gap-3">
-                          {currentIdx === WRITING_DATA.length - 1 ? "FINISH MISSION" : "NEXT MISSION"} <ChevronRight size={24} />
-                       </button>
-                    </motion.div>
+          {/* Scrambled Area */}
+          {!isTypingMode && (
+             <div className="flex flex-wrap justify-center gap-4 p-8 bg-white border border-slate-100 rounded-[40px]">
+                <AnimatePresence>
+                  {scrambled.map((word, i) => (
+                    <motion.button
+                      layoutId={`word-${word}-${i}`}
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0.5, opacity: 0 }}
+                      key={`scramble-${i}`}
+                      onClick={() => handleWordClick(word, false)}
+                      className="px-8 py-4 bg-slate-50 text-slate-800 rounded-2xl font-black text-xl border-2 border-slate-100 hover:bg-slate-100 hover:border-slate-200 transition-all shadow-sm active:scale-95"
+                    >
+                      {word}
+                    </motion.button>
                   ))}
-               </AnimatePresence>
+                </AnimatePresence>
+             </div>
+          )}
+
+          {/* Feedback & Actions */}
+          <div className="pt-8 border-t border-slate-50 flex flex-col md:flex-row items-center justify-between gap-8">
+             <div className="space-y-4 w-full md:w-auto">
+                {feedback === false && (
+                  <div className="flex items-center gap-4 bg-rose-50 p-6 rounded-[30px] border border-rose-100">
+                    <div className="w-12 h-12 bg-rose-500 text-white rounded-2xl flex items-center justify-center shadow-lg">
+                      <Zap size={24} fill="currentColor" />
+                    </div>
+                    <div>
+                      <p className="text-rose-900 font-black text-lg">HINT AVAILABLE</p>
+                      <button onClick={() => setShowAnswerIdx(currentIdx)} className="text-rose-400 font-bold hover:text-rose-600 transition underline underline-offset-4 decoration-rose-200">정답 보기</button>
+                    </div>
+                  </div>
+                )}
+                {showAnswerIdx === currentIdx && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-8 bg-indigo-50 border-2 border-indigo-100 rounded-[35px] shadow-sm">
+                    <p className="text-slate-400 font-black text-[10px] uppercase tracking-widest mb-3">Model Answer</p>
+                    <p className="text-2xl font-black text-indigo-700 leading-tight">
+                       {qCorrectFull}
+                    </p>
+                  </motion.div>
+                )}
+             </div>
+
+             <div className="flex items-center gap-4 w-full md:w-auto">
+                {isTypingMode && feedback === null && (
+                  <button 
+                    onClick={checkAnswer}
+                    disabled={!typedAnswer.trim()}
+                    className="flex-1 md:flex-none bg-slate-800 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-black transition active:scale-95 shadow-xl disabled:opacity-30"
+                  >
+                    CHECK ANSWER
+                  </button>
+                )}
+                {(feedback === true || showAnswerIdx === currentIdx) && (
+                   <button 
+                    onClick={nextLevel}
+                    className="flex-1 md:flex-none bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-slate-800 transition active:scale-95 shadow-2xl shadow-indigo-100 flex items-center justify-center gap-3"
+                   >
+                    {currentIdx === filteredQuestions.length - 1 ? "FINISH MISSION" : "NEXT MISSION"}
+                    <ChevronRight size={24} />
+                   </button>
+                )}
              </div>
           </div>
         </div>
+      </motion.div>
+
+      <div className="flex flex-col md:flex-row gap-4">
+         <button 
+          onClick={() => navTo('dashboard')}
+          className="flex-1 py-6 bg-slate-100 text-slate-500 rounded-3xl font-black text-xl hover:bg-slate-200 transition"
+         >
+           메뉴로 돌아가기
+         </button>
+         <button 
+          onClick={() => setSubSection('menu')}
+          className="flex-1 py-6 bg-white border-2 border-slate-100 text-slate-400 rounded-3xl font-black text-xl hover:bg-slate-50 transition"
+         >
+           미션 목록 보기
+         </button>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   const MyStoryView = ({ handleSpeak, navTo, onBack }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void; onBack: () => void }) => {
     const [sentencePPC, setSentencePPC] = useState('');
@@ -2555,11 +2516,14 @@ function ResultCard({
     const [storyEntries, setStoryEntries] = useState<any[]>(() => {
       try {
         const saved = localStorage.getItem('mental_health_stories');
-        return saved ? JSON.parse(saved) : [];
+        let parsed = saved ? JSON.parse(saved) : [];
+        const excluded = ['o', 'tth', 'thht', 'test', 'asdf', 'ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'a', 'b', 'c', '123'];
+        return parsed.filter((e: any) => !excluded.includes(e.author?.toLowerCase()));
       } catch {
         return [];
       }
     });
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [storyTab, setStoryTab] = useState<'build' | 'wall'>('build');
     const [commentInput, setCommentInput] = useState<{[key: string]: string}>({});
 
@@ -2569,18 +2533,31 @@ function ResultCard({
         return;
       }
       if (sentencePPC.trim() && sentenceSoThat.trim()) {
-        const newEntry = {
-          id: Date.now().toString(),
-          author: authorName,
-          ppc: sentencePPC,
-          soThat: sentenceSoThat,
-          date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-          reactions: {},
-          comments: []
-        };
-        const updated = [newEntry, ...storyEntries];
-        setStoryEntries(updated);
-        localStorage.setItem('mental_health_stories', JSON.stringify(updated));
+        if (editingId) {
+          const updated = storyEntries.map(e => e.id === editingId ? {
+            ...e,
+            author: authorName,
+            ppc: sentencePPC,
+            soThat: sentenceSoThat
+          } : e);
+          setStoryEntries(updated);
+          localStorage.setItem('mental_health_stories', JSON.stringify(updated));
+        } else {
+          const newId = Date.now().toString();
+          const newEntry = {
+            id: newId,
+            author: authorName,
+            ppc: sentencePPC,
+            soThat: sentenceSoThat,
+            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            reactions: {},
+            comments: []
+          };
+          const updated = [newEntry, ...storyEntries];
+          setStoryEntries(updated);
+          localStorage.setItem('mental_health_stories', JSON.stringify(updated));
+          setEditingId(newId);
+        }
         setSubmitted(true);
       }
     };
@@ -2620,95 +2597,199 @@ function ResultCard({
 
     if (storyTab === 'wall') {
       return (
-        <div className="max-w-6xl mx-auto space-y-12 pb-20">
-          <div className="flex flex-col md:flex-row md:items-end justify-between border-b-4 border-indigo-500 pb-8 gap-6 h-full">
-            <div className="space-y-4">
-              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">My Class Mental Health Story</h2>
-              <p className="text-2xl font-black text-indigo-500 underline underline-offset-8 decoration-indigo-200">우리의 감정 건강 이야기 담벼락</p>
-            </div>
-            <div className="flex gap-4">
-              <button 
-                onClick={() => setStoryTab('build')}
-                className="bg-indigo-600 text-white px-10 py-5 rounded-[30px] font-black text-xl hover:bg-slate-800 transition shadow-xl flex items-center gap-3 active:scale-95"
+        <div className="max-w-7xl mx-auto space-y-16 pb-32">
+          {/* Header Section */}
+          <div className="relative">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[500px] bg-gradient-to-b from-indigo-50/50 to-transparent -z-10 rounded-[200px] blur-3xl opacity-60"></div>
+            
+            <div className="flex flex-col items-center text-center space-y-8 pt-10">
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-24 h-24 bg-white rounded-[32px] shadow-2xl overflow-hidden flex items-center justify-center border border-indigo-100 mb-2 ring-8 ring-indigo-50/30"
               >
-                <PenTool size={24} /> WRITE STORY
-              </button>
+                <Users size={44} className="text-indigo-600" />
+              </motion.div>
+              
+              <div className="space-y-4">
+                <h2 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter uppercase leading-none">My Class <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-indigo-400">Story</span></h2>
+                <div className="flex items-center justify-center gap-4">
+                  <div className="h-px w-20 bg-indigo-100"></div>
+                  <p className="text-xl font-black text-indigo-500 uppercase tracking-[0.2em]">Community Gallery</p>
+                  <div className="h-px w-20 bg-indigo-100"></div>
+                </div>
+                <p className="max-w-none mx-auto text-lg font-bold text-slate-400 whitespace-nowrap">친구들이 작성한 마음 건강 이야기를 보며 서로에게 따뜻한 응원의 한마디를 남겨주세요.</p>
+              </div>
+
+              <div className="flex items-center gap-6">
+                <button 
+                  onClick={() => setStoryTab('build')}
+                  className="group relative bg-slate-900 text-white px-12 py-6 rounded-[35px] font-black text-xl hover:bg-black transition-all shadow-2xl flex items-center gap-4 active:scale-95"
+                >
+                  <div className="absolute inset-0 bg-indigo-500 rounded-[35px] opacity-0 group-hover:opacity-10 transition-opacity"></div>
+                  <PenTool size={24} className="group-hover:rotate-12 transition-transform" /> 
+                  SHARE YOUR STORY
+                  <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+                </button>
+                <div className="bg-white border border-slate-100 px-8 py-4 rounded-[30px] shadow-sm flex items-center gap-4">
+                   <div className="text-right">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Growth Stories</p>
+                      <p className="text-2xl font-black text-indigo-600">{storyEntries.length}</p>
+                   </div>
+                   <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500">
+                      <BookOpen size={24} />
+                   </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {/* Stories Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-4">
             <AnimatePresence initial={false}>
               {storyEntries.length === 0 ? (
-                <div className="col-span-full py-32 text-center bg-white rounded-[60px] border-4 border-dashed border-slate-100 italic">
-                  <p className="text-slate-300 font-black text-2xl">아직 공유된 이야기가 없습니다. 첫 번째 이야기를 들려주세요!</p>
+                <div className="col-span-full py-40 text-center bg-white/50 rounded-[80px] border-4 border-dashed border-slate-100 backdrop-blur-sm">
+                  <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-md">
+                    <History size={40} className="text-slate-200" />
+                  </div>
+                  <p className="text-slate-300 font-black text-3xl">아직 공유된 이야기가 없습니다.<br/>첫 번째 주인공이 되어보세요!</p>
                 </div>
               ) : (
-                storyEntries.map((entry, idx) => (
+                [...storyEntries]
+                  .sort((a, b) => {
+                    const idA = isNaN(Number(a.id)) ? 0 : Number(a.id);
+                    const idB = isNaN(Number(b.id)) ? 0 : Number(b.id);
+                    return idB - idA;
+                  })
+                  .map((entry, idx) => (
                   <motion.div 
                     key={entry.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="bg-white p-10 rounded-[50px] shadow-lg border border-slate-50 space-y-8 flex flex-col justify-between hover:shadow-2xl transition-all group"
+                    transition={{ delay: idx * 0.1 }}
+                    className="relative bg-white p-6 rounded-[35px] shadow-[0_15px_40px_rgba(0,0,0,0.05)] border border-slate-50 space-y-6 flex flex-col justify-between hover:shadow-[0_25px_60px_rgba(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-500 group overflow-hidden"
                   >
-                    <div className="space-y-8">
-                      <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-indigo-500 rounded-3xl flex items-center justify-center text-white font-black text-2xl shadow-lg ring-4 ring-indigo-50">
-                          {entry.author.charAt(0)}
+                    {/* Decorative Corner */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/20 rounded-full -translate-y-16 translate-x-16 transition-transform group-hover:scale-150 duration-700"></div>
+                    
+                    <div className="relative space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="relative">
+                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-[14px] flex items-center justify-center text-white font-black text-xl shadow-lg ring-4 ring-indigo-50 transition-transform group-hover:rotate-6">
+                              {entry.author.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></div>
+                          </div>
+                          <div>
+                            <p className="font-black text-slate-800 text-base leading-none mb-1">{entry.author}</p>
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-1 h-1 rounded-full bg-indigo-400"></div>
+                              <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">{entry.date}</p>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-black text-slate-800 text-xl leading-none mb-1">{entry.author}</p>
-                          <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{entry.date}</p>
+                        <div className="flex gap-1.5 isolate">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingId(entry.id);
+                              setAuthorName(entry.author);
+                              setSentencePPC(entry.ppc);
+                              setSentenceSoThat(entry.soThat);
+                              setSubmitted(false);
+                              setStoryTab('build');
+                            }}
+                            className="p-2 bg-indigo-50/50 text-indigo-500 hover:bg-indigo-500 hover:text-white rounded-[14px] transition-all active:scale-90 shadow-sm"
+                            title="Edit"
+                          >
+                            <Edit size={14} />
+                          </button>
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (window.confirm('정말로 이 이야기를 삭제하시겠습니까?')) {
+                                const updated = storyEntries.filter(e => e.id !== entry.id);
+                                setStoryEntries(updated);
+                                localStorage.setItem('mental_health_stories', JSON.stringify(updated));
+                              }
+                            }}
+                            className="p-2 bg-rose-50/50 text-rose-400 hover:bg-rose-500 hover:text-white rounded-[14px] transition-all active:scale-90 shadow-sm"
+                            title="Delete"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
                       </div>
 
-                      <div className="space-y-5">
-                         <div className="bg-indigo-50/50 p-6 rounded-[35px] border-l-8 border-indigo-500 relative overflow-hidden">
-                            <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-3">Efforts (PPC)</span>
-                            <p className="text-xl font-bold text-indigo-950 leading-relaxed italic">"{entry.ppc}"</p>
-                         </div>
-                         <div className="bg-emerald-50/50 p-6 rounded-[35px] border-l-8 border-emerald-500 relative overflow-hidden">
-                            <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-600 text-[10px] font-black rounded-lg uppercase tracking-widest mb-3">Results (So ~ That)</span>
-                            <p className="text-xl font-bold text-emerald-950 leading-relaxed italic">"{entry.soThat}"</p>
-                         </div>
+                      <div className="space-y-4">
+                        <div className="relative p-5 bg-slate-50/50 rounded-[24px] border border-slate-100 group-hover:bg-indigo-50/30 transition-all group-hover:border-indigo-100">
+                          <div className="absolute top-3 left-4 text-indigo-100 opacity-50"><Quote size={24} fill="currentColor" /></div>
+                          <p className="relative text-base font-bold text-slate-700 leading-relaxed italic z-10">
+                            "{entry.ppc}, so that {entry.soThat}"
+                          </p>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          {['PPC', 'SoThat'].map(tag => (
+                            <span key={tag} className="px-3 py-1 bg-white border border-slate-100 text-slate-400 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm group-hover:border-indigo-100 group-hover:text-indigo-400 transition-all">
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="mt-8 pt-8 border-t border-slate-50 space-y-6">
+                    <div className="mt-6 pt-6 border-t border-slate-50 space-y-6 relative isolate">
                       <div className="flex flex-wrap gap-2">
-                        {['👍', '❤️', '👏', '🔥', '✨', '😭', '💪'].map(emoji => (
+                        {['👍', '❤️', '👏', '🔥', '✨', '💪'].map(emoji => (
                           <button 
                             key={emoji}
                             onClick={() => handleReaction(entry.id, emoji)}
-                            className={`px-4 py-2 rounded-2xl text-sm font-black border transition-all flex items-center gap-2 ${entry.reactions?.[emoji] ? 'bg-indigo-50 border-indigo-100 text-indigo-600' : 'bg-slate-50 border-transparent text-slate-400 hover:bg-slate-100'}`}
+                            className={`px-3 py-1.5 rounded-full text-sm font-black border transition-all flex items-center gap-1.5 ${entry.reactions?.[emoji] ? 'bg-indigo-500 border-indigo-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:border-indigo-200 hover:bg-indigo-50/50 shadow-sm'}`}
                           >
                             <span>{emoji}</span>
-                            {entry.reactions?.[emoji] > 0 && <span>{entry.reactions[emoji]}</span>}
+                            {entry.reactions?.[emoji] > 0 && <span className="text-[10px]">{entry.reactions[emoji]}</span>}
                           </button>
                         ))}
                       </div>
 
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         {entry.comments?.length > 0 && (
-                          <div className="space-y-2 bg-slate-50/50 p-6 rounded-[30px] border border-slate-100 shadow-inner max-h-40 overflow-y-auto">
+                          <div className="space-y-3 bg-slate-50/30 p-5 rounded-[30px] border border-slate-100 shadow-inner max-h-40 overflow-y-auto custom-scrollbar">
                             {entry.comments.map((c: any) => (
-                              <div key={c.id} className="text-xs">
-                                <span className="font-black text-indigo-500 mr-2 uppercase tracking-tighter">{c.author}</span>
-                                <span className="text-slate-600 font-medium">{c.text}</span>
-                              </div>
+                              <motion.div 
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                key={c.id} 
+                                className="flex gap-2.5"
+                              >
+                                <div className="w-7 h-7 rounded-lg bg-white border border-slate-100 flex items-center justify-center shrink-0">
+                                  <span className="text-[9px] font-black uppercase text-indigo-500">{c.author.charAt(0)}</span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="font-black text-slate-800 text-[9px] uppercase tracking-tighter">{c.author}</span>
+                                  <p className="text-slate-600 font-medium text-[11px] leading-tight">{c.text}</p>
+                                </div>
+                              </motion.div>
                             ))}
                           </div>
                         )}
-                        <div className="relative">
+                        <div className="relative group/input">
                           <input 
                             type="text"
                             value={commentInput[entry.id] || ''}
-                            onChange={(e) => setCommentInput({...commentInput, [entry.id]: e.target.value})}
+                            onChange={(e) => setCommentInput({ ...commentInput, [entry.id]: e.target.value })}
                             onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id)}
-                            placeholder="응원의 댓글을 남겨보세요..."
-                            className="w-full h-12 pl-5 pr-12 bg-slate-50 border-none rounded-2xl text-sm font-bold text-slate-600 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-slate-300"
+                            placeholder="응원 댓글..."
+                            className="w-full h-12 pl-6 pr-14 bg-slate-50 border-2 border-transparent rounded-[24px] text-[13px] font-bold text-slate-600 focus:bg-white focus:border-indigo-100 focus:ring-0 transition-all placeholder:text-slate-300 shadow-inner"
                           />
-                          <button onClick={() => handleAddComment(entry.id)} className="absolute right-3 top-1/2 -translate-y-1/2 text-indigo-500 hover:text-indigo-700 transition-colors"><Send size={20} /></button>
+                          <button 
+                            onClick={() => handleAddComment(entry.id)} 
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-indigo-500 text-white rounded-xl flex items-center justify-center hover:bg-slate-900 transition-all shadow-lg active:scale-90"
+                          >
+                            <Send size={14} />
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -2722,91 +2803,112 @@ function ResultCard({
     }
 
     return (
-      <div className="max-w-4xl mx-auto space-y-12 pb-20">
-        <div className="bg-white p-8 md:p-16 rounded-[60px] shadow-2xl border border-slate-100 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-orange-50 rounded-full -translate-y-40 translate-x-40"></div>
+      <div className="max-w-3xl mx-auto space-y-8 pb-10">
+        <div className="bg-white p-6 md:p-10 rounded-[50px] shadow-2xl border border-slate-100 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-orange-50 rounded-full -translate-y-32 translate-x-32"></div>
           
-          <div className="relative z-10 space-y-12">
-             <div className="flex items-center">
-                <button 
-                  onClick={onBack}
-                  className="p-4 bg-slate-50 text-slate-400 hover:text-indigo-600 rounded-3xl transition-all active:scale-90"
-                >
-                  <RotateCcw size={28} className="-rotate-90" />
-                </button>
-             </div>
-
-             <div className="space-y-4">
-                <h2 className="text-5xl md:text-6xl font-black text-slate-800 tracking-tighter leading-none mb-4 whitespace-nowrap">MY STORY <span className="text-indigo-600 uppercase">BUILDER</span></h2>
-                <div className="flex gap-3 pt-2">
-                  <button 
-                    onClick={() => setStoryTab('wall')}
-                    className="bg-indigo-50 text-indigo-600 px-6 py-2 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-100 transition-all active:scale-95 shadow-sm"
-                  >
-                    Class Stories ⮕
-                  </button>
-                  <span className="bg-orange-100 text-orange-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center">Final Step</span>
+          <div className="relative z-10 space-y-10">
+             <div className="space-y-6 mb-8">
+                <div className="flex items-center justify-between">
+                   <button 
+                     onClick={onBack}
+                     className="p-3 bg-slate-50 text-slate-400 hover:text-indigo-600 rounded-[20px] transition-all active:scale-90"
+                   >
+                     <RotateCcw size={24} className="-rotate-90" />
+                   </button>
+                   
+                   <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => setStoryTab('wall')}
+                        className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95 shadow-lg flex items-center gap-2"
+                      >
+                        My Class Story <ArrowRight size={16} />
+                      </button>
+                      <span className="bg-orange-100 text-orange-600 px-3 py-3 rounded-xl font-black text-[9px] uppercase tracking-widest flex items-center whitespace-nowrap">Final Step</span>
+                   </div>
                 </div>
-                <p className="text-xl font-bold text-slate-400">학습한 핵심 어법을 활용하여 당신의 감정 건강 상태를 표현해 보세요.</p>
+                
+                <div className="space-y-4">
+                   <h2 className="text-3xl md:text-4xl font-black text-slate-800 tracking-tighter leading-none whitespace-nowrap">MY STORY <span className="text-indigo-600 uppercase">BUILDER</span></h2>
+                   <p className="text-xl font-bold text-slate-400 whitespace-nowrap">학습한 핵심 어법을 활용하여 당신의 감정 건강 상태를 표현해 보세요.</p>
+                </div>
              </div>
 
-             <div className="bg-slate-50 p-10 rounded-[45px] border border-slate-100 focus-within:border-indigo-300 transition-all flex items-center gap-6 shadow-inner max-w-md">
-                <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-slate-400 shadow-sm border border-slate-100">
-                  <User size={32} />
+             <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 focus-within:border-indigo-300 transition-all flex items-center gap-5 shadow-inner max-w-sm">
+                <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-slate-400 shadow-sm border border-slate-100">
+                  <User size={28} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Writer Name (Required)</p>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Writer Name (Required)</p>
                   <input 
                     type="text"
                     value={authorName}
                     onChange={(e) => setAuthorName(e.target.value)}
-                    placeholder="이름을 입력하세요 (e.g. Minji)"
-                    className="w-full bg-transparent border-none focus:ring-0 text-3xl font-black text-slate-700 placeholder:text-slate-200"
+                    placeholder="이름을 입력하세요"
+                    className="w-full bg-transparent border-none focus:ring-0 text-2xl font-black text-slate-700 placeholder:text-slate-200"
                   />
                 </div>
              </div>
 
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-indigo-50 p-6 rounded-3xl border border-indigo-100">
-                  <h4 className="font-black text-indigo-600 mb-2 flex items-center gap-2">
-                    <Zap size={18} /> PATTERN 1
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
+                  <h4 className="font-black text-indigo-600 mb-1 flex items-center gap-2 text-sm">
+                    <Zap size={16} /> PATTERN 1
                   </h4>
-                  <p className="text-slate-700 font-bold mb-1">현재완료 진행형</p>
-                  <code className="text-sm bg-white/50 px-2 py-1 rounded">I have been -ing ...</code>
-                  <p className="text-xs text-slate-400 mt-2">최근에 해오고 있는 노력을 적어보세요.</p>
+                  <p className="text-slate-700 font-bold text-sm mb-1">현재완료 진행형</p>
+                  <code className="text-xs bg-white/50 px-2 py-1 rounded">I have been -ing ...</code>
                 </div>
-                <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
-                  <h4 className="font-black text-emerald-600 mb-2 flex items-center gap-2">
-                    <Smile size={18} /> PATTERN 2
+                <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                  <h4 className="font-black text-emerald-600 mb-1 flex items-center gap-2 text-sm">
+                    <Smile size={16} /> PATTERN 2
                   </h4>
-                  <p className="text-slate-700 font-bold mb-1">so ~ that 구문</p>
-                  <code className="text-sm bg-white/50 px-2 py-1 rounded">I feel so [형용사] that ...</code>
-                  <p className="text-xs text-slate-400 mt-2">노력의 결과로 느끼는 변화를 적어보세요.</p>
+                  <p className="text-slate-700 font-bold text-sm mb-1">so ~ that 구문</p>
+                  <code className="text-xs bg-white/50 px-2 py-1 rounded">I feel so ... that ...</code>
                 </div>
              </div>
 
              <div className="space-y-10">
                 <div className="space-y-4">
-                   <label className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">PART 1: YOUR EFFORTS</label>
-                   <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 focus-within:border-indigo-300 transition-colors shadow-inner">
+                   <div className="flex items-center justify-between px-4">
+                      <label className="text-sm font-black text-slate-400 uppercase tracking-widest">PART 1: YOUR EFFORTS</label>
+                      {submitted && (
+                        <button 
+                          onClick={() => setSubmitted(false)}
+                          className="flex items-center gap-1 text-[10px] font-black text-indigo-500 hover:text-indigo-700 transition-colors uppercase tracking-widest"
+                        >
+                          <Edit size={12} /> Edit
+                        </button>
+                      )}
+                   </div>
+                   <div className="bg-slate-50 p-6 rounded-[35px] border border-slate-100 focus-within:border-indigo-300 transition-colors shadow-inner">
                       <textarea 
                          value={sentencePPC}
                          onChange={(e) => setSentencePPC(e.target.value)}
                          disabled={submitted}
-                         className="w-full bg-transparent border-none focus:ring-0 text-xl md:text-2xl font-black text-slate-700 placeholder:text-slate-200 h-28 p-2 cursor-auto"
+                         className="w-full bg-transparent border-none focus:ring-0 text-xl font-black text-slate-700 placeholder:text-slate-200 h-24 p-2 cursor-auto"
                          placeholder="e.g. I have been eating healthy meals every day."
                       />
                    </div>
                 </div>
 
                 <div className="space-y-4">
-                   <label className="text-sm font-black text-slate-400 uppercase tracking-widest pl-4">PART 2: THE RESULTS</label>
-                   <div className="bg-slate-50 p-8 rounded-[40px] border border-slate-100 focus-within:border-emerald-300 transition-colors shadow-inner">
+                   <div className="flex items-center justify-between px-4">
+                      <label className="text-sm font-black text-slate-400 uppercase tracking-widest">PART 2: THE RESULTS</label>
+                      {submitted && (
+                        <button 
+                          onClick={() => setSubmitted(false)}
+                          className="flex items-center gap-1 text-[10px] font-black text-emerald-500 hover:text-emerald-700 transition-colors uppercase tracking-widest"
+                        >
+                          <Edit size={12} /> Edit
+                        </button>
+                      )}
+                   </div>
+                   <div className="bg-slate-50 p-6 rounded-[35px] border border-slate-100 focus-within:border-emerald-300 transition-colors shadow-inner">
                       <textarea 
                          value={sentenceSoThat}
                          onChange={(e) => setSentenceSoThat(e.target.value)}
                          disabled={submitted}
-                         className="w-full bg-transparent border-none focus:ring-0 text-xl md:text-2xl font-black text-slate-700 placeholder:text-slate-200 h-28 p-2"
+                         className="w-full bg-transparent border-none focus:ring-0 text-xl font-black text-slate-700 placeholder:text-slate-200 h-24 p-2"
                          placeholder="e.g. I feel so energetic that I can focus better."
                       />
                    </div>
@@ -2816,26 +2918,26 @@ function ResultCard({
                   <button 
                      onClick={handleSubmit}
                      disabled={!authorName.trim() || !sentencePPC.trim() || !sentenceSoThat.trim()}
-                     className="w-full py-8 bg-indigo-600 text-white rounded-[45px] font-black text-3xl shadow-2xl shadow-indigo-100 hover:bg-slate-800 transition active:scale-95 disabled:opacity-30"
+                     className="w-full py-6 bg-indigo-600 text-white rounded-[35px] font-black text-2xl shadow-2xl shadow-indigo-100 hover:bg-slate-800 transition active:scale-95 disabled:opacity-30"
                    >
                      PUBLISH MY STORY ✍️
                    </button>
                 ) : (
                   <div className="space-y-6 text-center animate-in fade-in zoom-in-95 duration-500">
-                    <div className="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-emerald-100 mb-4">
-                      <CheckCircle2 size={40} />
+                    <div className="w-16 h-16 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto shadow-xl shadow-emerald-100 mb-4">
+                      <CheckCircle2 size={32} />
                     </div>
-                    <p className="text-2xl font-black text-slate-800 tracking-tighter">Your story has been shared with the class!</p>
+                    <p className="text-xl font-black text-slate-800 tracking-tighter">Your story has been shared with the class!</p>
                     <div className="flex flex-col gap-4">
                       <button 
                         onClick={() => setStoryTab('wall')}
-                        className="w-full py-8 bg-indigo-600 text-white rounded-[45px] font-black text-3xl shadow-2xl shadow-indigo-100 hover:bg-slate-800 transition active:scale-95 flex items-center justify-center gap-4"
+                        className="w-full py-6 bg-indigo-600 text-white rounded-[35px] font-black text-2xl shadow-2xl shadow-indigo-100 hover:bg-slate-800 transition active:scale-95 flex items-center justify-center gap-4"
                       >
-                        VIEW CLASS WALL <ArrowRight size={32} />
+                        VIEW CLASS WALL <ArrowRight size={24} />
                       </button>
                       <button 
                         onClick={() => setSubmitted(false)}
-                        className="w-full py-5 text-slate-400 font-extrabold hover:text-slate-600 transition"
+                        className="w-full py-4 text-slate-400 font-extrabold hover:text-slate-600 transition text-sm"
                       >
                         MAKE AN EDIT
                       </button>
@@ -2866,6 +2968,13 @@ function ResultCard({
                       </div>
                       <h3 className="text-4xl font-black tracking-tighter">BY {authorName.toUpperCase()}</h3>
                     </div>
+                    <button 
+                      onClick={() => setSubmitted(false)}
+                      className="p-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all text-white active:scale-90"
+                      title="Edit Story"
+                    >
+                      <Edit size={24} />
+                    </button>
                   </div>
 
                   <div className="space-y-10 max-w-3xl">
@@ -2907,7 +3016,7 @@ function ResultCard({
     const content = READING_TEXTS[sectionKey as keyof typeof READING_TEXTS];
     const filteredQuestions = useMemo(() => {
       const all = READING_DATA.filter(q => q.section === (sectionKey as any));
-      return all;
+      return all.sort((a, b) => a.id - b.id);
     }, [sectionKey]);
     
     const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -2918,6 +3027,15 @@ function ResultCard({
     const isWarmupReading = isWarmup;
     const [showTranslation, setShowTranslation] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
+
+    useEffect(() => {
+      setCurrentQuestion(0);
+      setFeedback(null);
+      setInputValue('');
+      setShowQuiz(false);
+      setShowNameInput(isWarmup);
+      setIsFinished(false);
+    }, [activeSection, isWarmup, setIsFinished]);
 
     if (activeSection === 'reading') {
         return (
@@ -3075,6 +3193,7 @@ function ResultCard({
                   </div>
                   <div className="space-y-4 text-center md:text-left flex-1">
                     <h4 className="text-2xl font-black text-sky-900 uppercase tracking-tight">Warm up Video</h4>
+                    <p className="text-sky-800 font-bold leading-relaxed text-sm">마음 건강을 지키는 간단한 팁을 영상으로 확인해 보세요.</p>
                     <a 
                       href="https://www.youtube.com/shorts/I03lorqi-P4?si=JSZcyB0ut-3K8rRh" 
                       target="_blank" 
@@ -3092,6 +3211,7 @@ function ResultCard({
                   </div>
                   <div className="space-y-4 text-center md:text-left flex-1">
                     <h4 className="text-2xl font-black text-amber-900 uppercase tracking-tight">Warm up Video</h4>
+                    <p className="text-amber-800 font-bold leading-relaxed text-sm">강연을 통해 감사함이 어떻게 우리를 행복으로 이끄는지 확인해 보세요.</p>
                     <a 
                       href="https://www.ted.com/talks/david_steindl_rast_want_to_be_happy_be_grateful?utm_campaign=tedspread&utm_medium=referral&utm_source=tedcomshare" 
                       target="_blank" 
@@ -3155,6 +3275,26 @@ function ResultCard({
                 </motion.div>
               )}
             </div>
+
+            {sectionKey === 'p2_jiho' && (
+              <div className="mt-12 p-8 bg-sky-50 rounded-[40px] border border-sky-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+                <div className="w-16 h-16 bg-sky-500 rounded-2xl flex items-center justify-center text-white shadow-lg shrink-0">
+                  <Zap size={32} />
+                </div>
+                <div className="space-y-4 text-center md:text-left flex-1">
+                  <h4 className="text-xl font-black text-sky-900 uppercase tracking-tight">Jiho's Special Tip Video</h4>
+                  <p className="text-sky-800 font-bold leading-relaxed text-sm">지호의 감사 일기와 관련된 영상을 확인해 보세요.</p>
+                  <a 
+                    href="https://www.youtube.com/shorts/U81tG2Qjqqk" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white text-sky-600 px-6 py-2 rounded-xl font-black shadow-md hover:bg-sky-100 transition-all active:scale-95 border border-sky-200 text-sm"
+                  >
+                    영상 보기 <ArrowRight size={16} />
+                  </a>
+                </div>
+              </div>
+            )}
 
             <div className="mt-12 p-8 bg-emerald-50 rounded-3xl border border-emerald-100 flex items-center gap-6">
               <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm border border-emerald-100">
@@ -3239,12 +3379,6 @@ function ResultCard({
                  QUEST {currentQuestion + 1} / {filteredQuestions.length}
                </span>
                <span className="text-slate-300 font-bold tracking-widest uppercase text-[10px]">P.{activeSection.includes('p1') ? '1' : '2'} / {sectionKey.toUpperCase()}</span>
-               <button 
-                onClick={handleNext}
-                className="text-slate-400 font-bold text-xs hover:text-emerald-500 transition-colors"
-               >
-                SKIP
-               </button>
              </div>
              <div className="flex items-center gap-2">
                 <Trophy size={18} className="text-yellow-500" />
@@ -3335,8 +3469,7 @@ function ResultCard({
                   <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    onClick={handleNext}
-                    className={`mt-10 p-10 rounded-[40px] border-4 cursor-pointer hover:scale-[1.01] transition-transform ${
+                    className={`mt-10 p-10 rounded-[40px] border-4 ${
                       feedback.isCorrect 
                         ? "bg-emerald-50 border-emerald-200 text-emerald-800 shadow-emerald-100" 
                         : "bg-rose-50 border-rose-200 text-rose-800 shadow-rose-100"
@@ -3384,7 +3517,8 @@ function ResultCard({
     const [entries, setEntries] = useState<GratitudeEntry[]>(() => {
       try {
         const saved = localStorage.getItem('gratitude_diary');
-        return saved ? JSON.parse(saved) : [];
+        let parsed = saved ? JSON.parse(saved) : [];
+        return parsed.filter((e: GratitudeEntry) => e.author?.toLowerCase() !== 'o');
       } catch {
         return [];
       }
@@ -3393,7 +3527,8 @@ function ResultCard({
     const [classEntries, setClassEntries] = useState<GratitudeEntry[]>(() => {
       try {
         const saved = localStorage.getItem('class_diary');
-        return saved ? JSON.parse(saved) : [];
+        let parsed = saved ? JSON.parse(saved) : [];
+        return parsed.filter((e: GratitudeEntry) => e.author?.toLowerCase() !== 'o');
       } catch {
         return [];
       }
@@ -3478,16 +3613,19 @@ function ResultCard({
     );
   
     useEffect(() => {
-      // User requested to delete all records from May 15th
-      // AND a specific record from May 17th mentioning peaceful morning
-      const cleanupDate = '5월 15일';
-      const targetPostDate = '5월 17일';
-      const targetContent = "I am grateful for this peaceful morning";
+      // User requested cleanup of specific dates or posts
+      const cleanupDate15 = '5월 15일';
+      const cleanupDate10 = '5월 10일';
+      const cleanupDate19 = '5월 19일';
+      const targetPostDate17 = '5월 17일';
+      const targetContent17 = "I am grateful for this peaceful morning";
       
       const filterPost = (e: GratitudeEntry) => {
-        const isTargetDate = e.date.includes(cleanupDate);
-        const isSpecificPost = e.date.includes(targetPostDate) && e.content.includes(targetContent);
-        return !isTargetDate && !isSpecificPost;
+        const isTargetDate15 = e.date.includes(cleanupDate15);
+        const isTargetDate10 = e.date.includes(cleanupDate10);
+        const isTargetDate19 = e.date.includes(cleanupDate19);
+        const isSpecificPost17 = e.date.includes(targetPostDate17) && e.content.includes(targetContent17);
+        return !isTargetDate15 && !isTargetDate10 && !isTargetDate19 && !isSpecificPost17;
       };
 
       setEntries(prev => {
@@ -3499,13 +3637,10 @@ function ResultCard({
       });
 
       setClassEntries(prev => {
-        // First filter out May 15th records, 'sone', and 'some'
+        // First filter out specific date cleanups requested
         let updated = prev.filter(e => {
-            const isRemovedByDateOrAuthor = filterPost(e) === false || 
-                                           e.author?.toLowerCase() === 'sone' || 
-                                           e.author?.toLowerCase() === 'some' || 
-                                           e.author?.toLowerCase() === 'anonymous';
-            return !isRemovedByDateOrAuthor;
+            const isRemovedByDate = filterPost(e) === false;
+            return !isRemovedByDate;
         });
         
         // Specific records to add/ensure
@@ -3605,7 +3740,7 @@ function ResultCard({
 
       if (editingEntryId) {
         // Update existing entry
-        const updateEntry = (e: GratitudeEntry) => {
+        const updateInList = (list: GratitudeEntry[]) => list.map(e => {
           if (e.id === editingEntryId) {
             return {
               ...e,
@@ -3616,13 +3751,13 @@ function ResultCard({
             };
           }
           return e;
-        };
+        });
 
-        const updatedPersonal = entries.map(updateEntry);
+        const updatedPersonal = updateInList(entries);
         setEntries(updatedPersonal);
         localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
 
-        const updatedClass = classEntries.map(updateEntry);
+        const updatedClass = updateInList(classEntries);
         setClassEntries(updatedClass);
         localStorage.setItem('class_diary', JSON.stringify(updatedClass));
 
@@ -3762,7 +3897,7 @@ function ResultCard({
               onClick={() => setViewTab('class')}
               className={`px-10 py-4 rounded-[24px] font-black tracking-tight transition-all ${viewTab === 'class' ? 'bg-white text-indigo-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              OUR CLASS DIARY
+              My Class Diary
             </button>
           </div>
         </div>
@@ -3777,54 +3912,57 @@ function ResultCard({
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-rose-50 rounded-full -translate-y-32 translate-x-32 opacity-50"></div>
               <div className="relative z-10">
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-4 mb-6">
                   <div className="w-16 h-16 bg-rose-500 rounded-3xl flex items-center justify-center shadow-lg shadow-rose-200">
                     <Heart className="text-white" size={32} fill="currentColor" />
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col gap-4">
-                        <div>
-                          <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase whitespace-nowrap">My Gratitude Diary</h2>
-                          <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg whitespace-nowrap">
-                            마음 건강을 위해 감사의 일기를 작성하세요.
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => {
-                              if (window.confirm(viewTab === 'my' ? '정말로 모든 개인 기록을 삭제하시겠습니까?' : '정말로 모든 학급 기록을 삭제하시겠습니까?')) {
-                                if (viewTab === 'my') {
-                                  setEntries([]);
-                                  localStorage.removeItem('gratitude_diary');
-                                } else {
-                                  setClassEntries([]);
-                                  localStorage.removeItem('class_diary');
-                                }
-                              }
-                            }}
-                            className="p-2 bg-slate-50 border border-slate-100 text-slate-400 hover:text-white hover:bg-rose-500 hover:border-rose-500 rounded-xl transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest px-4"
-                          >
-                            <Trash2 size={12} /> Clear All
-                          </button>
-                          <button 
-                            onClick={refreshData}
-                            className="p-2 bg-slate-50 border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-200 rounded-xl transition-all flex items-center gap-2 font-black text-[10px] uppercase tracking-widest px-4"
-                          >
-                            <RefreshCw size={12} /> Refresh Diary
-                          </button>
-                        </div>
-                      </div>
+                    <div className="flex flex-col gap-1">
+                      <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase whitespace-nowrap">My Gratitude Diary</h2>
+                      <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg whitespace-nowrap">
+                        마음 건강을 위해 감사의 일기를 작성하세요.
+                      </p>
                     </div>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-3xl border border-slate-100 focus-within:border-rose-200 transition-all flex items-center gap-3">
-                    <User size={20} className="text-slate-400" />
+                </div>
+
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 p-6 bg-slate-50/50 rounded-[40px] border border-slate-100 shadow-sm relative z-10">
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => {
+                        if (window.confirm(viewTab === 'my' ? '정말로 모든 개인 기록을 삭제하시겠습니까?' : '정말로 모든 학급 기록을 삭제하시겠습니까?')) {
+                          if (viewTab === 'my') {
+                            setEntries([]);
+                            localStorage.removeItem('gratitude_diary');
+                          } else {
+                            setClassEntries([]);
+                            localStorage.removeItem('class_diary');
+                          }
+                        }
+                      }}
+                      className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-white hover:bg-rose-500 hover:border-rose-500 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 shadow-sm"
+                    >
+                      <Trash2 size={14} /> Clear Records
+                    </button>
+                    <button 
+                      onClick={refreshData}
+                      className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-200 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 shadow-sm"
+                    >
+                      <RefreshCw size={14} /> Refresh
+                    </button>
+                  </div>
+                  <div className="bg-white p-4 rounded-3xl border border-slate-100 focus-within:border-rose-200 transition-all flex items-center gap-4 shadow-sm px-6">
+                    <div className="flex items-center gap-2 text-rose-500">
+                      <User size={20} />
+                      <span className="text-xs font-black uppercase tracking-widest">Writer</span>
+                    </div>
+                    <div className="w-px h-6 bg-slate-100"></div>
                     <input 
                       type="text"
                       value={authorName}
                       onChange={(e) => setAuthorName(e.target.value)}
                       placeholder="이름 (e.g. Jiho)"
-                      className="bg-transparent border-none focus:ring-0 text-lg font-black text-slate-700 placeholder:text-slate-300 w-32"
+                      className="bg-transparent border-none focus:ring-0 text-xl font-black text-slate-700 placeholder:text-slate-300 w-48"
                     />
                   </div>
                 </div>
@@ -4167,7 +4305,7 @@ function ResultCard({
         ) : (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center space-y-4 relative">
-              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">Our Class Diary</h2>
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">My Class Diary</h2>
               <p className="text-indigo-500 font-black uppercase tracking-[0.2em] text-xl italic underline underline-offset-8 decoration-indigo-200 decoration-4">우리 반 친구들의 감사 기록장</p>
               <button 
                 onClick={refreshData}
@@ -4180,7 +4318,11 @@ function ResultCard({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <AnimatePresence initial={false}>
                 {Array.from(new Map([...classEntries, ...entries].map(entry => [entry.id, entry])).values())
-                  .sort((a, b) => Number(b.id) - Number(a.id))
+                  .sort((a, b) => {
+                    const idA = isNaN(Number(a.id)) ? 0 : Number(a.id);
+                    const idB = isNaN(Number(b.id)) ? 0 : Number(b.id);
+                    return idB - idA;
+                  })
                   .map((entry, idx) => (
                   <motion.div 
                     key={entry.id}
@@ -4457,7 +4599,19 @@ function ResultCard({
         ctx.lineWidth = lineWidth;
     }, [color, lineWidth]);
 
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        
+        // Initial white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }, []);
+
     const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+        if (e.cancelable) e.preventDefault();
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -4476,6 +4630,7 @@ function ResultCard({
 
     const draw = (e: React.MouseEvent | React.TouchEvent) => {
         if (!isDrawing) return;
+        if (e.cancelable) e.preventDefault();
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -4500,7 +4655,13 @@ function ResultCard({
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // After clearing with white, if a template is selected, we should redraw it
+        if (selectedTemplate !== 'none') {
+            drawTemplate(selectedTemplate);
+        }
     };
 
     const saveToWall = () => {
@@ -4716,7 +4877,7 @@ function ResultCard({
                                     ref={canvasRef}
                                     width={600}
                                     height={600}
-                                    className="bg-white cursor-crosshair max-w-full h-auto"
+                                    className="bg-white cursor-crosshair max-w-full h-auto touch-none"
                                     onMouseDown={startDrawing}
                                     onMouseMove={draw}
                                     onMouseUp={stopDrawing}
