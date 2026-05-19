@@ -110,7 +110,7 @@ interface ReadingQuestion {
   type: 'choice' | 'subjective';
   section: 'warmup' | 'p1' | 'p2_jiho' | 'p2_somi';
   question: string;
-  question_ko: string;
+  question_ko?: string;
   options?: string[];
   answer: string;
   explanation: string;
@@ -520,50 +520,42 @@ const WRITING_DATA: WritingQuestion[] = [
 
 const READING_DATA: ReadingQuestion[] = [
   // Warm-up Reading: Want to Be Happy?
-  {
+    {
     id: 101, section: 'warmup', type: 'subjective',
-    question: "What do all people want according to the speaker?",
-    question_ko: "연설자에 따르면 모든 사람들이 원하는 것은 무엇인가요? (All people want ...)",
+    question: "What do all people want according to the speaker? (All people want ...)",
     answer: "to be happy",
     explanation: "연설자는 모든 사람들이 공통적으로 '행복해지기를 원한다(all of us want to be happy)'고 말합니다."
   },
-  {
+    {
     id: 102, section: 'warmup', type: 'subjective',
     question: "According to the speaker, what makes people happy?",
-    question_ko: "연설자에 따르면 무엇이 사람들을 행복하게 만드나요? (It's ... that makes people happy.)",
     answer: "gratefulness",
     explanation: "연설자는 행복이 우리를 감사하게 만드는 것이 아니라, '감사함(gratefulness)'이 우리를 행복하게 만든다고 강조합니다."
   },
   {
     id: 103, section: 'warmup', type: 'subjective',
-    question: "Why are some rich or successful people not happy?",
-    question_ko: "왜 어떤 부유하거나 성공한 사람들은 행복하지 않은가요? (Because they want ...)",
+    question: "Why are some rich or successful people not happy? (Because they want ...)",
     answer: "something else or more of the same",
     explanation: "그들은 이미 가진 것에 만족하지 못하고 '다른 무언가나 혹은 같은 것을 더 많이' 원하기 때문입니다."
   },
   // Page 1: Protecting Your Emotional Health
   {
-    id: 1, section: 'p1', type: 'choice',
-    question: "According to the text, what is the first step to improve your emotional health?",
-    question_ko: "본문에 따르면, 정서적 건강을 향상시키기 위한 첫 번째 단계는 무엇인가요?",
-    options: ["Exercise every day", "Notice what makes you sad or happy", "Eat healthy meals", "Connect with pets"],
-    answer: "Notice what makes you sad or happy",
+    id: 1, section: 'p1', type: 'subjective',
+    question: "According to the text, what is the first step to improve your emotional health? (Notice what makes you ______ or ______.)",
+    answer: "sad, happy | sad or happy",
     explanation: "본문은 정서적 건강을 위해 자신을 슬프거나 기쁘게 만드는 것이 무엇인지 알아차리는 것부터 시작하라고 조언합니다."
   },
   {
     id: 2, section: 'p1', type: 'subjective',
     question: "If you keep negative feelings inside, they can cause problems in your __________. (One word)",
-    question_ko: "부정적인 감정을 내면에 담아두면, 당신의 _____에 문제를 일으킬 수 있습니다. (한 단어)",
     answer: "relationships",
     explanation: "부정적인 감정은 사람 사이의 관계(relationships)에 문제를 일으킬 수 있다고 설명합니다."
   },
   {
-    id: 3, section: 'p1', type: 'choice',
-    question: "Which of the following is NOT mentioned for maintaining physical health?",
-    question_ko: "신체적 건강을 유지하기 위해 언급되지 않은 것은 무엇인가요?",
-    options: ["Exercising regularly", "Eating healthy meals", "Sleeping enough", "Joining a sports club"],
-    answer: "Joining a sports club",
-    explanation: "본문은 운동, 식사, 수면을 언급하며, 스포츠 클럽 가입은 직접적인 예시로 나오지 않았습니다."
+    id: 3, section: 'p1', type: 'subjective',
+    question: "Which of the following is essential for your emotional health? (Keep your body healthy by __________ regularly.)",
+    answer: "exercising",
+    explanation: "정기적인 운동은 신체 건강뿐만 아니라 정서적 건강에도 필수적입니다."
   },
   {
     id: 4, section: 'p1', type: 'subjective',
@@ -946,8 +938,8 @@ export default function App() {
       )}
 
       {/* Sidebar */}
-      <aside className={`${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative top-0 left-0 w-72 md:w-80 bg-[#2D3748] p-6 md:p-8 flex flex-col h-full border-r border-white/5 z-40 transition-transform duration-300 ease-in-out`}>
-        <div className="flex items-center space-x-4 mb-8 md:mb-10 pl-2">
+      <aside className={`${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative top-0 left-0 w-72 md:w-80 bg-[#2D3748] py-6 md:py-8 flex flex-col h-full border-r border-white/5 z-40 transition-transform duration-300 ease-in-out`}>
+        <div className="flex items-center space-x-4 mb-8 md:mb-10 px-6 md:px-8">
           <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-2xl flex items-center justify-center shadow-2xl shadow-white/10 shrink-0">
             <Award className="text-[#4C51BF]" size={26} fill="currentColor" />
           </div>
@@ -957,7 +949,7 @@ export default function App() {
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1.5 md:space-y-2 overflow-y-auto pr-2 custom-scrollbar">
+        <nav className="flex-1 space-y-1.5 md:space-y-2 overflow-y-auto custom-scrollbar px-2">
           <SidebarBtn 
             icon={<LayoutDashboard className="w-5 h-5 text-white" />} 
             label="DASHBOARD" 
@@ -972,21 +964,21 @@ export default function App() {
           />
           
           <div className="pt-4 md:pt-6 pb-1">
-             <div className="flex items-center space-x-3 p-4 rounded-3xl font-black uppercase tracking-widest text-lg text-white whitespace-nowrap">
+             <div className="flex items-center space-x-3 p-4 px-6 rounded-3xl font-black uppercase tracking-widest text-lg text-white whitespace-nowrap">
                 <Brain className="w-6 h-6 text-indigo-300 shrink-0" />
                 <span>GRAMMAR MASTER</span>
              </div>
              <div className="space-y-1 md:space-y-1.5 px-2">
                 <button 
                   onClick={() => { navTo('grammar_ppc'); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'grammar_ppc' ? "bg-cyan-500 text-white shadow-lg translate-x-1" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-xl md:text-2xl transition-all whitespace-nowrap ${activeSection === 'grammar_ppc' ? "bg-cyan-500 text-white shadow-lg" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
                 >
                    <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'grammar_ppc' ? "bg-white" : "bg-cyan-400"}`}></div>
                    현재완료 진행형
                 </button>
                 <button 
                   onClick={() => { navTo('grammar_so_that'); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'grammar_so_that' ? "bg-pink-600 text-white shadow-lg translate-x-1" : "text-pink-100 hover:text-white hover:bg-white/10"}`}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-xl md:text-2xl transition-all whitespace-nowrap ${activeSection === 'grammar_so_that' ? "bg-pink-600 text-white shadow-lg" : "text-pink-100 hover:text-white hover:bg-white/10"}`}
                 >
                    <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'grammar_so_that' ? "bg-white" : "bg-pink-400"}`}></div>
                    so ~ that 구문
@@ -1636,9 +1628,9 @@ function SidebarBtn({ icon, label, active, onClick }: { icon: React.ReactNode; l
   return (
     <button 
       onClick={onClick}
-      className={`flex items-center space-x-4 p-4 rounded-3xl transition-all font-black uppercase tracking-widest text-lg group w-full text-left ${
+      className={`flex items-center space-x-4 p-4 px-6 rounded-3xl transition-all font-black uppercase tracking-widest text-lg md:text-xl group w-full text-left ${
         active 
-          ? "bg-[#667EEA] text-white shadow-xl shadow-indigo-700/20 translate-x-1" 
+          ? "bg-[#667EEA] text-white shadow-xl shadow-indigo-700/20 translate-x-0" 
           : "text-white hover:bg-white/10 hover:text-white"
       }`}
     >
@@ -2755,7 +2747,7 @@ function ResultCard({
                   </button>
                   <span className="bg-orange-100 text-orange-600 px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center">Final Step</span>
                 </div>
-                <p className="text-xl font-bold text-slate-400">학습한 핵심 어법을 활용하여 당신의 감정 건강 이야기를 만들어보세요.</p>
+                <p className="text-xl font-bold text-slate-400">학습한 핵심 어법을 활용하여 당신의 감정 건강 상태를 표현해 보세요.</p>
              </div>
 
              <div className="bg-slate-50 p-10 rounded-[45px] border border-slate-100 focus-within:border-indigo-300 transition-all flex items-center gap-6 shadow-inner max-w-md">
@@ -2923,9 +2915,9 @@ function ResultCard({
     const [userName, setUserName] = useState('');
     const [showNameInput, setShowNameInput] = useState(isWarmup);
     const [feedback, setFeedback] = useState<{ isCorrect: boolean; explanation: string } | null>(null);
+    const isWarmupReading = isWarmup;
+    const [showTranslation, setShowTranslation] = useState(false);
     const [showQuiz, setShowQuiz] = useState(false);
-
-    const isWarmupReading = activeSection === 'reading_warmup';
 
     if (activeSection === 'reading') {
         return (
@@ -2941,9 +2933,19 @@ function ResultCard({
                   <Sparkles size={32} />
                 </div>
                 <div className="space-y-1 text-center md:text-left">
-                  <span className="bg-white/20 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Recommended Start</span>
+                  <span className="bg-white/20 px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest italic">Take care of yourself</span>
                   <h3 className="text-3xl font-black tracking-tight uppercase">Warm-up Reading</h3>
-                  <p className="font-bold text-white/70 italic text-sm">"Small positive changes lead to big improvements..."</p>
+                  <div className="flex flex-wrap gap-3 mt-2">
+                    <p className="font-bold text-white/70 italic text-sm w-full mb-1">"Small positive changes lead to big improvements..."</p>
+                    <a 
+                       href="https://www.mentalhealth.go.kr/portal/mdexmnDtl/mdexmnTypeList.do"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-full text-xs font-black flex items-center gap-2 shadow-lg transition-all active:scale-95"
+                    >
+                      <Smile size={14} /> 스트레스 자가 진단 바로가기
+                    </a>
+                  </div>
                 </div>
               </div>
               <button 
@@ -3049,47 +3051,75 @@ function ResultCard({
                 </div>
                 <div>
                   <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-2 uppercase leading-none">{content.title}</h2>
-                  <p className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-lg">{isWarmupReading ? "Preparation for Part 2" : "Main Text Analysis"}</p>
+                  {!isWarmupReading && (
+                    <p className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-lg">Main Text Analysis</p>
+                  )}
                 </div>
               </div>
-              <button 
-                onClick={() => setShowQuiz(true)}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-10 py-5 rounded-3xl font-black text-xl shadow-xl shadow-emerald-100 transition-all active:scale-95 flex items-center gap-3"
-              >
-                {isWarmupReading ? "START ACTIVITY" : "QUIZ START"} <Zap size={20} fill="currentColor" />
-              </button>
+              <div className="flex gap-4">
+                <button 
+                  onClick={() => setShowQuiz(true)}
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-10 py-5 rounded-3xl font-black text-xl shadow-xl shadow-emerald-100 transition-all active:scale-95 flex items-center gap-3"
+                >
+                  {isWarmupReading ? "START ACTIVITY" : "QUIZ START"} <Zap size={20} fill="currentColor" />
+                </button>
+              </div>
             </div>
 
             {isWarmupReading && (
-              <div className="mb-12 p-8 bg-amber-50 rounded-[40px] border border-amber-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
-                  <Volume2 size={40} />
+              <div className="mb-12 flex flex-col gap-8">
+                {/* Addition: Korean Healing Minds Shorts Section */}
+                <div className="p-8 bg-sky-50 rounded-[40px] border border-sky-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+                  <div className="w-20 h-20 bg-sky-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
+                    <Zap size={40} />
+                  </div>
+                  <div className="space-y-4 text-center md:text-left flex-1">
+                    <h4 className="text-2xl font-black text-sky-900 uppercase tracking-tight">Warm up Video</h4>
+                    <a 
+                      href="https://www.youtube.com/shorts/I03lorqi-P4?si=JSZcyB0ut-3K8rRh" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-white text-sky-600 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-sky-100 transition-all active:scale-95 border border-sky-200"
+                    >
+                      쇼츠 영상 보기 <ArrowRight size={18} />
+                    </a>
+                  </div>
                 </div>
-                <div className="space-y-4 text-center md:text-left flex-1">
-                  <h4 className="text-2xl font-black text-amber-900 uppercase tracking-tight">Watch the TED Talk</h4>
-                  <p className="text-amber-800 font-bold leading-relaxed">
-                    이 글의 바탕이 된 David Steindl-Rast 신부님의 강연을 영상으로 만나보세요. <br/>
-                    감사함이 어떻게 우리를 행복으로 이끄는지 더 깊이 이해할 수 있습니다.
-                  </p>
-                  <a 
-                    href="https://www.ted.com/talks/david_steindl_rast_want_to_be_happy_be_grateful?utm_campaign=tedspread&utm_medium=referral&utm_source=tedcomshare" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-amber-100 transition-all active:scale-95 border border-amber-200"
-                  >
-                    TED 강연 영상 보기 <ArrowRight size={18} />
-                  </a>
+
+                <div className="p-8 bg-amber-50 rounded-[40px] border border-amber-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+                  <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
+                    <Volume2 size={40} />
+                  </div>
+                  <div className="space-y-4 text-center md:text-left flex-1">
+                    <h4 className="text-2xl font-black text-amber-900 uppercase tracking-tight">Warm up Video</h4>
+                    <a 
+                      href="https://www.ted.com/talks/david_steindl_rast_want_to_be_happy_be_grateful?utm_campaign=tedspread&utm_medium=referral&utm_source=tedcomshare" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-amber-100 transition-all active:scale-95 border border-amber-200"
+                    >
+                      TED 강연 영상 보기 <ArrowRight size={18} />
+                    </a>
+                  </div>
                 </div>
               </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className={`grid grid-cols-1 ${showTranslation ? 'lg:grid-cols-2' : ''} gap-12 transition-all`}>
               <div className="space-y-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                    <Star className="text-emerald-500" size={16} fill="currentColor" />
-                  </span>
-                  <h4 className="text-xl font-black text-slate-800 tracking-tight">ORIGINAL TEXT</h4>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                      <Star className="text-emerald-500" size={16} fill="currentColor" />
+                    </span>
+                    <h4 className="text-xl font-black text-slate-800 tracking-tight">ORIGINAL TEXT</h4>
+                  </div>
+                  <button 
+                    onClick={() => setShowTranslation(!showTranslation)}
+                    className={`${showTranslation ? 'bg-orange-500 text-white' : 'bg-slate-100 text-slate-600'} px-6 py-3 rounded-2xl font-black text-sm shadow-md transition-all active:scale-95 flex items-center gap-2`}
+                  >
+                    {showTranslation ? "영어만 보기" : "한글 번역 보기"} <Search size={16} />
+                  </button>
                 </div>
                 <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 min-h-[300px] shadow-inner relative group">
                   <p className="text-2xl font-black text-slate-700 leading-relaxed tracking-tight break-words whitespace-pre-wrap">
@@ -3105,123 +3135,32 @@ function ResultCard({
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                    <Search className="text-orange-500" size={16} />
-                  </span>
-                  <h4 className="text-xl font-black text-slate-800 tracking-tight">KOREAN TRANSLATION</h4>
-                </div>
-                <div className="bg-orange-50/30 p-10 rounded-[40px] border border-orange-100 min-h-[300px] shadow-sm">
-                  <p className="text-xl font-bold text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
-                    {content.translation}
-                  </p>
-                </div>
-              </div>
+              {showTranslation && (
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="space-y-6"
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
+                      <Search className="text-orange-500" size={16} />
+                    </span>
+                    <h4 className="text-xl font-black text-slate-800 tracking-tight">KOREAN TRANSLATION</h4>
+                  </div>
+                  <div className="bg-orange-50/30 p-10 rounded-[40px] border border-orange-100 min-h-[300px] shadow-sm">
+                    <p className="text-xl font-bold text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
+                      {content.translation}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             <div className="mt-12 p-8 bg-emerald-50 rounded-3xl border border-emerald-100 flex items-center gap-6">
               <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm border border-emerald-100">
                 <CheckCircle2 size={24} />
               </div>
-              <p className="text-emerald-800 font-bold text-lg">본문을 충분히 읽고 이해하셨나요? 이해가 되었다면 오른쪽 상단의 <b>QUIZ START</b> 버튼을 눌러보세요!</p>
-            </div>
-          </motion.div>
-        </div>
-      );
-    }
-
-    if (!showQuiz) {
-      return (
-        <div className="max-w-5xl mx-auto space-y-12">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white p-16 rounded-[60px] shadow-2xl border border-slate-100 relative overflow-hidden"
-          >
-            <div className="flex flex-col md:flex-row items-center justify-between mb-12 gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-emerald-500 rounded-3xl flex items-center justify-center shadow-lg shadow-emerald-200">
-                  <BookOpen className="text-white" size={32} />
-                </div>
-                <div>
-                  <h2 className="text-6xl font-black text-slate-800 tracking-tighter mb-2 uppercase">{content.title}</h2>
-                  <p className="text-emerald-500 font-bold uppercase tracking-[0.2em] text-lg">{isWarmup ? "Preparation for Part 2" : "Main Text Analysis"}</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setShowQuiz(true)}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-10 py-5 rounded-3xl font-black text-xl shadow-xl shadow-emerald-100 transition-all active:scale-95 flex items-center gap-3"
-              >
-                {isWarmup ? "START ACTIVITY" : "QUIZ START"} <Zap size={20} fill="currentColor" />
-              </button>
-            </div>
-
-            {isWarmup && (
-              <div className="mb-12 p-8 bg-amber-50 rounded-[40px] border border-amber-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-                <div className="w-20 h-20 bg-amber-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
-                  <Volume2 size={40} />
-                </div>
-                <div className="space-y-4 text-center md:text-left flex-1">
-                  <h4 className="text-2xl font-black text-amber-900 uppercase tracking-tight">Watch the TED Talk</h4>
-                  <p className="text-amber-800 font-bold leading-relaxed">
-                    이 글의 바탕이 된 David Steindl-Rast 신부님의 강연을 영상으로 만나보세요. <br/>
-                    감사함이 어떻게 우리를 행복으로 이끄는지 더 깊이 이해할 수 있습니다.
-                  </p>
-                  <a 
-                    href="https://www.ted.com/talks/david_steindl_rast_want_to_be_happy_be_grateful?utm_campaign=tedspread&utm_medium=referral&utm_source=tedcomshare" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-amber-100 transition-all active:scale-95 border border-amber-200"
-                  >
-                    TED 강연 영상 보기 <ArrowRight size={18} />
-                  </a>
-                </div>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                    <Star className="text-emerald-500" size={16} fill="currentColor" />
-                  </span>
-                  <h4 className="text-xl font-black text-slate-800 tracking-tight">ORIGINAL TEXT</h4>
-                </div>
-                <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 min-h-[300px] shadow-inner relative group">
-                  <p className="text-2xl font-black text-slate-700 leading-relaxed tracking-tight break-words whitespace-pre-wrap">
-                    {content.text}
-                  </p>
-                  <button 
-                    onClick={() => handleSpeak(content.text)}
-                    className="absolute bottom-6 right-6 p-4 bg-white text-emerald-500 rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-90"
-                    title="전체 본문 듣기"
-                  >
-                    <Volume2 size={24} />
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center">
-                    <Search className="text-orange-500" size={16} />
-                  </span>
-                  <h4 className="text-xl font-black text-slate-800 tracking-tight">KOREAN TRANSLATION</h4>
-                </div>
-                <div className="bg-orange-50/30 p-10 rounded-[40px] border border-orange-100 min-h-[300px] shadow-sm">
-                  <p className="text-xl font-bold text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
-                    {content.translation}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-12 p-8 bg-emerald-50 rounded-3xl border border-emerald-100 flex items-center gap-6">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm border border-emerald-100">
-                <CheckCircle2 size={24} />
-              </div>
-              <p className="text-emerald-800 font-bold text-lg">본문을 충분히 읽고 이해하셨나요? 이해가 되었다면 오른쪽 상단의 <b>QUIZ START</b> 버튼을 눌러보세요!</p>
+              <p className="text-emerald-800 font-bold text-lg">본문을 충분히 읽고 이해하셨나요? 이해가 되었다면 위쪽의 <b>QUIZ START</b> 버튼을 눌러보세요!</p>
             </div>
           </motion.div>
         </div>
@@ -3326,9 +3265,11 @@ function ResultCard({
                     <Volume2 size={24} />
                   </button>
                 </div>
-                <p className="text-xl font-bold text-slate-400">
-                  질문: {q.question_ko}
-                </p>
+                {q.question_ko && (
+                  <p className="text-xl font-bold text-slate-400">
+                    질문: {q.question_ko}
+                  </p>
+                )}
              </div>
 
              {q.type === 'choice' ? (
@@ -4411,7 +4352,8 @@ function ResultCard({
         if (!ctx) return;
 
         // Clear first
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
         if (templateId === 'none') return;
 
