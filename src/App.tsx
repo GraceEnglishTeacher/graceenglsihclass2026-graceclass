@@ -2291,6 +2291,8 @@ function ResultCard({
         </div>
       );
     }
+    
+    if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
 
   // --- Practice View (Word Scramble and Direct Typing) ---
   const q = filteredQuestions[currentIdx];
@@ -2645,7 +2647,7 @@ function ResultCard({
           </div>
 
           {/* Stories Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4">
             <AnimatePresence initial={false}>
               {storyEntries.length === 0 ? (
                 <div className="col-span-full py-40 text-center bg-white/50 rounded-[80px] border-4 border-dashed border-slate-100 backdrop-blur-sm">
@@ -2667,7 +2669,7 @@ function ResultCard({
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.1 }}
-                    className="relative bg-white p-6 rounded-[35px] shadow-[0_15px_40px_rgba(0,0,0,0.05)] border border-slate-50 space-y-6 flex flex-col justify-between hover:shadow-[0_25px_60px_rgba(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-500 group overflow-hidden"
+                    className="relative bg-white p-5 rounded-[30px] shadow-[0_15px_40px_rgba(0,0,0,0.05)] border border-slate-50 space-y-5 flex flex-col justify-between hover:shadow-[0_25px_60px_rgba(0,0,0,0.08)] hover:-translate-y-2 transition-all duration-500 group overflow-hidden"
                   >
                     {/* Decorative Corner */}
                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/20 rounded-full -translate-y-16 translate-x-16 transition-transform group-hover:scale-150 duration-700"></div>
@@ -2682,7 +2684,7 @@ function ResultCard({
                             <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white"></div>
                           </div>
                           <div>
-                            <p className="font-black text-slate-800 text-base leading-none mb-1">{entry.author}</p>
+                            <p className="font-black text-slate-800 text-sm leading-none mb-1">{entry.author}</p>
                             <div className="flex items-center gap-1.5">
                               <div className="w-1 h-1 rounded-full bg-indigo-400"></div>
                               <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">{entry.date}</p>
@@ -2723,9 +2725,9 @@ function ResultCard({
                       </div>
 
                       <div className="space-y-4">
-                        <div className="relative p-5 bg-slate-50/50 rounded-[24px] border border-slate-100 group-hover:bg-indigo-50/30 transition-all group-hover:border-indigo-100">
+                        <div className="relative p-4 bg-slate-50/50 rounded-[20px] border border-slate-100 group-hover:bg-indigo-50/30 transition-all group-hover:border-indigo-100">
                           <div className="absolute top-3 left-4 text-indigo-100 opacity-50"><Quote size={24} fill="currentColor" /></div>
-                          <p className="relative text-base font-bold text-slate-700 leading-relaxed italic z-10">
+                          <p className="relative text-sm font-bold text-slate-700 leading-relaxed italic z-10">
                             "{entry.ppc}, so that {entry.soThat}"
                           </p>
                         </div>
@@ -2740,7 +2742,7 @@ function ResultCard({
                       </div>
                     </div>
 
-                    <div className="mt-6 pt-6 border-t border-slate-50 space-y-6 relative isolate">
+                    <div className="mt-4 pt-4 border-t border-slate-50 space-y-4 relative isolate">
                       <div className="flex flex-wrap gap-2">
                         {['👍', '❤️', '👏', '🔥', '✨', '💪'].map(emoji => (
                           <button 
@@ -2754,22 +2756,22 @@ function ResultCard({
                         ))}
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {entry.comments?.length > 0 && (
-                          <div className="space-y-3 bg-slate-50/30 p-5 rounded-[30px] border border-slate-100 shadow-inner max-h-40 overflow-y-auto custom-scrollbar">
+                          <div className="space-y-2 bg-slate-50/30 p-4 rounded-[24px] border border-slate-100 shadow-inner max-h-32 overflow-y-auto custom-scrollbar">
                             {entry.comments.map((c: any) => (
                               <motion.div 
                                 initial={{ opacity: 0, x: -10 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 key={c.id} 
-                                className="flex gap-2.5"
+                                className="flex gap-2"
                               >
-                                <div className="w-7 h-7 rounded-lg bg-white border border-slate-100 flex items-center justify-center shrink-0">
-                                  <span className="text-[9px] font-black uppercase text-indigo-500">{c.author.charAt(0)}</span>
+                                <div className="w-6 h-6 rounded-lg bg-white border border-slate-100 flex items-center justify-center shrink-0">
+                                  <span className="text-[8px] font-black uppercase text-indigo-500">{c.author.charAt(0)}</span>
                                 </div>
                                 <div className="flex flex-col gap-0.5">
-                                  <span className="font-black text-slate-800 text-[9px] uppercase tracking-tighter">{c.author}</span>
-                                  <p className="text-slate-600 font-medium text-[11px] leading-tight">{c.text}</p>
+                                  <span className="font-black text-slate-800 text-[8px] uppercase tracking-tighter">{c.author}</span>
+                                  <p className="text-slate-600 font-medium text-[10px] leading-tight">{c.text}</p>
                                 </div>
                               </motion.div>
                             ))}
@@ -2782,13 +2784,13 @@ function ResultCard({
                             onChange={(e) => setCommentInput({ ...commentInput, [entry.id]: e.target.value })}
                             onKeyDown={(e) => e.key === 'Enter' && handleAddComment(entry.id)}
                             placeholder="응원 댓글..."
-                            className="w-full h-12 pl-6 pr-14 bg-slate-50 border-2 border-transparent rounded-[24px] text-[13px] font-bold text-slate-600 focus:bg-white focus:border-indigo-100 focus:ring-0 transition-all placeholder:text-slate-300 shadow-inner"
+                            className="w-full h-10 pl-5 pr-12 bg-slate-50 border-2 border-transparent rounded-[20px] text-[12px] font-bold text-slate-600 focus:bg-white focus:border-indigo-100 focus:ring-0 transition-all placeholder:text-slate-300 shadow-inner"
                           />
                           <button 
                             onClick={() => handleAddComment(entry.id)} 
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-indigo-500 text-white rounded-xl flex items-center justify-center hover:bg-slate-900 transition-all shadow-lg active:scale-90"
+                            className="absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 bg-indigo-500 text-white rounded-lg flex items-center justify-center hover:bg-slate-900 transition-all shadow-lg active:scale-90"
                           >
-                            <Send size={14} />
+                            <Send size={12} />
                           </button>
                         </div>
                       </div>
