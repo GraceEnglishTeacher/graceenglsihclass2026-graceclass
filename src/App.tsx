@@ -3004,6 +3004,25 @@ function ResultCard({
 
             {isWarmupReading && (
               <div className="mb-12 flex flex-col gap-8">
+                {/* Stress Self-Diagnosis Link */}
+                <div className="p-8 bg-rose-50 rounded-[40px] border border-rose-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
+                  <div className="w-20 h-20 bg-rose-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
+                    <Heart size={40} fill="currentColor" />
+                  </div>
+                  <div className="space-y-4 text-center md:text-left flex-1">
+                    <h4 className="text-2xl font-black text-rose-900 uppercase tracking-tight">스트레스 자가진단</h4>
+                    <p className="text-rose-800 font-bold leading-relaxed text-sm">국가정신건강포털에서 나의 스트레스 지수를 자가진단해 보고 마음의 상태를 확인해 보세요.</p>
+                    <a 
+                      href="https://www.mentalhealth.go.kr/portal/mdexmnDtl/mdexmnTypeList.do" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-white text-rose-600 px-8 py-3 rounded-2xl font-black shadow-md hover:bg-rose-100 transition-all active:scale-95 border border-rose-200"
+                    >
+                      스트레스 자가진단 바로가기 <ArrowRight size={18} />
+                    </a>
+                  </div>
+                </div>
+
                 {/* Addition: Korean Healing Minds Shorts Section */}
                 <div className="p-8 bg-sky-50 rounded-[40px] border border-sky-100 flex flex-col md:flex-row items-center gap-8 shadow-sm">
                   <div className="w-20 h-20 bg-sky-500 rounded-3xl flex items-center justify-center text-white shadow-lg shrink-0">
