@@ -34,7 +34,8 @@ import {
   Menu,
   Users,
   Quote,
-  Clock
+  Clock,
+  History
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import dogTemplate from './assets/images/puppy_cute_zentangle_template_1779095376379.png';
@@ -2063,8 +2064,6 @@ function ResultCard({
     const [subSection, setSubSection] = useState<'menu' | 'practice' | 'review' | 'story'>('menu');
     const [currentIdx, setCurrentIdx] = useState(0);
 
-    if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
-
     const [userOrder, setUserOrder] = useState<string[]>([]);
     const [scrambled, setScrambled] = useState<string[]>([]);
     const [feedback, setFeedback] = useState<boolean | null>(null);
@@ -2164,6 +2163,8 @@ function ResultCard({
         setSubSection('review');
       }
     };
+
+    if (subSection === 'story') return <MyStoryView handleSpeak={handleSpeak} navTo={navTo} onBack={() => setSubSection('menu')} />;
 
     if (subSection === 'menu') {
       return (
@@ -2265,41 +2266,76 @@ function ResultCard({
                           </button>
                        </div>
                      );
-                   })}
-                </div>
-              )}
-            </div>
-
-            <div className="mt-16 flex flex-col md:flex-row gap-4">
-               <button 
-                onClick={() => {
-                  setSubSection('menu');
-                  setScore(0);
-                  setCurrentIdx(0);
-                  setWrongAnswers([]);
-                  setAlreadyScored([]);
-                }}
-                className="flex-1 py-6 bg-slate-100 text-slate-500 rounded-3xl font-black text-xl hover:bg-slate-200 transition"
-               >
-                 메뉴로 돌아가기
-               </button>
-               <button 
-                onClick={() => setSubSection('story')}
-                className="flex-1 py-6 bg-indigo-600 text-white rounded-3xl font-black text-xl hover:bg-indigo-700 transition shadow-xl shadow-indigo-100"
-               >
-                 MY STORY 만들러 가기 <ChevronRight className="inline ml-1" />
-               </button>
-            </div>
+                         {(feedback === true || showAnswerIdx === currentIdx) && (
+                   <button 
+                    onClick={nextLevel}
+                    className="flex-1 md:flex-none bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-slate-800 transition active:scale-95 shadow-2xl shadow-indigo-100 flex items-center justify-center gap-3"
+                   >
+                    {currentIdx === filteredQuestions.length - 1 ? "FINISH MISSION" : "NEXT MISSION"}
+                    <ChevronRight size={24} />
+                   </button>
+                )}
+             </div>
           </div>
         </div>
-      );
-    }
-    
-    // Previous story check removed here (moved to top)
+      </motion.div>
 
+      <div className="flex flex-col md:flex-row gap-4">
+         <button 
+          onClick={() => navTo('dashboard')}
+          className="flex-1 py-6 bg-slate-100 text-slate-500 rounded-3xl font-black text-xl hover:bg-slate-200 transition"
+         >
+           메뉴로 돌아가기
+         </button>
+         <button 
+          onClick={() => setSubSection('menu')}
+          className="flex-1 py-6 bg-white border-2 border-slate-100 text-slate-400 rounded-3xl font-black text-xl hover:bg-slate-50 transition"
+         >
+           미션 목록 보기 </button>
+      </div>
+    </div>
+  );
+};
 
-  // --- Practice View (Word Scramble and Direct Typing) ---
-  const q = filteredQuestions[currentIdx];
+  const MyStoryView = ({ handleSpeak, navTo, onBack }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void; onBack: () => void }) => {
+    const [sentencePPC, setSentencePPC] = useState('');
+    const [sentenceSoThat, setSentenceSoThat] = useState('');
+    const [authorName, setAuthorName] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+    const [storyEntries, setStoryEntries] = useState<any[]>(() => {
+      try {
+        const saved = localStorage.getItem('mental_health_stories');
+        let parsed = saved ? JSON.parse(saved) : [];
+        const excluded = ['o', 'tth', 'thht', 'test', 'asdf', 'ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'a', 'b', 'c', '123'];
+        return parsed.filter((e: any) => !excluded.includes(e.author?.toLowerCase()));
+      } catch {
+        return [];
+      }
+    });
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [storyTab, setStoryTab] = useState<'build' | 'wall'>('build');
+    const [commentInput, setCommentInput] = useState<{[key: string]: string}>({});
+
+    const handleSubmit = () => {
+      if (!authorName.trim()) {
+        alert("Please enter your name!");
+        return;
+      }
+      if (sentencePPC.trim() && sentenceSoThat.trim()) {
+        if (editingId) {
+          const updated = storyEntries.map(e => {
+            if (e.id === editingId) {
+              return {
+                ...e,
+                author: authorName,
+                ppc: sentencePPC,
+                soThat: sentenceSoThat
+              };
+            }
+            return e;
+          });
+          setStoryEntries(updated);
+          localStorage.setItem('mental_health_stories', JSON.stringify(updated)); = filteredQuestions[currentIdx];
   const qCorrectFull = `${q.prefix || ""} ${q.correct} ${q.suffix || ""}`;
 
   return (
@@ -2485,67 +2521,23 @@ function ResultCard({
                 {(feedback === true || showAnswerIdx === currentIdx) && (
                    <button 
                     onClick={nextLevel}
-                    className="flex-1 md:flex-none bg-indigo-600 text-white px-12 py-5 rounded-3xl font-black text-xl hover:bg-slate-800 transition active:scale-95 shadow-2xl shadow-indigo-100 flex items-center justify-center gap-3"
-                   >
-                    {currentIdx === filteredQuestions.length - 1 ? "FINISH MISSION" : "NEXT MISSION"}
-                    <ChevronRight size={24} />
-                   </button>
-                )}
-             </div>
-          </div>
-        </div>
-      </motion.div>
-
-      <div className="flex flex-col md:flex-row gap-4">
-         <button 
-          onClick={() => navTo('dashboard')}
-          className="flex-1 py-6 bg-slate-100 text-slate-500 rounded-3xl font-black text-xl hover:bg-slate-200 transition"
-         >
-           메뉴로 돌아가기
-         </button>
-         <button 
-          onClick={() => setSubSection('menu')}
-          className="flex-1 py-6 bg-white border-2 border-slate-100 text-slate-400 rounded-3xl font-black text-xl hover:bg-slate-50 transition"
-         >
-           미션 목록 보기
-         </button>
-      </div>
-    </div>
-  );
-};
-
-  const MyStoryView = ({ handleSpeak, navTo, onBack }: { handleSpeak: (t: string) => void; navTo: (s: Section) => void; onBack: () => void }) => {
-    const [sentencePPC, setSentencePPC] = useState('');
-    const [sentenceSoThat, setSentenceSoThat] = useState('');
-    const [authorName, setAuthorName] = useState('');
-    const [submitted, setSubmitted] = useState(false);
-    const [storyEntries, setStoryEntries] = useState<any[]>(() => {
-      try {
-        const saved = localStorage.getItem('mental_health_stories');
-        let parsed = saved ? JSON.parse(saved) : [];
-        const excluded = ['o', 'tth', 'thht', 'test', 'asdf', 'ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'a', 'b', 'c', '123'];
-        return parsed.filter((e: any) => !excluded.includes(e.author?.toLowerCase()));
-      } catch {
-        return [];
-      }
-    });
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [storyTab, setStoryTab] = useState<'build' | 'wall'>('build');
-    const [commentInput, setCommentInput] = useState<{[key: string]: string}>({});
-
-    const handleSubmit = () => {
-      if (!authorName.trim()) {
-        alert("Please enter your name!");
-        return;
-      }
-      if (sentencePPC.trim() && sentenceSoThat.trim()) {
-        if (editingId) {
-          const updated = storyEntries.map(e => e.id === editingId ? {
-            ...e,
-            author: authorName,
-            ppc: sentencePPC,
-            soThat: sentenceSoThat
-          } : e);
+                         <div className="flex gap-1.5 isolate">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingId(entry.id);
+                              setAuthorName(entry.author);
+                              setSentencePPC(entry.ppc);
+                              setSentenceSoThat(entry.soThat);
+                              setSubmitted(false);
+                              setStoryTab('build');
+                            }}
+                            className="p-2 bg-indigo-50/50 text-indigo-500 hover:bg-indigo-500 hover:text-white rounded-[14px] transition-all active:scale-90 shadow-sm"
+                            title="Edit"
+                          >
+                            <Edit size={14} />
+                          </button>
+                        </div>);
           setStoryEntries(updated);
           localStorage.setItem('mental_health_stories', JSON.stringify(updated));
         } else {
@@ -2618,7 +2610,7 @@ function ResultCard({
               </motion.div>
               
               <div className="space-y-4">
-                <h2 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter uppercase leading-none">My Class <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-indigo-400">Story</span></h2>
+                <h2 className="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter uppercase leading-none">MY CLASS <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-indigo-400">STORY</span></h2>
                 <div className="flex items-center justify-center gap-4">
                   <div className="h-px w-20 bg-indigo-100"></div>
                   <p className="text-xl font-black text-indigo-500 uppercase tracking-[0.2em]">Community Gallery</p>
@@ -2629,7 +2621,14 @@ function ResultCard({
 
               <div className="flex items-center gap-6">
                 <button 
-                  onClick={() => setStoryTab('build')}
+                  onClick={() => {
+                    setEditingId(null);
+                    setAuthorName('');
+                    setSentencePPC('');
+                    setSentenceSoThat('');
+                    setSubmitted(false);
+                    setStoryTab('build');
+                  }}
                   className="group relative bg-slate-900 text-white px-12 py-6 rounded-[35px] font-black text-xl hover:bg-black transition-all shadow-2xl flex items-center gap-4 active:scale-95"
                 >
                   <div className="absolute inset-0 bg-indigo-500 rounded-[35px] opacity-0 group-hover:opacity-10 transition-opacity"></div>
@@ -2826,11 +2825,11 @@ function ResultCard({
                    <div className="flex items-center gap-2">
                       <button 
                         onClick={() => setStoryTab('wall')}
-                        className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95 shadow-lg flex items-center gap-2"
+                        className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all active:scale-95 shadow-lg flex items-center gap-2"
                       >
-                        My Class Story <ArrowRight size={16} />
+                        MY CLASS STORY <ArrowRight size={18} />
                       </button>
-                      <span className="bg-orange-100 text-orange-600 px-3 py-3 rounded-xl font-black text-[9px] uppercase tracking-widest flex items-center whitespace-nowrap">Final Step</span>
+                      <span className="bg-orange-100 text-orange-600 px-4 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center whitespace-nowrap">Final Step</span>
                    </div>
                 </div>
                 
@@ -2857,19 +2856,25 @@ function ResultCard({
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
-                  <h4 className="font-black text-indigo-600 mb-1 flex items-center gap-2 text-sm">
-                    <Zap size={16} /> PATTERN 1
-                  </h4>
-                  <p className="text-slate-700 font-bold text-sm mb-1">현재완료 진행형</p>
-                  <code className="text-xs bg-white/50 px-2 py-1 rounded">I have been -ing ...</code>
+                <div className="bg-indigo-50 p-5 rounded-3xl border border-indigo-100 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-black text-indigo-600 mb-1 flex items-center gap-2 text-sm">
+                      <Zap size={16} /> PATTERN 1
+                    </h4>
+                    <p className="text-slate-700 font-extrabold text-base mb-1">현재완료 진행형</p>
+                    <code className="text-xs bg-white/80 px-2.5 py-1.5 rounded-lg block font-mono text-indigo-700 font-semibold mb-2">I have been -ing ...</code>
+                  </div>
+                  <p className="text-[11px] text-indigo-500 font-bold">최근에 해오고 있는 노력을 적어보세요</p>
                 </div>
-                <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
-                  <h4 className="font-black text-emerald-600 mb-1 flex items-center gap-2 text-sm">
-                    <Smile size={16} /> PATTERN 2
-                  </h4>
-                  <p className="text-slate-700 font-bold text-sm mb-1">so ~ that 구문</p>
-                  <code className="text-xs bg-white/50 px-2 py-1 rounded">I feel so ... that ...</code>
+                <div className="bg-emerald-50 p-5 rounded-3xl border border-emerald-100 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-black text-emerald-600 mb-1 flex items-center gap-2 text-sm">
+                      <Smile size={16} /> PATTERN 2
+                    </h4>
+                    <p className="text-slate-700 font-extrabold text-base mb-1">so ~ that 구문</p>
+                    <code className="text-xs bg-white/80 px-2.5 py-1.5 rounded-lg block font-mono text-emerald-700 font-semibold mb-2">I feel so [형용사] that ...</code>
+                  </div>
+                  <p className="text-[11px] text-emerald-500 font-bold">노력의 결과로 느끼는 변화를 적어보세요</p>
                 </div>
              </div>
 
@@ -3746,7 +3751,7 @@ function ResultCard({
 
       if (editingEntryId) {
         // Update existing entry
-        const updateInList = (list: GratitudeEntry[]) => list.map(e => {
+        const updatedPersonal = entries.map(e => {
           if (e.id === editingEntryId) {
             return {
               ...e,
@@ -3758,12 +3763,38 @@ function ResultCard({
           }
           return e;
         });
-
-        const updatedPersonal = updateInList(entries);
         setEntries(updatedPersonal);
         localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
 
-        const updatedClass = updateInList(classEntries);
+        const existsInClass = classEntries.some(e => e.id === editingEntryId);
+        let updatedClass;
+        if (existsInClass) {
+          updatedClass = classEntries.map(e => {
+            if (e.id === editingEntryId) {
+              return {
+                ...e,
+                author: authorName.trim(),
+                content: gratitudeInput,
+                ppcSentence: ppcInput,
+                soThatSentence: soThatInput
+              };
+            }
+            return e;
+          });
+        } else {
+          const originalEntry = entries.find(e => e.id === editingEntryId);
+          const updatedItem = {
+            id: editingEntryId,
+            author: authorName.trim(),
+            date: originalEntry?.date || new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+            content: gratitudeInput,
+            ppcSentence: ppcInput,
+            soThatSentence: soThatInput,
+            reactions: originalEntry?.reactions || {},
+            comments: originalEntry?.comments || []
+          };
+          updatedClass = [updatedItem, ...classEntries];
+        }
         setClassEntries(updatedClass);
         localStorage.setItem('class_diary', JSON.stringify(updatedClass));
 
@@ -3903,7 +3934,7 @@ function ResultCard({
               onClick={() => setViewTab('class')}
               className={`px-10 py-4 rounded-[24px] font-black tracking-tight transition-all ${viewTab === 'class' ? 'bg-white text-indigo-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              My Class Diary
+              MY CLASS DIARY
             </button>
           </div>
         </div>
@@ -4311,7 +4342,7 @@ function ResultCard({
         ) : (
           <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center space-y-4 relative">
-              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">My Class Diary</h2>
+              <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">MY CLASS DIARY</h2>
               <p className="text-indigo-500 font-black uppercase tracking-[0.2em] text-xl italic underline underline-offset-8 decoration-indigo-200 decoration-4">우리 반 친구들의 감사 기록장</p>
               <button 
                 onClick={refreshData}
@@ -4350,22 +4381,31 @@ function ResultCard({
                             </div>
                           </div>
                           <div className="flex flex-col gap-2 items-end">
-
-                             <button 
-                               onClick={() => handleEdit(entry)}
-                               className="flex items-center gap-1.5 p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all font-black text-xs"
-                               title="Edit"
-                             >
-                               <Edit size={18} />
-                               <span>{showKorean ? "수정" : "EDIT"}</span>
-                             </button>
-                             <button 
-                               onClick={() => handleSpeak(`${entry.ppcSentence}. ${entry.soThatSentence}. ${entry.content}`)}
-                               className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
-                               title="Listen"
-                             >
-                               <Volume2 size={18} />
-                             </button>
+                            <div className="flex gap-1">
+                              <button 
+                                onClick={() => handleEdit(entry)}
+                                className="flex items-center gap-1 p-2 text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all font-black text-xs"
+                                title="Edit"
+                              >
+                                <Edit size={16} />
+                                <span>{showKorean ? "수정" : "EDIT"}</span>
+                              </button>
+                              <button 
+                                onClick={() => handleDelete(entry.id)}
+                                className="flex items-center gap-1 p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all font-black text-xs"
+                                title="Delete"
+                              >
+                                <Trash2 size={16} />
+                                <span>{showKorean ? "삭제" : "DEL"}</span>
+                              </button>
+                            </div>
+                            <button 
+                              onClick={() => handleSpeak(`${entry.ppcSentence || ""}. ${entry.soThatSentence || ""}. ${entry.content}`)}
+                              className="p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                              title="Listen"
+                            >
+                              <Volume2 size={18} />
+                            </button>
                           </div>
                         </div>
 
