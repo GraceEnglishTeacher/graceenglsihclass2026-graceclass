@@ -6,7 +6,7 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: '/graceenglishclass2026-graceclass/',
+    base: '/graceenglsihclass2026-graceclass/'
 
     plugins: [react(), tailwindcss()],
 
