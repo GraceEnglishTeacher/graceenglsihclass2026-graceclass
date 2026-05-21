@@ -3450,7 +3450,7 @@ function ResultCard({
     );
   
     useEffect(() => {
-      // User requested cleanup of specific dates or posts
+      // User requested cleanup of specific dates or posts from personal local state
       const cleanupDate15 = '5월 15일';
       const cleanupDate10 = '5월 10일';
       const cleanupDate19 = '5월 19일';
@@ -3473,96 +3473,45 @@ function ResultCard({
         return filtered;
       });
 
-      setClassEntries(prev => {
-        // First filter out specific date cleanups requested
-        let updated = prev.filter(e => {
-            const isRemovedByDate = filterPost(e) === false;
-            return !isRemovedByDate;
-        });
-        
-        // Specific records to add/ensure
-        const seedEntries: GratitudeEntry[] = [
-          {
-            id: 'seed-minjun',
-            author: 'minjun',
-            content: "When I'm stressed, I exercise. My stress was so huge that I started running. I have been running for thirty minutes to feel refreshed. Exercise is a great way to handle stress. I am thankful for my healthy body.",
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '❤️': 5 },
-            comments: []
-          },
-          {
-            id: 'seed-hana',
-            author: 'hana',
-            content: "When I feel stressed, I listen to music. The melodies are so sweet that they calm my mind. I have been listening to jazz since I got home to relax. I am grateful for the beautiful music.",
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '❤️': 7 },
-            comments: []
-          },
-          {
-            id: 'seed-doyun',
-            author: 'doyun',
-            content: "I often cook when I'm stressed. The smell of bread is so nice that it makes me happy. I have been baking bread for two hours to forget my stress. I feel thankful for the delicious smell.",
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '❤️': 4 },
-            comments: []
-          },
-          {
-            id: 'seed-somi',
-            author: 'somi',
-            content: "I draw when I'm under stress. The paper is so white that I want to fill it with patterns. I have been drawing zentangles for an hour to calm down. I am grateful for this peaceful time.",
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '❤️': 6 },
-            comments: []
-          },
-          {
-            id: 'seed-jiho',
-            author: 'jiho',
-            content: "When I'm stressed, I play with my dog. He is so energetic that he makes me active. I have been playing catch with him all afternoon. I am thankful for my energetic puppy.",
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '👍': 8 },
-            comments: []
-          },
-          {
-            id: 'seed-sujin',
-            author: 'sujin',
-            content: "Reading is my way to handle stress. The book is so exciting that I am completely absorbed in it. I have been reading this adventure story for three hours. I am grateful for the interesting book.",
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '✨': 6 },
-            comments: []
-          },
-          {
-            id: 'seed-taeyang',
-            author: 'taeyang',
-            content: "I take a walk when I'm stressed. The park is so quiet that I can think clearly. I have been walking along the river for an hour. I feel thankful for the fresh air.",
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '📚': 9 },
-            comments: []
+      // Synchronize/load Class diaries from backend server
+      const loadClassDiary = async () => {
+        try {
+          const res = await fetch('/api/class-diary');
+          if (res.ok) {
+            const data = await res.json();
+            // Filter class data according to the clean-up date/post filters
+            const filteredData = data.filter(filterPost);
+            setClassEntries(filteredData);
           }
-        ];
-
-        // Replace or add these entries
-        seedEntries.forEach(seed => {
-          const index = updated.findIndex(e => e.id === seed.id || (e.author?.toLowerCase() === seed.author.toLowerCase()));
-          if (index !== -1) {
-            updated[index] = seed;
-          } else {
-            updated = [seed, ...updated];
+        } catch (err) {
+          console.error("Failed to load class diary on mount:", err);
+          // Fallback to local storage if offline or server error
+          const savedClass = localStorage.getItem('class_diary');
+          if (savedClass) {
+            try {
+              const parsed = JSON.parse(savedClass);
+              setClassEntries(parsed.filter(filterPost));
+            } catch (e) {}
           }
-        });
-
-        if (JSON.stringify(updated) !== JSON.stringify(prev)) {
-          localStorage.setItem('class_diary', JSON.stringify(updated));
         }
-        return updated;
-      });
+      };
+
+      loadClassDiary();
     }, []);
 
     const refreshData = () => {
       try {
         const savedPersonal = localStorage.getItem('gratitude_diary');
         if (savedPersonal) setEntries(JSON.parse(savedPersonal));
-        const savedClass = localStorage.getItem('class_diary');
-        if (savedClass) setClassEntries(JSON.parse(savedClass));
+        
+        fetch('/api/class-diary')
+          .then(res => res.json())
+          .then(data => setClassEntries(data))
+          .catch(err => {
+            console.error("Refresh failed for class diary server:", err);
+            const savedClass = localStorage.getItem('class_diary');
+            if (savedClass) setClassEntries(JSON.parse(savedClass));
+          });
       } catch (e) {
         console.error("Refresh failed:", e);
       }
@@ -3576,7 +3525,7 @@ function ResultCard({
       if (!gratitudeInput.trim() && !ppcInput.trim() && !soThatInput.trim()) return;
 
       if (editingEntryId) {
-        // Update existing entry
+        // Update existing entry locally
         const updatedPersonal = entries.map(e => {
           if (e.id === editingEntryId) {
             return {
@@ -3593,23 +3542,19 @@ function ResultCard({
         localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
 
         const existsInClass = classEntries.some(e => e.id === editingEntryId);
-        let updatedClass;
+        let updatedEntry: GratitudeEntry;
         if (existsInClass) {
-          updatedClass = classEntries.map(e => {
-            if (e.id === editingEntryId) {
-              return {
-                ...e,
-                author: authorName.trim(),
-                content: gratitudeInput,
-                ppcSentence: ppcInput,
-                soThatSentence: soThatInput
-              };
-            }
-            return e;
-          });
+          const orig = classEntries.find(e => e.id === editingEntryId);
+          updatedEntry = {
+            ...orig,
+            author: authorName.trim(),
+            content: gratitudeInput,
+            ppcSentence: ppcInput,
+            soThatSentence: soThatInput
+          } as GratitudeEntry;
         } else {
           const originalEntry = entries.find(e => e.id === editingEntryId);
-          const updatedItem = {
+          updatedEntry = {
             id: editingEntryId,
             author: authorName.trim(),
             date: originalEntry?.date || new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
@@ -3619,10 +3564,23 @@ function ResultCard({
             reactions: originalEntry?.reactions || {},
             comments: originalEntry?.comments || []
           };
-          updatedClass = [updatedItem, ...classEntries];
         }
-        setClassEntries(updatedClass);
-        localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+
+        // Post to backend
+        fetch('/api/class-diary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedEntry)
+        })
+          .then(res => res.json())
+          .then(data => setClassEntries(data))
+          .catch(err => {
+            console.error("Failed to update entry on server:", err);
+            // Local fallback
+            const updatedClass = classEntries.map(e => e.id === editingEntryId ? updatedEntry : e);
+            setClassEntries(updatedClass);
+            localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+          });
 
         setEditingEntryId(null);
       } else {
@@ -3638,15 +3596,26 @@ function ResultCard({
           comments: []
         };
         
-        // Update personal entries
+        // Update personal entries locally
         const updatedPersonal = [entry, ...entries];
         setEntries(updatedPersonal);
         localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
         
-        // Also add to class diary
-        const updatedClass = [entry, ...classEntries];
-        setClassEntries(updatedClass);
-        localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+        // Post new entry to backend
+        fetch('/api/class-diary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        })
+          .then(res => res.json())
+          .then(data => setClassEntries(data))
+          .catch(err => {
+            console.error("Failed to post entry to server:", err);
+            // Local fallback
+            const updatedClass = [entry, ...classEntries];
+            setClassEntries(updatedClass);
+            localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+          });
       }
 
       setGratitudeInput('');
@@ -3680,17 +3649,27 @@ function ResultCard({
       if (!window.confirm('기록을 삭제하시겠습니까?')) return;
       
       const updatedPersonal = entries.filter(e => e.id !== id);
-      const updatedClass = classEntries.filter(e => e.id !== id);
-      
       setEntries(updatedPersonal);
-      setClassEntries(updatedClass);
-      
       localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
-      localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+
+      // Post delete to backend
+      fetch('/api/class-diary/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+      })
+        .then(res => res.json())
+        .then(data => setClassEntries(data))
+        .catch(err => {
+          console.error("Server delete failed:", err);
+          const updatedClass = classEntries.filter(e => e.id !== id);
+          setClassEntries(updatedClass);
+          localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+        });
     };
 
     const handleReaction = (id: string, emoji: string) => {
-      const updateEntry = (e: GratitudeEntry) => {
+      const updateLocalEntry = (e: GratitudeEntry) => {
         if (e.id === id) {
           const reactions = { ...(e.reactions || {}) };
           reactions[emoji] = (reactions[emoji] || 0) + 1;
@@ -3699,17 +3678,32 @@ function ResultCard({
         return e;
       };
 
+      // Update personal locally
       setEntries(prev => {
-        const updated = prev.map(updateEntry);
+        const updated = prev.map(updateLocalEntry);
         localStorage.setItem('gratitude_diary', JSON.stringify(updated));
         return updated;
       });
 
-      setClassEntries(prev => {
-        const updated = prev.map(updateEntry);
-        localStorage.setItem('class_diary', JSON.stringify(updated));
-        return updated;
-      });
+      // Send to server
+      fetch('/api/class-diary/react', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, emoji })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setClassEntries(data);
+        })
+        .catch(err => {
+          console.error("Failed to post reaction:", err);
+          // Local fallback
+          setClassEntries(prev => {
+            const updated = prev.map(updateLocalEntry);
+            localStorage.setItem('class_diary', JSON.stringify(updated));
+            return updated;
+          });
+        });
     };
 
     const handleAddComment = (id: string) => {
@@ -3723,24 +3717,39 @@ function ResultCard({
         date: new Date().toISOString().split('T')[0] 
       };
 
-      const updateEntry = (e: GratitudeEntry) => {
+      const updateLocalEntry = (e: GratitudeEntry) => {
         if (e.id === id) {
           return { ...e, comments: [...(e.comments || []), comment] };
         }
         return e;
       };
 
+      // Update personal locally
       setEntries(prev => {
-        const updated = prev.map(updateEntry);
+        const updated = prev.map(updateLocalEntry);
         localStorage.setItem('gratitude_diary', JSON.stringify(updated));
         return updated;
       });
 
-      setClassEntries(prev => {
-        const updated = prev.map(updateEntry);
-        localStorage.setItem('class_diary', JSON.stringify(updated));
-        return updated;
-      });
+      // Send to backend
+      fetch('/api/class-diary/comment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, comment })
+      })
+        .then(res => res.json())
+        .then(data => {
+          setClassEntries(data);
+        })
+        .catch(err => {
+          console.error("Failed to add comment on server:", err);
+          // Local fallback
+          setClassEntries(prev => {
+            const updated = prev.map(updateLocalEntry);
+            localStorage.setItem('class_diary', JSON.stringify(updated));
+            return updated;
+          });
+        });
 
       setCommentInput({ ...commentInput, [id]: '' });
     };
@@ -3798,8 +3807,14 @@ function ResultCard({
                             setEntries([]);
                             localStorage.removeItem('gratitude_diary');
                           } else {
-                            setClassEntries([]);
-                            localStorage.removeItem('class_diary');
+                            fetch('/api/class-diary/clear', { method: 'POST' })
+                              .then(res => res.json())
+                              .then(data => setClassEntries(data))
+                              .catch(err => {
+                                console.error("Failed to clear server class diary:", err);
+                                setClassEntries([]);
+                                localStorage.removeItem('class_diary');
+                              });
                           }
                         }
                       }}
