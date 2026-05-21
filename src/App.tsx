@@ -3079,9 +3079,13 @@ function ResultCard({
                   </button>
                 </div>
                 <div className="bg-slate-50 p-10 rounded-[40px] border border-slate-100 min-h-[300px] shadow-inner relative group">
-                  <p className="text-2xl font-black text-slate-700 leading-relaxed tracking-tight break-words whitespace-pre-wrap">
-                    {content.text}
-                  </p>
+                  <div className="space-y-6">
+                    {content.text.split('\n').filter(p => p.trim() !== '').map((para, idx) => (
+                      <p key={idx} className="text-2xl font-black text-slate-700 leading-relaxed tracking-tight break-words text-justify indent-12">
+                        {para}
+                      </p>
+                    ))}
+                  </div>
                   <button 
                     onClick={() => handleSpeak(content.text)}
                     className="absolute bottom-6 right-6 p-4 bg-white text-emerald-500 rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-90"
@@ -3224,9 +3228,9 @@ function ResultCard({
           </div>
 
           <div className="space-y-10 flex-1">
-             <div className="space-y-4">
-                <div className="flex items-center justify-between gap-4">
-                  <h3 className="text-3xl font-black text-slate-800 leading-tight tracking-tighter italic">
+             <div className="space-y-4 text-center">
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <h3 className="text-3xl font-black text-slate-800 leading-tight tracking-tighter italic text-center">
                     Q: {q.question}
                   </h3>
                   <button 
@@ -3255,7 +3259,7 @@ function ResultCard({
                            setFeedback({ isCorrect, explanation: q.explanation });
                         }}
                         disabled={!!feedback}
-                        className={`p-6 text-xl font-black rounded-3xl border-2 transition-all text-left flex items-center justify-between group ${
+                        className={`p-6 text-xl font-black rounded-3xl border-2 transition-all text-center flex items-center justify-center gap-2 group ${
                            feedback
                              ? opt === q.answer
                                ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-lg shadow-emerald-100"
