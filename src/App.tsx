@@ -4505,8 +4505,10 @@ Start writing your first one!`}
         const rect = canvas.getBoundingClientRect();
         const clientX = ('touches' in e) ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
         const clientY = ('touches' in e) ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
 
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -4524,8 +4526,10 @@ Start writing your first one!`}
         const rect = canvas.getBoundingClientRect();
         const clientX = ('touches' in e) ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
         const clientY = ('touches' in e) ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
 
         ctx.lineTo(x, y);
         ctx.stroke();
