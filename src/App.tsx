@@ -3845,28 +3845,6 @@ function ResultCard({
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 p-6 bg-slate-50/50 rounded-[40px] border border-slate-100 shadow-sm relative z-10">
                   <div className="flex gap-2">
                     <button 
-                      onClick={() => {
-                        if (window.confirm(viewTab === 'my' ? '정말로 모든 개인 기록을 삭제하시겠습니까?' : '정말로 모든 학급 기록을 삭제하시겠습니까?')) {
-                          if (viewTab === 'my') {
-                            setEntries([]);
-                            localStorage.removeItem('gratitude_diary');
-                          } else {
-                            fetch('/api/class-diary/clear', { method: 'POST' })
-                              .then(res => res.json())
-                              .then(data => setClassEntries(data))
-                              .catch(err => {
-                                console.error("Failed to clear server class diary:", err);
-                                setClassEntries([]);
-                                localStorage.removeItem('class_diary');
-                              });
-                          }
-                        }
-                      }}
-                      className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-white hover:bg-rose-500 hover:border-rose-500 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 shadow-sm"
-                    >
-                      <Trash2 size={14} /> Clear Records
-                    </button>
-                    <button 
                       onClick={refreshData}
                       className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-rose-600 hover:border-rose-200 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 shadow-sm"
                     >
@@ -4051,25 +4029,6 @@ function ResultCard({
                   </h3>
                 </div>
                 <div className="flex gap-2">
-                  <button 
-                    onClick={handlePrintHistory}
-                    className="p-3 bg-rose-500 border border-rose-500 text-white hover:bg-rose-600 hover:border-rose-600 rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2 font-black text-xs uppercase tracking-widest px-5"
-                    title="Print"
-                  >
-                    <Printer size={16} /> {showKorean ? "인쇄하기" : "Print"}
-                  </button>
-                  <button 
-                    onClick={() => {
-                      if (window.confirm(showKorean ? "정말로 모든 감사 기록을 삭제하시겠습니까?" : "Are you sure you want to delete all gratitude records?")) {
-                        setEntries([]);
-                        localStorage.removeItem('gratitude_diary');
-                      }
-                    }}
-                    className="p-3 bg-white border border-slate-100 text-slate-300 hover:text-rose-500 hover:border-rose-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
-                    title="Clear All"
-                  >
-                    <Trash2 size={16} /> {showKorean ? "모두 삭제" : "Clear All"}
-                  </button>
                   <button 
                     onClick={refreshData}
                     className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-rose-500 hover:border-rose-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
