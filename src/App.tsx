@@ -3384,6 +3384,21 @@ function ResultCard({
     const [commentInput, setCommentInput] = useState<{ [id: string]: string }>({});
     const [visibleTranslations, setVisibleTranslations] = useState<{ [key: string]: boolean }>({});
     const [showKorean, setShowKorean] = useState(false);
+    const [printType, setPrintType] = useState<'history' | 'worksheet'>('history');
+
+    const handlePrintHistory = () => {
+        setPrintType('history');
+        setTimeout(() => {
+            window.print();
+        }, 150);
+    };
+
+    const handlePrintWorksheet = () => {
+        setPrintType('worksheet');
+        setTimeout(() => {
+            window.print();
+        }, 150);
+    };
 
     const printEntries = viewTab === 'my' 
       ? entries 
@@ -3842,6 +3857,13 @@ function ResultCard({
                     >
                       <RefreshCw size={14} /> Refresh
                     </button>
+                    <button 
+                      onClick={handlePrintWorksheet}
+                      className="p-3 bg-rose-500 border border-rose-500 text-white hover:bg-rose-600 hover:border-rose-600 rounded-2xl transition-all flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 shadow-md shadow-rose-100 active:scale-95"
+                      title="Print Worksheet"
+                    >
+                      <Printer size={14} /> {showKorean ? "워크시트 인쇄" : "Print Worksheet"}
+                    </button>
                   </div>
                   <div className="bg-white p-4 rounded-3xl border border-slate-100 focus-within:border-rose-200 transition-all flex items-center gap-4 shadow-sm px-6">
                     <div className="flex items-center gap-2 text-rose-500">
@@ -4015,7 +4037,7 @@ function ResultCard({
                 </div>
                 <div className="flex gap-2">
                   <button 
-                    onClick={() => window.print()}
+                    onClick={handlePrintHistory}
                     className="p-3 bg-rose-500 border border-rose-500 text-white hover:bg-rose-600 hover:border-rose-600 rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2 font-black text-xs uppercase tracking-widest px-5"
                     title="Print"
                   >
@@ -4210,7 +4232,7 @@ Start writing your first one!`}
               <p className="text-indigo-500 font-black uppercase tracking-[0.2em] text-xl italic underline underline-offset-8 decoration-indigo-200 decoration-4">우리 반 친구들의 감사 기록장</p>
               <div className="absolute right-0 top-0 flex gap-2">
                 <button 
-                  onClick={() => window.print()}
+                  onClick={handlePrintHistory}
                   className="p-3 bg-indigo-500 border border-indigo-500 text-white hover:bg-indigo-600 hover:border-indigo-600 rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2 font-black text-xs uppercase tracking-widest px-5"
                 >
                   <Printer size={16} /> {showKorean ? "인쇄하기" : "Print"}
@@ -4407,92 +4429,215 @@ Start writing your first one!`}
             }
           `}</style>
           
-          <div className="border-b-4 border-rose-500 pb-6 mb-10 flex justify-between items-end">
-            <div>
-              <h1 className="text-4xl font-extrabold text-slate-900 leading-none">
-                💖 {viewTab === 'my' 
-                  ? (showKorean ? "나의 감사 일기 기록" : "My Gratitude Diary") 
-                  : (showKorean ? "우리 반 친구들의 감사 기록장" : "My Class Gratitude Diary")}
-              </h1>
-              <p className="text-slate-500 mt-2 text-sm font-semibold">
-                {showKorean ? "마음 건강을 위한 감사의 일기 기록 목록입니다." : "Compiled list of gratitude diary entries."}
-              </p>
-            </div>
-            <div className="text-right text-xs text-slate-400 font-bold">
-              <span>Print Date: {new Date().toLocaleDateString()}</span>
-            </div>
-          </div>
-          
-          <div className="space-y-10">
-            {printEntries.map((entry, idx) => (
-              <div key={entry.id} className="border-b border-slate-200 pb-8 page-break-inside-avoid shadow-none">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xl font-bold text-rose-500">
-                    No. {idx + 1} {entry.author ? `by ${entry.author}` : ''}
-                  </span>
-                  <span className="text-sm font-semibold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
-                    {entry.date}
-                  </span>
+          {printType === 'worksheet' ? (
+            // --- WORKSHEET STYLE PRINTING ---
+            <div className="space-y-8 max-w-4xl mx-auto text-black">
+              <div className="border-b-4 border-slate-900 pb-4 mb-8 flex justify-between items-end">
+                <div>
+                  <h1 className="text-3xl font-extrabold tracking-tight uppercase">
+                    📝 {showKorean ? "마음 건강 감사 일기 워크시트" : "My Gratitude Diary Worksheet"}
+                  </h1>
+                  <p className="text-slate-600 mt-1 text-sm font-semibold">
+                    {showKorean ? "현재 상태 파악, 스트레스 해소법, 그리고 오늘의 감사에 대한 기록 양식" : "A structured template for checking feelings, describing relief methods, and recording gratitude."}
+                  </p>
                 </div>
-                
-                <div className="space-y-4 pl-4 border-l-4 border-slate-100">
-                  {entry.ppcSentence && (
-                    <div>
-                      <span className="text-xs font-black tracking-wider text-indigo-500 uppercase block mb-1">
-                        {showKorean ? "현재상태 (Current Status)" : "Mental Status (PPC)"}
-                      </span>
-                      <p className="text-lg font-bold italic text-slate-800">"{entry.ppcSentence}"</p>
-                      {entry.ppcSentenceKo && (
-                        <p className="text-sm font-medium text-slate-500 mt-1">↳ {entry.ppcSentenceKo}</p>
-                      )}
-                    </div>
-                  )}
-                  
-                  {entry.soThatSentence && (
-                    <div>
-                      <span className="text-xs font-black tracking-wider text-emerald-500 uppercase block mb-1">
-                        {showKorean ? "스트레스 관리 (Stress Relief)" : "Stress Management (So~That)"}
-                      </span>
-                      <p className="text-lg font-bold italic text-slate-800">"{entry.soThatSentence}"</p>
-                      {entry.soThatSentenceKo && (
-                        <p className="text-sm font-medium text-slate-500 mt-1">↳ {entry.soThatSentenceKo}</p>
-                      )}
-                    </div>
-                  )}
-                  
-                  {entry.content && (
-                    <div className="bg-rose-50/30 p-5 rounded-2xl border border-rose-100">
-                      <span className="text-xs font-black tracking-wider text-rose-500 uppercase block mb-1">
-                        {showKorean ? "감사 한 줄 (Today's Gratitude)" : "Gratitude Diary"}
-                      </span>
-                      <p className="text-xl font-black text-slate-900">"{entry.content}"</p>
-                      {entry.contentKo && (
-                        <p className="text-base font-bold text-slate-600 mt-2">↳ {entry.contentKo}</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {entry.comments && entry.comments.length > 0 && (
-                  <div className="mt-6 ml-4 bg-slate-50 p-4 rounded-xl border border-slate-150 text-xs shadow-none">
-                    <span className="font-extrabold text-slate-500 block mb-2 uppercase tracking-wider">Comments / Thoughts:</span>
-                    <div className="space-y-2">
-                      {entry.comments.map((comment, cidx) => (
-                        <div key={comment.id || cidx} className="text-slate-700 py-1.5 border-t border-slate-200/50 first:border-0">
-                          <strong>{comment.author}</strong>: {comment.text} <span className="text-slate-400">({comment.date})</span>
-                        </div>
-                      ))}
-                    </div>
+                <div className="text-right text-xs font-bold space-y-1">
+                  <div>Date: {new Date().toLocaleDateString()}</div>
+                  <div className="text-sm">
+                    <strong>Writer:</strong> {authorName.trim() ? authorName : "__________________"}
                   </div>
+                </div>
+              </div>
+
+              {/* 1. Mental Health Status */}
+              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                  <h3 className="text-lg font-bold flex items-center gap-2">
+                    <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">01</span>
+                    {showKorean ? "현재 정신 건강 및 심리 상태 (Mental Health Status)" : "Mental Health Status"}
+                  </h3>
+                  <span className="text-xs font-semibold text-slate-500">Grammar pattern: have been -ing</span>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1">
+                  <strong>Examples:</strong>
+                  <p>• I have been feeling stressed lately. (최근에 스트레스를 받아왔어요.)</p>
+                  <p>• I have been taking a walk every morning to clear my mind. (매일 아침 산책을 하며 마음을 정리해왔어요.)</p>
+                </div>
+                <div className="pt-2">
+                  <label className="text-xs font-bold text-slate-400 block mb-1">YOUR RESPONSE:</label>
+                  {ppcInput.trim() ? (
+                    <p className="text-lg font-extrabold italic border-b-2 border-slate-300 pb-2 pl-2">
+                      {ppcInput}
+                    </p>
+                  ) : (
+                    <div className="space-y-6 pt-4">
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 2. Stress Relief Methods */}
+              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                  <h3 className="text-lg font-bold flex items-center gap-2">
+                    <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">02</span>
+                    {showKorean ? "스트레스 관리 및 해소법 (Stress Relief Methods)" : "Stress Relief Methods"}
+                  </h3>
+                  <span className="text-xs font-semibold text-slate-500">Grammar pattern: so ~ that ... (너무 ~해서 ...하다)</span>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1">
+                  <strong>Examples:</strong>
+                  <p>• Listening to music is so sweet that I feel relaxed. (음악을 듣는 것은 너무 달콤해서 마음이 편안해져요.)</p>
+                  <p>• I exercise so hard that I feel refreshed. (운동을 아주 열심히 해서 기분이 상쾌해요.)</p>
+                </div>
+                <div className="pt-2">
+                  <label className="text-xs font-bold text-slate-400 block mb-1">YOUR RESPONSE:</label>
+                  {soThatInput.trim() ? (
+                    <p className="text-lg font-extrabold italic border-b-2 border-slate-300 pb-2 pl-2">
+                      {soThatInput}
+                    </p>
+                  ) : (
+                    <div className="space-y-6 pt-4">
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 3. Today's Gratitude */}
+              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                  <h3 className="text-lg font-bold flex items-center gap-2">
+                    <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">03</span>
+                    {showKorean ? "오늘의 감사 한 줄 일기 (Today's Gratitude)" : "Today's Gratitude"}
+                  </h3>
+                  <span className="text-xs font-semibold text-slate-500">Core Goal: Deep Reflection & Appreciating Details</span>
+                </div>
+                <div className="bg-rose-50/50 p-4 rounded-xl text-xs text-rose-900 space-y-1 border border-rose-100">
+                  <strong>Writing Help Guide:</strong>
+                  <p className="italic font-medium">
+                    "I have been practicing deep breathing to stay calm. I am so relaxed after breathing that I can focus better. I am grateful for this peaceful morning."
+                  </p>
+                  <p className="opacity-85 mt-2">
+                    • I am so thankful that I have a happy family. (행복한 가족이 있어서 너무 감사해요.)<br />
+                    • The weather is so beautiful that I feel happy. (날씨가 너무 아름다워서 행복해요.)
+                  </p>
+                </div>
+                <div className="pt-2">
+                  <label className="text-xs font-bold text-slate-400 block mb-1">YOUR RESPONSE:</label>
+                  {gratitudeInput.trim() ? (
+                    <p className="text-xl font-black border-2 border-slate-200 p-4 rounded-xl bg-slate-50/50 min-h-[100px] leading-relaxed">
+                      {gratitudeInput}
+                    </p>
+                  ) : (
+                    <div className="space-y-6 pt-4">
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="text-center pt-8 border-t border-slate-200 text-[10px] text-slate-400 font-medium">
+                우리의 마음 건강과 긍정적인 말은 건강한 자아를 가꿉니다.
+              </div>
+            </div>
+          ) : (
+            // --- HISTORY STYLE PRINTING ---
+            <>
+              <div className="border-b-4 border-rose-500 pb-6 mb-10 flex justify-between items-end">
+                <div>
+                  <h1 className="text-4xl font-extrabold text-slate-900 leading-none">
+                    💖 {viewTab === 'my' 
+                      ? (showKorean ? "나의 감사 일기 기록" : "My Gratitude Diary") 
+                      : (showKorean ? "우리 반 친구들의 감사 기록장" : "My Class Gratitude Diary")}
+                  </h1>
+                  <p className="text-slate-500 mt-2 text-sm font-semibold">
+                    {showKorean ? "마음 건강을 위한 감사의 일기 기록 목록입니다." : "Compiled list of gratitude diary entries."}
+                  </p>
+                </div>
+                <div className="text-right text-xs text-slate-400 font-bold">
+                  <span>Print Date: {new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
+              
+              <div className="space-y-10">
+                {printEntries.map((entry, idx) => (
+                  <div key={entry.id} className="border-b border-slate-200 pb-8 page-break-inside-avoid shadow-none">
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-xl font-bold text-rose-500">
+                        No. {idx + 1} {entry.author ? `by ${entry.author}` : ''}
+                      </span>
+                      <span className="text-sm font-semibold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
+                        {entry.date}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-4 pl-4 border-l-4 border-slate-100">
+                      {entry.ppcSentence && (
+                        <div>
+                          <span className="text-xs font-black tracking-wider text-indigo-500 uppercase block mb-1">
+                            {showKorean ? "현재상태 (Current Status)" : "Mental Status (PPC)"}
+                          </span>
+                          <p className="text-lg font-bold italic text-slate-800">"{entry.ppcSentence}"</p>
+                          {entry.ppcSentenceKo && (
+                            <p className="text-sm font-medium text-slate-500 mt-1">↳ {entry.ppcSentenceKo}</p>
+                          )}
+                        </div>
+                      )}
+                      
+                      {entry.soThatSentence && (
+                        <div>
+                          <span className="text-xs font-black tracking-wider text-emerald-500 uppercase block mb-1">
+                            {showKorean ? "스트레스 관리 (Stress Relief)" : "Stress Management (So~That)"}
+                          </span>
+                          <p className="text-lg font-bold italic text-slate-800">"{entry.soThatSentence}"</p>
+                          {entry.soThatSentenceKo && (
+                            <p className="text-sm font-medium text-slate-500 mt-1">↳ {entry.soThatSentenceKo}</p>
+                          )}
+                        </div>
+                      )}
+                      
+                      {entry.content && (
+                        <div className="bg-rose-50/30 p-5 rounded-2xl border border-rose-100">
+                          <span className="text-xs font-black tracking-wider text-rose-500 uppercase block mb-1">
+                            {showKorean ? "감사 한 줄 (Today's Gratitude)" : "Gratitude Diary"}
+                          </span>
+                          <p className="text-xl font-black text-slate-900">"{entry.content}"</p>
+                          {entry.contentKo && (
+                            <p className="text-base font-bold text-slate-600 mt-2">↳ {entry.contentKo}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {entry.comments && entry.comments.length > 0 && (
+                      <div className="mt-6 ml-4 bg-slate-50 p-4 rounded-xl border border-slate-150 text-xs shadow-none">
+                        <span className="font-extrabold text-slate-500 block mb-2 uppercase tracking-wider">Comments / Thoughts:</span>
+                        <div className="space-y-2">
+                          {entry.comments.map((comment, cidx) => (
+                            <div key={comment.id || cidx} className="text-slate-700 py-1.5 border-t border-slate-200/50 first:border-0">
+                              <strong>{comment.author}</strong>: {comment.text} <span className="text-slate-400">({comment.date})</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {printEntries.length === 0 && (
+                  <p className="text-slate-400 italic text-center py-12 border border-dashed border-slate-200 rounded-3xl">
+                    {showKorean ? "기록된 감사 일기가 없습니다." : "No saved gratitude records."}
+                  </p>
                 )}
               </div>
-            ))}
-            {printEntries.length === 0 && (
-              <p className="text-slate-400 italic text-center py-12 border border-dashed border-slate-200 rounded-3xl">
-                {showKorean ? "기록된 감사 일기가 없습니다." : "No saved gratitude records."}
-              </p>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
     );
