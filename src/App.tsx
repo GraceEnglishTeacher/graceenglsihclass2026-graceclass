@@ -921,14 +921,14 @@ export default function App() {
              <div className="space-y-1 md:space-y-1.5 px-2">
                 <button 
                   onClick={() => { navTo('grammar_ppc'); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-xl md:text-2xl transition-all whitespace-nowrap ${activeSection === 'grammar_ppc' ? "bg-cyan-500 text-white shadow-lg" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'grammar_ppc' ? "bg-cyan-500 text-white shadow-lg" : "text-cyan-100 hover:text-white hover:bg-white/10"}`}
                 >
                    <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'grammar_ppc' ? "bg-white" : "bg-cyan-400"}`}></div>
                    현재완료 진행형
                 </button>
                 <button 
                   onClick={() => { navTo('grammar_so_that'); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-xl md:text-2xl transition-all whitespace-nowrap ${activeSection === 'grammar_so_that' ? "bg-pink-600 text-white shadow-lg" : "text-pink-100 hover:text-white hover:bg-white/10"}`}
+                  className={`w-full flex items-center gap-3 px-6 py-4 rounded-xl font-black text-lg md:text-xl transition-all whitespace-nowrap ${activeSection === 'grammar_so_that' ? "bg-pink-600 text-white shadow-lg" : "text-pink-100 hover:text-white hover:bg-white/10"}`}
                 >
                    <div className={`w-3 h-3 rounded-full shrink-0 ${activeSection === 'grammar_so_that' ? "bg-white" : "bg-pink-400"}`}></div>
                    so ~ that 구문
@@ -3473,8 +3473,8 @@ function ResultCard({
 
     const ExampleBox = ({ id, en, ko, colorClass }: { id: string, en: React.ReactNode, ko: string, colorClass: string }) => (
         <div className={`${colorClass} p-4 rounded-2xl border transition-all relative group`}>
-            <p className="text-base font-bold text-slate-600 italic leading-relaxed pr-8">"{en}"</p>
-            <p className="text-sm font-black text-slate-400 mt-2 border-t border-dashed pt-2 italic">
+            <p className="text-lg font-bold text-slate-600 italic leading-relaxed pr-8">"{en}"</p>
+            <p className="text-base font-black text-slate-400 mt-2 border-t border-dashed pt-2 italic">
                 {ko}
             </p>
         </div>
@@ -3838,7 +3838,7 @@ function ResultCard({
                     <div className="flex flex-col gap-1">
                       <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase whitespace-nowrap">My Gratitude Diary</h2>
                       <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg whitespace-nowrap">
-                        자신의 마음 건강을 위해 감사의 일기를 작성하세요.
+                        자신의 마음 건강을 위해 감사 일기를 작성하세요.
                       </p>
                     </div>
                   </div>
@@ -3882,8 +3882,8 @@ function ResultCard({
                     <div className="flex items-center justify-between">
                       <h4 className="text-xl font-black text-slate-700 flex items-baseline gap-2">
                         <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-xs self-center">01</span>
-                        <span>Mental Health Status</span>
-                        <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(정신 건강 상태)</span>
+                        <span>My Mental Health Status</span>
+                        <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(나의 정신 건강 상태)</span>
                       </h4>
                       <span className="text-[10px] font-black bg-indigo-50 text-indigo-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: have been -ing</span>
                     </div>
@@ -3919,8 +3919,8 @@ function ResultCard({
                     <div className="flex items-center justify-between">
                       <h4 className="text-xl font-black text-slate-700 flex items-baseline gap-2">
                         <span className="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-xs self-center">02</span>
-                        <span>Stress Relief Methods</span>
-                        <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(스트레스 해소법)</span>
+                        <span>My Stress Relief Methods</span>
+                        <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(나의 스트레스 해소법)</span>
                       </h4>
                       <span className="text-[10px] font-black bg-emerald-50 text-emerald-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: so ~ that ...</span>
                     </div>
@@ -3972,8 +3972,8 @@ function ResultCard({
                              <BookOpen size={20} />
                           </div>
                           <div className="space-y-2">
-                             <p className="text-sm font-black text-slate-600 uppercase tracking-tighter">Guide: Stress Management & Gratitude</p>
-                             <p className="text-base font-bold text-slate-500 leading-relaxed italic">
+                             <p className="text-base font-black text-slate-600 uppercase tracking-tighter">Guide: Stress Management & Gratitude</p>
+                             <p className="text-lg font-bold text-slate-500 leading-relaxed italic">
                                "I <span className="text-indigo-500">have been practicing</span> deep breathing to stay calm. 
                                I am <span className="text-emerald-500">so relaxed</span> after breathing <span className="text-emerald-500">that</span> I <span className="text-emerald-500">can</span> focus better. 
                                I am <span className="text-rose-500">grateful</span> for this peaceful morning."
@@ -4555,7 +4555,7 @@ Start writing your first one!`}
                 <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">01</span>
-                    Mental Health Status <span className="worksheet-print-section-subtitle">(정신 건강 상태)</span>
+                    My Mental Health Status <span className="worksheet-print-section-subtitle">(나의 정신 건강 상태)</span>
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Grammar pattern: have been -ing</span>
                 </div>
@@ -4584,7 +4584,7 @@ Start writing your first one!`}
                 <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">02</span>
-                    Stress Relief Methods <span className="worksheet-print-section-subtitle">(스트레스 해소법)</span>
+                    My Stress Relief Methods <span className="worksheet-print-section-subtitle">(나의 스트레스 해소법)</span>
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Grammar pattern: so ~ that ... (너무 ~해서 ...하다)</span>
                 </div>
