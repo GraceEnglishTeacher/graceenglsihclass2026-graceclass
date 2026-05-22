@@ -3526,6 +3526,13 @@ function ResultCard({
       };
 
       loadClassDiary();
+
+      // Poll server every 3 seconds to auto-update and reflect other users' entries
+      const intervalId = setInterval(loadClassDiary, 3000);
+
+      return () => {
+        clearInterval(intervalId);
+      };
     }, []);
 
     const refreshData = () => {
@@ -3602,13 +3609,17 @@ function ResultCard({
           body: JSON.stringify(updatedEntry)
         })
           .then(res => res.json())
-          .then(data => setClassEntries(data))
+          .then(data => {
+            setClassEntries(data);
+            setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
+          })
           .catch(err => {
             console.error("Failed to update entry on server:", err);
             // Local fallback
             const updatedClass = classEntries.map(e => e.id === editingEntryId ? updatedEntry : e);
             setClassEntries(updatedClass);
             localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+            setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
           });
 
         setEditingEntryId(null);
@@ -3637,13 +3648,17 @@ function ResultCard({
           body: JSON.stringify(entry)
         })
           .then(res => res.json())
-          .then(data => setClassEntries(data))
+          .then(data => {
+            setClassEntries(data);
+            setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
+          })
           .catch(err => {
             console.error("Failed to post entry to server:", err);
             // Local fallback
             const updatedClass = [entry, ...classEntries];
             setClassEntries(updatedClass);
             localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+            setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
           });
       }
 
@@ -4399,16 +4414,23 @@ Start writing your first one!`}
         )}
 
         {/* Hidden printable area */}
-        <div id="gratitude-print-area" className="hidden print:block text-slate-900 p-12 bg-white">
+        <div id="gratitude-print-area" className="hidden print:block text-slate-900 p-8 bg-white">
           <style>{`
             @media print {
               html, body {
                 background: white !important;
                 color: black !important;
                 font-family: system-ui, -apple-system, sans-serif !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 11px !important;
               }
-              #root * {
-                visibility: hidden !important;
+              @page {
+                size: portrait;
+                margin: 6mm 10mm 6mm 10mm;
+              }
+              #root {
+                display: none !important;
               }
               #gratitude-print-area, #gratitude-print-area * {
                 visibility: visible !important;
@@ -4420,19 +4442,123 @@ Start writing your first one!`}
                 width: 100% !important;
                 display: block !important;
                 background: white !important;
-                padding: 24px !important;
+                padding: 0 !important;
+                margin: 0 !important;
               }
               .page-break-inside-avoid {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
+              }
+              
+              /* Custom worksheet design to perfectly fit on a single page */
+              .worksheet-print-container {
+                max-width: 100% !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 8px !important;
+              }
+              .worksheet-print-header {
+                padding-bottom: 6px !important;
+                margin-bottom: 6px !important;
+                border-bottom: 3px solid #1e293b !important;
+              }
+              .worksheet-print-header h1 {
+                font-size: 18px !important;
+                line-height: 1.2 !important;
+              }
+              .worksheet-print-header p {
+                font-size: 9.5px !important;
+                color: #475569 !important;
+              }
+              .worksheet-print-section {
+                border: 1px solid #cbd5e1 !important;
+                border-radius: 12px !important;
+                padding: 10px 14px !important;
+                margin-bottom: 6px !important;
+                background-color: #ffffff !important;
+              }
+              .worksheet-print-section-header {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                padding-bottom: 4px !important;
+                margin-bottom: 6px !important;
+              }
+              .worksheet-print-section h3 {
+                font-size: 12.5px !important;
+                font-weight: bold !important;
+                margin: 0 !important;
+              }
+              .worksheet-print-example {
+                background-color: #f8fafc !important;
+                border: 1px solid #f1f5f9 !important;
+                border-radius: 8px !important;
+                padding: 6px 10px !important;
+                font-size: 9.5px !important;
+                line-height: 1.35 !important;
+                color: #334155 !important;
+                margin-bottom: 8px !important;
+              }
+              .worksheet-print-label {
+                font-size: 8.5px !important;
+                font-weight: bold !important;
+                color: #64748b !important;
+                text-transform: uppercase !important;
+                display: block !important;
+                margin-bottom: 2px !important;
+              }
+              .worksheet-print-response {
+                font-size: 13px !important;
+                font-weight: 800 !important;
+                font-style: italic !important;
+                line-height: 1.4 !important;
+                color: #0f172a !important;
+                border-bottom: 1.5px solid #94a3b8 !important;
+                padding-bottom: 3px !important;
+                padding-left: 4px !important;
+                margin: 4px 0 0 0 !important;
+                word-wrap: break-word !important;
+                word-break: keep-all !important;
+              }
+              .worksheet-print-response-gratitude {
+                font-size: 14px !important;
+                font-weight: 900 !important;
+                line-height: 1.45 !important;
+                color: #0f172a !important;
+                background-color: #fffafb !important;
+                border: 1.5px solid #fecdd3 !important;
+                border-radius: 8px !important;
+                padding: 10px 12px !important;
+                min-height: 70px !important;
+                margin: 4px 0 0 0 !important;
+                word-wrap: break-word !important;
+                word-break: keep-all !important;
+              }
+              .worksheet-print-blanklines {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 12px !important;
+                padding-top: 6px !important;
+              }
+              .worksheet-print-blankline {
+                border-bottom: 1px dashed #cbd5e1 !important;
+                height: 12px !important;
+              }
+              .worksheet-print-footer {
+                text-align: center !important;
+                padding-top: 4px !important;
+                border-top: 1px solid #e2e8f0 !important;
+                font-size: 8.5px !important;
+                color: #94a3b8 !important;
               }
             }
           `}</style>
           
           {printType === 'worksheet' ? (
             // --- WORKSHEET STYLE PRINTING ---
-            <div className="space-y-8 max-w-4xl mx-auto text-black">
-              <div className="border-b-4 border-slate-900 pb-4 mb-8 flex justify-between items-end">
+            <div className="space-y-8 max-w-4xl mx-auto text-black worksheet-print-container">
+              <div className="border-b-4 border-slate-900 pb-4 mb-8 flex justify-between items-end worksheet-print-header">
                 <div>
                   <h1 className="text-3xl font-extrabold tracking-tight uppercase">
                     📝 {showKorean ? "마음 건강 감사 일기 워크시트" : "My Gratitude Diary Worksheet"}
@@ -4450,73 +4576,73 @@ Start writing your first one!`}
               </div>
 
               {/* 1. Mental Health Status */}
-              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid">
-                <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid worksheet-print-section">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">01</span>
                     {showKorean ? "현재 정신 건강 및 심리 상태 (Mental Health Status)" : "Mental Health Status"}
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Grammar pattern: have been -ing</span>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1">
+                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1 worksheet-print-example">
                   <strong>Examples:</strong>
                   <p>• I have been feeling stressed lately. (최근에 스트레스를 받아왔어요.)</p>
                   <p>• I have been taking a walk every morning to clear my mind. (매일 아침 산책을 하며 마음을 정리해왔어요.)</p>
                 </div>
                 <div className="pt-2">
-                  <label className="text-xs font-bold text-slate-400 block mb-1">YOUR RESPONSE:</label>
+                  <label className="text-xs font-bold text-slate-400 block mb-1 worksheet-print-label">YOUR RESPONSE:</label>
                   {ppcInput.trim() ? (
-                    <p className="text-lg font-extrabold italic border-b-2 border-slate-300 pb-2 pl-2">
+                    <p className="text-lg font-extrabold italic border-b-2 border-slate-300 pb-2 pl-2 worksheet-print-response">
                       {ppcInput}
                     </p>
                   ) : (
-                    <div className="space-y-6 pt-4">
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                    <div className="space-y-6 pt-4 worksheet-print-blanklines">
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* 2. Stress Relief Methods */}
-              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid">
-                <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid worksheet-print-section">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">02</span>
                     {showKorean ? "스트레스 관리 및 해소법 (Stress Relief Methods)" : "Stress Relief Methods"}
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Grammar pattern: so ~ that ... (너무 ~해서 ...하다)</span>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1">
+                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1 worksheet-print-example">
                   <strong>Examples:</strong>
                   <p>• Listening to music is so sweet that I feel relaxed. (음악을 듣는 것은 너무 달콤해서 마음이 편안해져요.)</p>
                   <p>• I exercise so hard that I feel refreshed. (운동을 아주 열심히 해서 기분이 상쾌해요.)</p>
                 </div>
                 <div className="pt-2">
-                  <label className="text-xs font-bold text-slate-400 block mb-1">YOUR RESPONSE:</label>
+                  <label className="text-xs font-bold text-slate-400 block mb-1 worksheet-print-label">YOUR RESPONSE:</label>
                   {soThatInput.trim() ? (
-                    <p className="text-lg font-extrabold italic border-b-2 border-slate-300 pb-2 pl-2">
+                    <p className="text-lg font-extrabold italic border-b-2 border-slate-300 pb-2 pl-2 worksheet-print-response">
                       {soThatInput}
                     </p>
                   ) : (
-                    <div className="space-y-6 pt-4">
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                    <div className="space-y-6 pt-4 worksheet-print-blanklines">
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* 3. Today's Gratitude */}
-              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid">
-                <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+              <div className="border border-slate-300 p-6 rounded-2xl space-y-4 page-break-inside-avoid worksheet-print-section">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">03</span>
                     {showKorean ? "오늘의 감사 한 줄 일기 (Today's Gratitude)" : "Today's Gratitude"}
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Core Goal: Deep Reflection & Appreciating Details</span>
                 </div>
-                <div className="bg-rose-50/50 p-4 rounded-xl text-xs text-rose-900 space-y-1 border border-rose-100">
+                <div className="bg-rose-50/50 p-4 rounded-xl text-xs text-rose-900 space-y-1 border border-rose-100 worksheet-print-example">
                   <strong>Writing Help Guide:</strong>
                   <p className="italic font-medium">
                     "I have been practicing deep breathing to stay calm. I am so relaxed after breathing that I can focus better. I am grateful for this peaceful morning."
@@ -4527,23 +4653,23 @@ Start writing your first one!`}
                   </p>
                 </div>
                 <div className="pt-2">
-                  <label className="text-xs font-bold text-slate-400 block mb-1">YOUR RESPONSE:</label>
+                  <label className="text-xs font-bold text-slate-400 block mb-1 worksheet-print-label">YOUR RESPONSE:</label>
                   {gratitudeInput.trim() ? (
-                    <p className="text-xl font-black border-2 border-slate-200 p-4 rounded-xl bg-slate-50/50 min-h-[100px] leading-relaxed">
+                    <p className="text-xl font-black border-2 border-slate-200 p-4 rounded-xl bg-slate-50/50 min-h-[100px] leading-relaxed worksheet-print-response-gratitude">
                       {gratitudeInput}
                     </p>
                   ) : (
-                    <div className="space-y-6 pt-4">
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
-                      <div className="border-b border-dashed border-slate-300 h-6"></div>
+                    <div className="space-y-6 pt-4 worksheet-print-blanklines">
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
+                      <div className="border-b border-dashed border-slate-300 h-6 worksheet-print-blankline"></div>
                     </div>
                   )}
                 </div>
               </div>
               
-              <div className="text-center pt-8 border-t border-slate-200 text-[10px] text-slate-400 font-medium">
+              <div className="text-center pt-8 border-t border-slate-200 text-[10px] text-slate-400 font-medium worksheet-print-footer">
                 우리의 마음 건강과 긍정적인 말은 건강한 자아를 가꿉니다.
               </div>
             </div>
