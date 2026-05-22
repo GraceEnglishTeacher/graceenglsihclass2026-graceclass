@@ -35,7 +35,8 @@ import {
   Users,
   Quote,
   Clock,
-  History
+  History,
+  Printer
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import dogTemplate from './assets/images/puppy_cute_zentangle_template_1779095376379.png';
@@ -3384,6 +3385,15 @@ function ResultCard({
     const [visibleTranslations, setVisibleTranslations] = useState<{ [key: string]: boolean }>({});
     const [showKorean, setShowKorean] = useState(false);
 
+    const printEntries = viewTab === 'my' 
+      ? entries 
+      : Array.from(new Map([...classEntries, ...entries].map(entry => [entry.id, entry])).values())
+          .sort((a, b) => {
+            const idA = isNaN(Number(a.id)) ? 0 : Number(a.id);
+            const idB = isNaN(Number(b.id)) ? 0 : Number(b.id);
+            return idB - idA;
+          });
+
     const toggleTranslation = async (key: string) => {
         // Find entry in either entries or classEntries
         const personalEntry = entries.find(e => e.id === key);
@@ -4005,6 +4015,13 @@ function ResultCard({
                 </div>
                 <div className="flex gap-2">
                   <button 
+                    onClick={() => window.print()}
+                    className="p-3 bg-rose-500 border border-rose-500 text-white hover:bg-rose-600 hover:border-rose-600 rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2 font-black text-xs uppercase tracking-widest px-5"
+                    title="Print"
+                  >
+                    <Printer size={16} /> {showKorean ? "인쇄하기" : "Print"}
+                  </button>
+                  <button 
                     onClick={() => {
                       if (window.confirm(showKorean ? "정말로 모든 감사 기록을 삭제하시겠습니까?" : "Are you sure you want to delete all gratitude records?")) {
                         setEntries([]);
@@ -4191,12 +4208,20 @@ Start writing your first one!`}
             <div className="text-center space-y-4 relative">
               <h2 className="text-6xl font-black text-slate-800 tracking-tighter uppercase">MY CLASS DIARY</h2>
               <p className="text-indigo-500 font-black uppercase tracking-[0.2em] text-xl italic underline underline-offset-8 decoration-indigo-200 decoration-4">우리 반 친구들의 감사 기록장</p>
-              <button 
-                onClick={refreshData}
-                className="absolute right-0 top-0 p-3 bg-white border border-slate-100 text-slate-400 hover:text-indigo-500 hover:border-indigo-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest"
-              >
-                <RefreshCw size={16} /> Refresh
-              </button>
+              <div className="absolute right-0 top-0 flex gap-2">
+                <button 
+                  onClick={() => window.print()}
+                  className="p-3 bg-indigo-500 border border-indigo-500 text-white hover:bg-indigo-600 hover:border-indigo-600 rounded-2xl transition-all shadow-md active:scale-95 flex items-center gap-2 font-black text-xs uppercase tracking-widest px-5"
+                >
+                  <Printer size={16} /> {showKorean ? "인쇄하기" : "Print"}
+                </button>
+                <button 
+                  onClick={refreshData}
+                  className="p-3 bg-white border border-slate-100 text-slate-400 hover:text-indigo-500 hover:border-indigo-100 rounded-2xl transition-all shadow-sm flex items-center gap-2 font-black text-xs uppercase tracking-widest px-5"
+                >
+                  <RefreshCw size={16} /> Refresh
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -4350,6 +4375,125 @@ Start writing your first one!`}
             </div>
           </div>
         )}
+
+        {/* Hidden printable area */}
+        <div id="gratitude-print-area" className="hidden print:block text-slate-900 p-12 bg-white">
+          <style>{`
+            @media print {
+              html, body {
+                background: white !important;
+                color: black !important;
+                font-family: system-ui, -apple-system, sans-serif !important;
+              }
+              #root * {
+                visibility: hidden !important;
+              }
+              #gratitude-print-area, #gratitude-print-area * {
+                visibility: visible !important;
+              }
+              #gratitude-print-area {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                display: block !important;
+                background: white !important;
+                padding: 24px !important;
+              }
+              .page-break-inside-avoid {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+            }
+          `}</style>
+          
+          <div className="border-b-4 border-rose-500 pb-6 mb-10 flex justify-between items-end">
+            <div>
+              <h1 className="text-4xl font-extrabold text-slate-900 leading-none">
+                💖 {viewTab === 'my' 
+                  ? (showKorean ? "나의 감사 일기 기록" : "My Gratitude Diary") 
+                  : (showKorean ? "우리 반 친구들의 감사 기록장" : "My Class Gratitude Diary")}
+              </h1>
+              <p className="text-slate-500 mt-2 text-sm font-semibold">
+                {showKorean ? "마음 건강을 위한 감사의 일기 기록 목록입니다." : "Compiled list of gratitude diary entries."}
+              </p>
+            </div>
+            <div className="text-right text-xs text-slate-400 font-bold">
+              <span>Print Date: {new Date().toLocaleDateString()}</span>
+            </div>
+          </div>
+          
+          <div className="space-y-10">
+            {printEntries.map((entry, idx) => (
+              <div key={entry.id} className="border-b border-slate-200 pb-8 page-break-inside-avoid shadow-none">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xl font-bold text-rose-500">
+                    No. {idx + 1} {entry.author ? `by ${entry.author}` : ''}
+                  </span>
+                  <span className="text-sm font-semibold text-slate-400 bg-slate-100 px-3 py-1 rounded-full">
+                    {entry.date}
+                  </span>
+                </div>
+                
+                <div className="space-y-4 pl-4 border-l-4 border-slate-100">
+                  {entry.ppcSentence && (
+                    <div>
+                      <span className="text-xs font-black tracking-wider text-indigo-500 uppercase block mb-1">
+                        {showKorean ? "현재상태 (Current Status)" : "Mental Status (PPC)"}
+                      </span>
+                      <p className="text-lg font-bold italic text-slate-800">"{entry.ppcSentence}"</p>
+                      {entry.ppcSentenceKo && (
+                        <p className="text-sm font-medium text-slate-500 mt-1">↳ {entry.ppcSentenceKo}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {entry.soThatSentence && (
+                    <div>
+                      <span className="text-xs font-black tracking-wider text-emerald-500 uppercase block mb-1">
+                        {showKorean ? "스트레스 관리 (Stress Relief)" : "Stress Management (So~That)"}
+                      </span>
+                      <p className="text-lg font-bold italic text-slate-800">"{entry.soThatSentence}"</p>
+                      {entry.soThatSentenceKo && (
+                        <p className="text-sm font-medium text-slate-500 mt-1">↳ {entry.soThatSentenceKo}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  {entry.content && (
+                    <div className="bg-rose-50/30 p-5 rounded-2xl border border-rose-100">
+                      <span className="text-xs font-black tracking-wider text-rose-500 uppercase block mb-1">
+                        {showKorean ? "감사 한 줄 (Today's Gratitude)" : "Gratitude Diary"}
+                      </span>
+                      <p className="text-xl font-black text-slate-900">"{entry.content}"</p>
+                      {entry.contentKo && (
+                        <p className="text-base font-bold text-slate-600 mt-2">↳ {entry.contentKo}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {entry.comments && entry.comments.length > 0 && (
+                  <div className="mt-6 ml-4 bg-slate-50 p-4 rounded-xl border border-slate-150 text-xs shadow-none">
+                    <span className="font-extrabold text-slate-500 block mb-2 uppercase tracking-wider">Comments / Thoughts:</span>
+                    <div className="space-y-2">
+                      {entry.comments.map((comment, cidx) => (
+                        <div key={comment.id || cidx} className="text-slate-700 py-1.5 border-t border-slate-200/50 first:border-0">
+                          <strong>{comment.author}</strong>: {comment.text} <span className="text-slate-400">({comment.date})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+            {printEntries.length === 0 && (
+              <p className="text-slate-400 italic text-center py-12 border border-dashed border-slate-200 rounded-3xl">
+                {showKorean ? "기록된 감사 일기가 없습니다." : "No saved gratitude records."}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
