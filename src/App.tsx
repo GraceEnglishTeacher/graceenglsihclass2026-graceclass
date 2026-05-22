@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   LayoutDashboard,
   Brain, 
@@ -3071,6 +3072,14 @@ function ResultCard({
                       <Star className="text-emerald-500" size={16} fill="currentColor" />
                     </span>
                     <h4 className="text-xl font-black text-slate-800 tracking-tight">ORIGINAL TEXT</h4>
+                    <button 
+                      onClick={() => handleSpeak(content.text)}
+                      className="ml-2 p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-all active:scale-95 flex items-center justify-center gap-1.5 px-3.5 py-1.5 shadow-md text-xs font-black cursor-pointer"
+                      title="전체 본문 듣기"
+                    >
+                      <Volume2 size={14} />
+                      듣기
+                    </button>
                   </div>
                   <button 
                     onClick={() => setShowTranslation(!showTranslation)}
@@ -3087,13 +3096,6 @@ function ResultCard({
                       </p>
                     ))}
                   </div>
-                  <button 
-                    onClick={() => handleSpeak(content.text)}
-                    className="absolute bottom-6 right-6 p-4 bg-white text-emerald-500 rounded-2xl shadow-md hover:shadow-lg transition-all active:scale-90"
-                    title="전체 본문 듣기"
-                  >
-                    <Volume2 size={24} />
-                  </button>
                 </div>
               </div>
 
@@ -3471,8 +3473,8 @@ function ResultCard({
 
     const ExampleBox = ({ id, en, ko, colorClass }: { id: string, en: React.ReactNode, ko: string, colorClass: string }) => (
         <div className={`${colorClass} p-4 rounded-2xl border transition-all relative group`}>
-            <p className="text-sm font-bold text-slate-600 italic leading-relaxed pr-8">"{en}"</p>
-            <p className="text-xs font-black text-slate-400 mt-2 border-t border-dashed pt-2 italic">
+            <p className="text-base font-bold text-slate-600 italic leading-relaxed pr-8">"{en}"</p>
+            <p className="text-sm font-black text-slate-400 mt-2 border-t border-dashed pt-2 italic">
                 {ko}
             </p>
         </div>
@@ -3836,7 +3838,7 @@ function ResultCard({
                     <div className="flex flex-col gap-1">
                       <h2 className="text-5xl font-black text-slate-800 tracking-tighter uppercase whitespace-nowrap">My Gratitude Diary</h2>
                       <p className="text-rose-500 font-bold uppercase tracking-[0.2em] text-lg whitespace-nowrap">
-                        마음 건강을 위해 감사의 일기를 작성하세요.
+                        자신의 마음 건강을 위해 감사의 일기를 작성하세요.
                       </p>
                     </div>
                   </div>
@@ -3878,9 +3880,10 @@ function ResultCard({
                   {/* Mental Health - PPC */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xl font-black text-slate-700 flex items-center gap-2">
-                        <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-xs">01</span>
-                        Mental Health Status
+                      <h4 className="text-xl font-black text-slate-700 flex items-baseline gap-2">
+                        <span className="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center text-xs self-center">01</span>
+                        <span>Mental Health Status</span>
+                        <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(정신 건강 상태)</span>
                       </h4>
                       <span className="text-[10px] font-black bg-indigo-50 text-indigo-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: have been -ing</span>
                     </div>
@@ -3914,9 +3917,10 @@ function ResultCard({
                   {/* Stress Relief - so...that */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xl font-black text-slate-700 flex items-center gap-2">
-                        <span className="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-xs">02</span>
-                        Stress Relief Methods
+                      <h4 className="text-xl font-black text-slate-700 flex items-baseline gap-2">
+                        <span className="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center text-xs self-center">02</span>
+                        <span>Stress Relief Methods</span>
+                        <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(스트레스 해소법)</span>
                       </h4>
                       <span className="text-[10px] font-black bg-emerald-50 text-emerald-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: so ~ that ...</span>
                     </div>
@@ -3950,9 +3954,10 @@ function ResultCard({
                   {/* Today's Gratitude */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xl font-black text-slate-700 flex items-center gap-2">
-                        <span className="w-8 h-8 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center text-xs">03</span>
-                        Today's Gratitude
+                      <h4 className="text-xl font-black text-slate-700 flex items-baseline gap-2">
+                        <span className="w-8 h-8 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center text-xs self-center">03</span>
+                        <span>Today's Gratitude</span>
+                        <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(오늘의 감사)</span>
                       </h4>
                       <div className="bg-rose-50 px-4 py-2 rounded-2xl flex items-center gap-2">
                         <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Example Guide</span>
@@ -4373,7 +4378,8 @@ Start writing your first one!`}
         )}
 
         {/* Hidden printable area */}
-        <div id="gratitude-print-area" className="hidden print:block text-slate-900 p-8 bg-white">
+        {createPortal(
+          <div id="gratitude-print-area" className="hidden print:block text-slate-900 p-8 bg-white">
           <style>{`
             @media print {
               html, body {
@@ -4445,17 +4451,27 @@ Start writing your first one!`}
                 margin-bottom: 6px !important;
               }
               .worksheet-print-section h3 {
-                font-size: 12.5px !important;
+                font-size: 13.5px !important;
                 font-weight: bold !important;
                 margin: 0 !important;
+                display: flex !important;
+                align-items: baseline !important;
+                gap: 6px !important;
+                flex-wrap: wrap !important;
+              }
+              .worksheet-print-section-subtitle {
+                font-size: 11.5px !important;
+                font-weight: 600 !important;
+                color: #64748b !important;
+                text-transform: none !important;
               }
               .worksheet-print-example {
                 background-color: #f8fafc !important;
                 border: 1px solid #f1f5f9 !important;
                 border-radius: 8px !important;
                 padding: 6px 10px !important;
-                font-size: 9.5px !important;
-                line-height: 1.35 !important;
+                font-size: 11px !important;
+                line-height: 1.4 !important;
                 color: #334155 !important;
                 margin-bottom: 8px !important;
               }
@@ -4539,7 +4555,7 @@ Start writing your first one!`}
                 <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">01</span>
-                    {showKorean ? "현재 정신 건강 및 심리 상태 (Mental Health Status)" : "Mental Health Status"}
+                    Mental Health Status <span className="worksheet-print-section-subtitle">(정신 건강 상태)</span>
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Grammar pattern: have been -ing</span>
                 </div>
@@ -4568,7 +4584,7 @@ Start writing your first one!`}
                 <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">02</span>
-                    {showKorean ? "스트레스 관리 및 해소법 (Stress Relief Methods)" : "Stress Relief Methods"}
+                    Stress Relief Methods <span className="worksheet-print-section-subtitle">(스트레스 해소법)</span>
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Grammar pattern: so ~ that ... (너무 ~해서 ...하다)</span>
                 </div>
@@ -4597,7 +4613,7 @@ Start writing your first one!`}
                 <div className="flex justify-between items-center border-b border-slate-200 pb-2 worksheet-print-section-header">
                   <h3 className="text-lg font-bold flex items-center gap-2">
                     <span className="bg-slate-900 text-white rounded px-2 py-0.5 text-xs">03</span>
-                    {showKorean ? "오늘의 감사 한 줄 일기 (Today's Gratitude)" : "Today's Gratitude"}
+                    Today's Gratitude <span className="worksheet-print-section-subtitle">(오늘의 감사)</span>
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Core Goal: Deep Reflection & Appreciating Details</span>
                 </div>
@@ -4723,7 +4739,9 @@ Start writing your first one!`}
               </div>
             </>
           )}
-        </div>
+        </div>,
+        document.body
+      )}
       </div>
     );
   };
