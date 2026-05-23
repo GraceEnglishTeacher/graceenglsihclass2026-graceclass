@@ -1,0 +1,48 @@
+{
+  "entities": {
+    "Comment": {
+      "title": "Comment",
+      "description": "A comment on a gratitude entry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "author": { "type": "string" },
+        "text": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["id", "author", "text", "date"]
+    },
+    "GratitudeEntry": {
+      "title": "GratitudeEntry",
+      "description": "An entry in the gratitude diary",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "content": { "type": "string" },
+        "ppcSentence": { "type": "string" },
+        "soThatSentence": { "type": "string" },
+        "author": { "type": "string" },
+        "avatar": { "type": "string" },
+        "reactions": {
+          "type": "object",
+          "description": "A map of emoji characters to reaction counts"
+        },
+        "comments": {
+          "type": "array",
+          "items": { "type": "object", "$ref": "Comment" }
+        },
+        "contentKo": { "type": "string" },
+        "ppcSentenceKo": { "type": "string" },
+        "soThatSentenceKo": { "type": "string" }
+      },
+      "required": ["id", "date", "content"]
+    }
+  },
+  "firestore": {
+    "class_diary/{entryId}": {
+      "schema": "GratitudeEntry",
+      "description": "Collection of shared class gratitude diary entries"
+    }
+  }
+}

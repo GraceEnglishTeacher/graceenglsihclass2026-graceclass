@@ -40,6 +40,19 @@ import {
   Printer
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
+import firebaseConfig from '../firebase-applet-config.json';
+
+let firestoreInstance: any = null;
+function getClientDb() {
+  if (!firestoreInstance) {
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    firestoreInstance = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+  }
+  return firestoreInstance;
+}
+
 import dogTemplate from './assets/images/puppy_cute_zentangle_template_1779095376379.png';
 import dogExample from './assets/images/dog_zentangle_simple_example_1779094661261.png';
 import catTemplate from './assets/images/cat_cute_zentangle_template_1779095394772.png';
@@ -867,7 +880,7 @@ export default function App() {
 
   // Views moved outside App component to prevent unmount/remount on state changes
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-[#2D3748] font-sans selection:bg-indigo-200 selection:text-indigo-900 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen bg-[#2D3748] font-sans selection:bg-indigo-200 selection:text-indigo-900 overflow-hidden print:hidden">
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 bg-[#2D3748] border-b border-white/5 z-[60] shrink-0">
         <div className="flex items-center space-x-3">
@@ -3513,16 +3526,34 @@ function ResultCard({
             // Filter class data according to the clean-up date/post filters
             const filteredData = data.filter(filterPost);
             setClassEntries(filteredData);
+            localStorage.setItem('class_diary', JSON.stringify(filteredData));
+          } else {
+            throw new Error("Server returned non-OK status");
           }
         } catch (err) {
-          console.error("Failed to load class diary on mount:", err);
-          // Fallback to local storage if offline or server error
-          const savedClass = localStorage.getItem('class_diary');
-          if (savedClass) {
-            try {
-              const parsed = JSON.parse(savedClass);
-              setClassEntries(parsed.filter(filterPost));
-            } catch (e) {}
+          console.warn("Failed to load class diary via API. Trying direct Firestore fallback:", err);
+          try {
+            const db = getClientDb();
+            const colRef = collection(db, "class_diary");
+            const snapshot = await getDocs(colRef);
+            const entriesList: GratitudeEntry[] = [];
+            snapshot.forEach(docSnap => {
+              entriesList.push(docSnap.data() as GratitudeEntry);
+            });
+            entriesList.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
+            const filteredData = entriesList.filter(filterPost);
+            setClassEntries(filteredData);
+            localStorage.setItem('class_diary', JSON.stringify(filteredData));
+          } catch (fsErr) {
+            console.error("Direct Firestore load fallback failed:", fsErr);
+            // Fallback to local storage if offline or server error
+            const savedClass = localStorage.getItem('class_diary');
+            if (savedClass) {
+              try {
+                const parsed = JSON.parse(savedClass);
+                setClassEntries(parsed.filter(filterPost));
+              } catch (e) {}
+            }
           }
         }
       };
@@ -3537,19 +3568,39 @@ function ResultCard({
       };
     }, []);
 
-    const refreshData = () => {
+    const refreshData = async () => {
       try {
         const savedPersonal = localStorage.getItem('gratitude_diary');
         if (savedPersonal) setEntries(JSON.parse(savedPersonal));
         
-        fetch('/api/class-diary')
-          .then(res => res.json())
-          .then(data => setClassEntries(data))
-          .catch(err => {
-            console.error("Refresh failed for class diary server:", err);
+        try {
+          const res = await fetch('/api/class-diary');
+          if (res.ok) {
+            const data = await res.json();
+            setClassEntries(data);
+            localStorage.setItem('class_diary', JSON.stringify(data));
+          } else {
+            throw new Error("Server returned non-OK status");
+          }
+        } catch (err) {
+          console.warn("Refresh failed via API. Trying direct Firestore fallback:", err);
+          try {
+            const db = getClientDb();
+            const colRef = collection(db, "class_diary");
+            const snapshot = await getDocs(colRef);
+            const entriesList: GratitudeEntry[] = [];
+            snapshot.forEach(docSnap => {
+              entriesList.push(docSnap.data() as GratitudeEntry);
+            });
+            entriesList.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
+            setClassEntries(entriesList);
+            localStorage.setItem('class_diary', JSON.stringify(entriesList));
+          } catch (fsErr) {
+            console.error("Direct Firestore refresh fallback failed:", fsErr);
             const savedClass = localStorage.getItem('class_diary');
             if (savedClass) setClassEntries(JSON.parse(savedClass));
-          });
+          }
+        }
       } catch (e) {
         console.error("Refresh failed:", e);
       }
@@ -3604,24 +3655,41 @@ function ResultCard({
           };
         }
 
+        const saveDirectlyToFirestore = async () => {
+          try {
+            const db = getClientDb();
+            await setDoc(doc(db, "class_diary", updatedEntry.id), updatedEntry);
+            setClassEntries(prev => {
+              const updated = prev.map(e => e.id === editingEntryId ? updatedEntry : e);
+              localStorage.setItem('class_diary', JSON.stringify(updated));
+              return updated;
+            });
+          } catch (fsErr) {
+            console.error("Direct Firestore update fallback failed:", fsErr);
+            const updatedClass = classEntries.map(e => e.id === editingEntryId ? updatedEntry : e);
+            setClassEntries(updatedClass);
+            localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+          }
+          setViewTab('class');
+        };
+
         // Post to backend
         fetch('/api/class-diary', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedEntry)
         })
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) throw new Error("API status non-OK");
+            return res.json();
+          })
           .then(data => {
             setClassEntries(data);
             setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
           })
           .catch(err => {
-            console.error("Failed to update entry on server:", err);
-            // Local fallback
-            const updatedClass = classEntries.map(e => e.id === editingEntryId ? updatedEntry : e);
-            setClassEntries(updatedClass);
-            localStorage.setItem('class_diary', JSON.stringify(updatedClass));
-            setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
+            console.warn("Failed to update entry via API. Trying direct Firestore fallback:", err);
+            saveDirectlyToFirestore();
           });
 
         setEditingEntryId(null);
@@ -3643,24 +3711,41 @@ function ResultCard({
         setEntries(updatedPersonal);
         localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
         
+        const createDirectlyToFirestore = async () => {
+          try {
+            const db = getClientDb();
+            await setDoc(doc(db, "class_diary", entry.id), entry);
+            setClassEntries(prev => {
+              const updated = [entry, ...prev];
+              localStorage.setItem('class_diary', JSON.stringify(updated));
+              return updated;
+            });
+          } catch (fsErr) {
+            console.error("Direct Firestore create fallback failed:", fsErr);
+            const updatedClass = [entry, ...classEntries];
+            setClassEntries(updatedClass);
+            localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+          }
+          setViewTab('class');
+        };
+
         // Post new entry to backend
         fetch('/api/class-diary', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(entry)
         })
-          .then(res => res.json())
+          .then(res => {
+            if (!res.ok) throw new Error("API status non-OK");
+            return res.json();
+          })
           .then(data => {
             setClassEntries(data);
             setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
           })
           .catch(err => {
-            console.error("Failed to post entry to server:", err);
-            // Local fallback
-            const updatedClass = [entry, ...classEntries];
-            setClassEntries(updatedClass);
-            localStorage.setItem('class_diary', JSON.stringify(updatedClass));
-            setViewTab('class'); // Automatically switch to MY CLASS DIARY tab
+            console.warn("Failed to post entry via API. Trying direct Firestore fallback:", err);
+            createDirectlyToFirestore();
           });
       }
 
@@ -3698,19 +3783,37 @@ function ResultCard({
       setEntries(updatedPersonal);
       localStorage.setItem('gratitude_diary', JSON.stringify(updatedPersonal));
 
+      const deleteDirectlyFromFirestore = async () => {
+        try {
+          const db = getClientDb();
+          await deleteDoc(doc(db, "class_diary", id));
+          setClassEntries(prev => {
+            const filtered = prev.filter(e => e.id !== id);
+            localStorage.setItem('class_diary', JSON.stringify(filtered));
+            return filtered;
+          });
+        } catch (fsErr) {
+          console.error("Direct Firestore delete failed:", fsErr);
+          const updatedClass = classEntries.filter(e => e.id !== id);
+          setClassEntries(updatedClass);
+          localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+        }
+      };
+
       // Post delete to backend
       fetch('/api/class-diary/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("API status non-OK");
+          return res.json();
+        })
         .then(data => setClassEntries(data))
         .catch(err => {
-          console.error("Server delete failed:", err);
-          const updatedClass = classEntries.filter(e => e.id !== id);
-          setClassEntries(updatedClass);
-          localStorage.setItem('class_diary', JSON.stringify(updatedClass));
+          console.warn("Server delete via API failed. Trying direct Firestore:", err);
+          deleteDirectlyFromFirestore();
         });
     };
 
@@ -3731,24 +3834,49 @@ function ResultCard({
         return updated;
       });
 
+      const reactDirectlyToFirestore = async () => {
+        try {
+          const db = getClientDb();
+          const docRef = doc(db, "class_diary", id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const currentEntry = docSnap.data() as GratitudeEntry;
+            const updatedReactions = { ...(currentEntry.reactions || {}) };
+            updatedReactions[emoji] = (updatedReactions[emoji] || 0) + 1;
+            const entryToSet = { ...currentEntry, reactions: updatedReactions };
+            await setDoc(docRef, entryToSet);
+            setClassEntries(prev => {
+              const updated = prev.map(e => e.id === id ? entryToSet : e);
+              localStorage.setItem('class_diary', JSON.stringify(updated));
+              return updated;
+            });
+          }
+        } catch (fsErr) {
+          console.error("Direct Firestore reaction update failed:", fsErr);
+          setClassEntries(prev => {
+            const updated = prev.map(updateLocalEntry);
+            localStorage.setItem('class_diary', JSON.stringify(updated));
+            return updated;
+          });
+        }
+      };
+
       // Send to server
       fetch('/api/class-diary/react', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, emoji })
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("API status non-OK");
+          return res.json();
+        })
         .then(data => {
           setClassEntries(data);
         })
         .catch(err => {
-          console.error("Failed to post reaction:", err);
-          // Local fallback
-          setClassEntries(prev => {
-            const updated = prev.map(updateLocalEntry);
-            localStorage.setItem('class_diary', JSON.stringify(updated));
-            return updated;
-          });
+          console.warn("Failed to post reaction via API. Trying direct Firestore:", err);
+          reactDirectlyToFirestore();
         });
     };
 
@@ -3777,24 +3905,48 @@ function ResultCard({
         return updated;
       });
 
+      const commentDirectlyToFirestore = async () => {
+        try {
+          const db = getClientDb();
+          const docRef = doc(db, "class_diary", id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const currentEntry = docSnap.data() as GratitudeEntry;
+            const updatedComments = [...(currentEntry.comments || []), comment];
+            const entryToSet = { ...currentEntry, comments: updatedComments };
+            await setDoc(docRef, entryToSet);
+            setClassEntries(prev => {
+              const updated = prev.map(e => e.id === id ? entryToSet : e);
+              localStorage.setItem('class_diary', JSON.stringify(updated));
+              return updated;
+            });
+          }
+        } catch (fsErr) {
+          console.error("Direct Firestore comment insertion failed:", fsErr);
+          setClassEntries(prev => {
+            const updated = prev.map(updateLocalEntry);
+            localStorage.setItem('class_diary', JSON.stringify(updated));
+            return updated;
+          });
+        }
+      };
+
       // Send to backend
       fetch('/api/class-diary/comment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, comment })
       })
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("API status non-OK");
+          return res.json();
+        })
         .then(data => {
           setClassEntries(data);
         })
         .catch(err => {
-          console.error("Failed to add comment on server:", err);
-          // Local fallback
-          setClassEntries(prev => {
-            const updated = prev.map(updateLocalEntry);
-            localStorage.setItem('class_diary', JSON.stringify(updated));
-            return updated;
-          });
+          console.warn("Failed to add comment via API. Trying direct Firestore:", err);
+          commentDirectlyToFirestore();
         });
 
       setCommentInput({ ...commentInput, [id]: '' });
@@ -4393,9 +4545,6 @@ Start writing your first one!`}
               @page {
                 size: portrait;
                 margin: 6mm 10mm 6mm 10mm;
-              }
-              #root > div {
-                display: none !important;
               }
               #gratitude-print-area, #gratitude-print-area * {
                 visibility: visible !important;

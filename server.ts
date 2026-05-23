@@ -3,6 +3,53 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import fs from "fs";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+
+// Read Firebase config
+const firebaseConfigPath = path.join(process.cwd(), "firebase-applet-config.json");
+const firebaseConfig = JSON.parse(fs.readFileSync(firebaseConfigPath, "utf8"));
+
+// Initialize Firebase
+const appFirebase = initializeApp(firebaseConfig);
+const db = getFirestore(appFirebase, firebaseConfig.firestoreDatabaseId);
+
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
+
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string | null;
+    email?: string | null;
+    emailVerified?: boolean | null;
+    isAnonymous?: boolean | null;
+    tenantId?: string | null;
+    providerInfo?: {
+      providerId?: string | null;
+      email?: string | null;
+    }[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null): never {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {},
+    operationType,
+    path
+  };
+  console.error("Firestore Error: ", JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
 
 interface Comment {
   id: string;
@@ -85,31 +132,6 @@ const getSeedEntries = (): GratitudeEntry[] => [
   }
 ];
 
-const DIARY_FILE_PATH = path.join(process.cwd(), "class_diary_store.json");
-
-function readDiary(): GratitudeEntry[] {
-  try {
-    if (!fs.existsSync(DIARY_FILE_PATH)) {
-      const seeds = getSeedEntries();
-      fs.writeFileSync(DIARY_FILE_PATH, JSON.stringify(seeds, null, 2), "utf8");
-      return seeds;
-    }
-    const data = fs.readFileSync(DIARY_FILE_PATH, "utf8");
-    return JSON.parse(data);
-  } catch (err) {
-    console.error("Failed to read diary from disk:", err);
-    return getSeedEntries();
-  }
-}
-
-function writeDiary(data: GratitudeEntry[]) {
-  try {
-    fs.writeFileSync(DIARY_FILE_PATH, JSON.stringify(data, null, 2), "utf8");
-  } catch (err) {
-    console.error("Failed to write diary to disk:", err);
-  }
-}
-
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -119,107 +141,225 @@ async function startServer() {
   const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
   // Class Diary Shared Endpoints
-  app.get("/api/class-diary", (req, res) => {
+  app.get("/api/class-diary", async (req, res) => {
     try {
-      const data = readDiary();
-      res.json(data);
-    } catch (e) {
-      res.status(500).json({ error: "Failed to fetch class diary" });
+      const q = collection(db, "class_diary");
+      let snapshot;
+      try {
+        snapshot = await getDocs(q);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.LIST, "class_diary");
+      }
+      
+      let entries: GratitudeEntry[] = [];
+      snapshot.forEach(docSnap => {
+        entries.push(docSnap.data() as GratitudeEntry);
+      });
+      
+      if (entries.length === 0) {
+        // Seed database if empty
+        const seeds = getSeedEntries();
+        for (const seed of seeds) {
+          try {
+            await setDoc(doc(db, "class_diary", seed.id), seed);
+          } catch (err) {
+            handleFirestoreError(err, OperationType.CREATE, `class_diary/${seed.id}`);
+          }
+        }
+        entries = seeds;
+      }
+      res.json(entries);
+    } catch (e: any) {
+      console.error("Failed to fetch class diary:", e);
+      res.status(500).json({ error: "Failed to fetch class diary", details: e.message });
     }
   });
 
-  app.post("/api/class-diary", (req, res) => {
+  app.post("/api/class-diary", async (req, res) => {
     try {
       const newEntry: GratitudeEntry = req.body;
       if (!newEntry || !newEntry.id) {
         return res.status(400).json({ error: "Invalid entry structure" });
       }
 
-      let data = readDiary();
-      const existingIndex = data.findIndex(e => e.id === newEntry.id);
-      if (existingIndex !== -1) {
-        data[existingIndex] = {
-          ...data[existingIndex],
+      const docRef = doc(db, "class_diary", newEntry.id);
+      let docSnap;
+      try {
+        docSnap = await getDoc(docRef);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.GET, `class_diary/${newEntry.id}`);
+      }
+
+      let entryToSave: GratitudeEntry;
+      if (docSnap.exists()) {
+        entryToSave = {
+          ...(docSnap.data() as GratitudeEntry),
           ...newEntry
         };
       } else {
-        data = [newEntry, ...data];
+        entryToSave = newEntry;
       }
 
-      writeDiary(data);
-      res.json(data);
-    } catch (e) {
-      res.status(500).json({ error: "Failed to save entry" });
+      try {
+        await setDoc(docRef, entryToSave);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.WRITE, `class_diary/${newEntry.id}`);
+      }
+
+      // Return refreshed entries
+      const q = collection(db, "class_diary");
+      const snapshot = await getDocs(q);
+      const entries: GratitudeEntry[] = [];
+      snapshot.forEach(d => {
+        entries.push(d.data() as GratitudeEntry);
+      });
+      res.json(entries);
+    } catch (e: any) {
+      console.error("Failed to save entry:", e);
+      res.status(500).json({ error: "Failed to save entry", details: e.message });
     }
   });
 
-  app.post("/api/class-diary/react", (req, res) => {
+  app.post("/api/class-diary/react", async (req, res) => {
     try {
       const { id, emoji } = req.body;
       if (!id || !emoji) {
         return res.status(400).json({ error: "id and emoji are required" });
       }
 
-      const data = readDiary();
-      const entry = data.find(e => e.id === id);
-      if (entry) {
+      const docRef = doc(db, "class_diary", id);
+      let docSnap;
+      try {
+        docSnap = await getDoc(docRef);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.GET, `class_diary/${id}`);
+      }
+
+      if (docSnap.exists()) {
+        const entry = docSnap.data() as GratitudeEntry;
         entry.reactions = entry.reactions || {};
         entry.reactions[emoji] = (entry.reactions[emoji] || 0) + 1;
-        writeDiary(data);
-        res.json(data);
+        
+        try {
+          await setDoc(docRef, entry);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.WRITE, `class_diary/${id}`);
+        }
+
+        // Return refreshed entries
+        const q = collection(db, "class_diary");
+        const snapshot = await getDocs(q);
+        const entries: GratitudeEntry[] = [];
+        snapshot.forEach(d => {
+          entries.push(d.data() as GratitudeEntry);
+        });
+        res.json(entries);
       } else {
         res.status(404).json({ error: "Entry not found" });
       }
-    } catch (e) {
-      res.status(500).json({ error: "Failed to add reaction" });
+    } catch (e: any) {
+      console.error("Failed to add reaction:", e);
+      res.status(500).json({ error: "Failed to add reaction", details: e.message });
     }
   });
 
-  app.post("/api/class-diary/comment", (req, res) => {
+  app.post("/api/class-diary/comment", async (req, res) => {
     try {
       const { id, comment } = req.body;
       if (!id || !comment) {
         return res.status(400).json({ error: "id and comment are required" });
       }
 
-      const data = readDiary();
-      const entry = data.find(e => e.id === id);
-      if (entry) {
+      const docRef = doc(db, "class_diary", id);
+      let docSnap;
+      try {
+        docSnap = await getDoc(docRef);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.GET, `class_diary/${id}`);
+      }
+
+      if (docSnap.exists()) {
+        const entry = docSnap.data() as GratitudeEntry;
         entry.comments = entry.comments || [];
         entry.comments.push(comment);
-        writeDiary(data);
-        res.json(data);
+
+        try {
+          await setDoc(docRef, entry);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.WRITE, `class_diary/${id}`);
+        }
+
+        // Return refreshed entries
+        const q = collection(db, "class_diary");
+        const snapshot = await getDocs(q);
+        const entries: GratitudeEntry[] = [];
+        snapshot.forEach(d => {
+          entries.push(d.data() as GratitudeEntry);
+        });
+        res.json(entries);
       } else {
         res.status(404).json({ error: "Entry not found" });
       }
-    } catch (e) {
-      res.status(500).json({ error: "Failed to add comment" });
+    } catch (e: any) {
+      console.error("Failed to add comment:", e);
+      res.status(500).json({ error: "Failed to add comment", details: e.message });
     }
   });
 
-  app.post("/api/class-diary/delete", (req, res) => {
+  app.post("/api/class-diary/delete", async (req, res) => {
     try {
       const { id } = req.body;
       if (!id) {
         return res.status(400).json({ error: "id is required" });
       }
 
-      let data = readDiary();
-      data = data.filter(e => e.id !== id);
-      writeDiary(data);
-      res.json(data);
-    } catch (e) {
-      res.status(500).json({ error: "Failed to delete entry" });
+      const docRef = doc(db, "class_diary", id);
+      try {
+        await deleteDoc(docRef);
+      } catch (err) {
+        handleFirestoreError(err, OperationType.DELETE, `class_diary/${id}`);
+      }
+
+      // Return refreshed entries
+      const q = collection(db, "class_diary");
+      const snapshot = await getDocs(q);
+      const entries: GratitudeEntry[] = [];
+      snapshot.forEach(d => {
+        entries.push(d.data() as GratitudeEntry);
+      });
+      res.json(entries);
+    } catch (e: any) {
+      console.error("Failed to delete entry:", e);
+      res.status(500).json({ error: "Failed to delete entry", details: e.message });
     }
   });
 
-  app.post("/api/class-diary/clear", (req, res) => {
+  app.post("/api/class-diary/clear", async (req, res) => {
     try {
+      // Delete existing
+      const q = collection(db, "class_diary");
+      const snapshot = await getDocs(q);
+      for (const docSnap of snapshot.docs) {
+        try {
+          await deleteDoc(doc(db, "class_diary", docSnap.id));
+        } catch (err) {
+          handleFirestoreError(err, OperationType.DELETE, `class_diary/${docSnap.id}`);
+        }
+      }
+
+      // Re-seed
       const seeds = getSeedEntries();
-      writeDiary(seeds);
+      for (const seed of seeds) {
+        try {
+          await setDoc(doc(db, "class_diary", seed.id), seed);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.CREATE, `class_diary/${seed.id}`);
+        }
+      }
       res.json(seeds);
-    } catch (e) {
-      res.status(500).json({ error: "Failed to clear class diary" });
+    } catch (e: any) {
+      console.error("Failed to clear class diary:", e);
+      res.status(500).json({ error: "Failed to clear class diary", details: e.message });
     }
   });
 
