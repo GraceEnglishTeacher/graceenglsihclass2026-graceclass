@@ -3474,7 +3474,7 @@ function ResultCard({
     const ExampleBox = ({ id, en, ko, colorClass }: { id: string, en: React.ReactNode, ko: string, colorClass: string }) => (
         <div className={`${colorClass} p-4 rounded-2xl border transition-all relative group`}>
             <p className="text-lg font-bold text-slate-600 italic leading-relaxed pr-8">"{en}"</p>
-            <p className="text-base font-black text-slate-400 mt-2 border-t border-dashed pt-2 italic">
+            <p className="text-base font-black text-slate-400 mt-2 border-t border-dashed pt-2 italic break-keep">
                 {ko}
             </p>
         </div>
@@ -3885,7 +3885,7 @@ function ResultCard({
                         <span>My Mental Health Status</span>
                         <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(나의 정신 건강 상태)</span>
                       </h4>
-                      <span className="text-[10px] font-black bg-indigo-50 text-indigo-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: have been -ing</span>
+                      <span className="text-xs font-black bg-indigo-50 text-indigo-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: have been -ing</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3922,7 +3922,7 @@ function ResultCard({
                         <span>My Stress Relief Methods</span>
                         <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(나의 스트레스 해소법)</span>
                       </h4>
-                      <span className="text-[10px] font-black bg-emerald-50 text-emerald-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: so ~ that ...</span>
+                      <span className="text-xs font-black bg-emerald-50 text-emerald-400 px-3 py-1 rounded-full uppercase tracking-tighter">Use: so ~ that ...</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -3960,7 +3960,7 @@ function ResultCard({
                         <span className="text-sm font-bold text-slate-400 normal-case font-sans tracking-tight">(오늘의 감사)</span>
                       </h4>
                       <div className="bg-rose-50 px-4 py-2 rounded-2xl flex items-center gap-2">
-                        <span className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Example Guide</span>
+                        <span className="text-xs font-black text-rose-400 uppercase tracking-widest">Example Guide</span>
                         <div className="w-1.5 h-1.5 bg-rose-300 rounded-full animate-pulse"></div>
                       </div>
                     </div>
@@ -4394,7 +4394,7 @@ Start writing your first one!`}
                 size: portrait;
                 margin: 6mm 10mm 6mm 10mm;
               }
-              #root {
+              #root > div {
                 display: none !important;
               }
               #gratitude-print-area, #gratitude-print-area * {
@@ -4588,7 +4588,7 @@ Start writing your first one!`}
                   </h3>
                   <span className="text-xs font-semibold text-slate-500">Grammar pattern: so ~ that ... (너무 ~해서 ...하다)</span>
                 </div>
-                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1 worksheet-print-example">
+                <div className="bg-slate-50 p-4 rounded-xl text-xs text-slate-600 space-y-1 worksheet-print-example break-keep">
                   <strong>Examples:</strong>
                   <p>• Listening to music is so sweet that I feel relaxed. (음악을 듣는 것은 너무 달콤해서 마음이 편안해져요.)</p>
                   <p>• I exercise so hard that I feel refreshed. (운동을 아주 열심히 해서 기분이 상쾌해요.)</p>
@@ -5322,6 +5322,23 @@ Start writing your first one!`}
              title="READING" tagline="본문 입체 분석 및 독해 챌린지" variant="white" accent="emerald" 
              icon={<BookOpen size={42} />} onClick={() => navTo('reading')} 
            />
+        </div>
+
+        <div className="space-y-6 pt-8">
+           <div className="flex items-center space-x-2 pb-2 border-b border-indigo-100">
+              <Sparkles className="w-6 h-6 text-indigo-500 shrink-0" />
+              <h3 className="text-xl font-black text-slate-800 tracking-tighter uppercase">ACTIVITIES</h3>
+           </div>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <MenuCard 
+                title="GRATITUDE DIARY" tagline="마음 건강을 위한 영어 감사 일기" variant="white" accent="purple" 
+                icon={<Heart size={42} />} onClick={() => navTo('gratitude')} 
+              />
+              <MenuCard 
+                title="ZENTANGLE ART" tagline="마음의 평화를 위한 패턴 드로잉" variant="white" accent="emerald" 
+                icon={<Palette size={42} />} onClick={() => navTo('zentangle')} 
+              />
+           </div>
         </div>
       </div>
 
