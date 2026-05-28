@@ -4914,6 +4914,7 @@ Start writing your first one!`}
 
   const ZentangleView = () => {
     const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const canvasBgRef = React.useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [color, setColor] = useState('#000000');
     const [lineWidth, setLineWidth] = useState(2);
@@ -4923,6 +4924,7 @@ Start writing your first one!`}
     const [selectedTemplate, setSelectedTemplate] = useState<string>('none');
     const [viewMode, setViewMode] = useState<'draw' | 'diary'>('draw');
     const [zentangleCommentInput, setZentangleCommentInput] = useState<{ [id: string]: string }>({});
+    const [editingEntryId, setEditingEntryId] = useState<string | null>(null);
 
     // Drawing states
     const [history, setHistory] = useState<string[]>([]);
@@ -4934,6 +4936,7 @@ Start writing your first one!`}
         timestamp: string;
     } | null>(null);
     const [pendingLoadImage, setPendingLoadImage] = useState<{
+        id?: string;
         imageData: string;
         author: string;
         template: string;
@@ -4965,8 +4968,7 @@ Start writing your first one!`}
         const img = new Image();
         img.src = previousUrl;
         img.onload = () => {
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0);
             
             setRedoHistory(prev => [currentUrl, ...prev]);
@@ -4986,8 +4988,7 @@ Start writing your first one!`}
         const img = new Image();
         img.src = nextUrl;
         img.onload = () => {
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0);
 
             setHistory(prev => [...prev, nextUrl]);
@@ -5033,15 +5034,16 @@ Start writing your first one!`}
             const img = new Image();
             img.src = savedDraft.imageData;
             img.onload = () => {
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0);
                 
                 setSelectedTemplate(savedDraft.template);
+                drawTemplate(savedDraft.template);
                 // Reset undo history with the loaded state
                 const currentUrl = canvas.toDataURL();
                 setHistory([currentUrl]);
                 setRedoHistory([]);
+                setEditingEntryId(null);
                 alert(showKorean ? "저장된 그림을 성공적으로 불러왔습니다!" : "Saved drawing successfully loaded!");
             };
         }
@@ -5054,17 +5056,16 @@ Start writing your first one!`}
     ];
 
     const drawTemplate = (templateId: string) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
+        const bgCanvas = canvasBgRef.current;
+        if (!bgCanvas) return;
+        const bgCtx = bgCanvas.getContext('2d');
+        if (!bgCtx) return;
 
-        // Clear first
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // Clear background canvas first
+        bgCtx.fillStyle = '#ffffff';
+        bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
         
         if (templateId === 'none') {
-            saveStateToHistory(canvas);
             return;
         }
 
@@ -5074,68 +5075,72 @@ Start writing your first one!`}
             const img = new Image();
             img.src = imgTemplate.src;
             img.onload = () => {
-                // Ensure the context state is reset before drawing image
-                ctx.setLineDash([]);
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                // Restore current brush settings
-                ctx.strokeStyle = isEraser ? '#ffffff' : color;
-                ctx.lineWidth = isEraser ? Math.max(lineWidth * 3, 10) : lineWidth;
-                saveStateToHistory(canvas);
+                bgCtx.setLineDash([]);
+                bgCtx.drawImage(img, 0, 0, bgCanvas.width, bgCanvas.height);
             };
             return;
         }
 
-        ctx.save();
-        ctx.strokeStyle = '#e2e8f0'; // Light gray for guide lines
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]); // Dashed lines for guide
+        bgCtx.save();
+        bgCtx.strokeStyle = '#e2e8f0'; // Light gray for guide lines
+        bgCtx.lineWidth = 2;
+        bgCtx.setLineDash([5, 5]); // Dashed lines for guide
 
-        const w = canvas.width;
-        const h = canvas.height;
+        const w = bgCanvas.width;
+        const h = bgCanvas.height;
 
         if (templateId === 'sections') {
             // Random-ish sections
-            ctx.beginPath();
-            ctx.moveTo(w * 0.1, h * 0.1);
-            ctx.quadraticCurveTo(w * 0.5, h * 0.2, w * 0.9, h * 0.15);
-            ctx.quadraticCurveTo(w * 0.8, h * 0.6, w * 0.85, h * 0.9);
-            ctx.quadraticCurveTo(w * 0.4, h * 0.8, w * 0.15, h * 0.85);
-            ctx.closePath();
-            ctx.stroke();
+            bgCtx.beginPath();
+            bgCtx.moveTo(w * 0.1, h * 0.1);
+            bgCtx.quadraticCurveTo(w * 0.5, h * 0.2, w * 0.9, h * 0.15);
+            bgCtx.quadraticCurveTo(w * 0.8, h * 0.6, w * 0.85, h * 0.9);
+            bgCtx.quadraticCurveTo(w * 0.4, h * 0.8, w * 0.15, h * 0.85);
+            bgCtx.closePath();
+            bgCtx.stroke();
 
-            ctx.beginPath();
-            ctx.moveTo(w * 0.1, h * 0.1);
-            ctx.lineTo(w * 0.85, h * 0.9);
-            ctx.stroke();
+            bgCtx.beginPath();
+            bgCtx.moveTo(w * 0.1, h * 0.1);
+            bgCtx.lineTo(w * 0.85, h * 0.9);
+            bgCtx.stroke();
             
-            ctx.beginPath();
-            ctx.moveTo(w * 0.9, h * 0.15);
-            ctx.lineTo(w * 0.15, h * 0.85);
-            ctx.stroke();
+            bgCtx.beginPath();
+            bgCtx.moveTo(w * 0.9, h * 0.15);
+            bgCtx.lineTo(w * 0.15, h * 0.85);
+            bgCtx.stroke();
         } else if (templateId === 'mandala') {
             // Concentric circles
             for (let r = 1; r <= 3; r++) {
-                ctx.beginPath();
-                ctx.arc(w / 2, h / 2, (w / 2) * (r / 3.5), 0, Math.PI * 2);
-                ctx.stroke();
+                bgCtx.beginPath();
+                bgCtx.arc(w / 2, h / 2, (w / 2) * (r / 3.5), 0, Math.PI * 2);
+                bgCtx.stroke();
             }
             // Radiating lines
             for (let a = 0; a < 8; a++) {
-                ctx.beginPath();
-                ctx.moveTo(w / 2, h / 2);
+                bgCtx.beginPath();
+                bgCtx.moveTo(w / 2, h / 2);
                 const angle = (a * Math.PI) / 4;
-                ctx.lineTo(w / 2 + Math.cos(angle) * w * 0.45, h / 2 + Math.sin(angle) * h * 0.45);
-                ctx.stroke();
+                bgCtx.lineTo(w / 2 + Math.cos(angle) * w * 0.45, h / 2 + Math.sin(angle) * h * 0.45);
+                bgCtx.stroke();
             }
         }
 
-        ctx.restore();
-        saveStateToHistory(canvas);
+        bgCtx.restore();
     };
 
     const handleTemplateSelect = (id: string) => {
         setSelectedTemplate(id);
         drawTemplate(id);
+        // Clear user drawing canvas to transparent
+        const canvas = canvasRef.current;
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                saveStateToHistory(canvas);
+            }
+        }
+        setEditingEntryId(null);
     };
 
     // Load from Class Drawings helper
@@ -5148,12 +5153,13 @@ Start writing your first one!`}
                     const img = new Image();
                     img.src = pendingLoadImage.imageData;
                     img.onload = () => {
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
                         ctx.drawImage(img, 0, 0);
                         
-                        setSelectedTemplate(pendingLoadImage.template);
+                        setSelectedTemplate(pendingLoadImage.template || 'none');
+                        drawTemplate(pendingLoadImage.template || 'none');
                         setAuthorName(pendingLoadImage.author);
+                        setEditingEntryId(pendingLoadImage.id || null);
                         
                         // Save to history
                         const currentUrl = canvas.toDataURL();
@@ -5177,10 +5183,10 @@ Start writing your first one!`}
 
     useEffect(() => {
         // User requested to delete all existing posts in "Our Class Zentangle Drawings"
-        // We do a new one-time cleanup (v5) of the zentangle_wall storage as requested
-        if (!localStorage.getItem('zentangle_cleanup_v5')) {
+        // We do a new one-time cleanup (v6) of the zentangle_wall storage as requested
+        if (!localStorage.getItem('zentangle_cleanup_v6')) {
             localStorage.removeItem('zentangle_wall');
-            localStorage.setItem('zentangle_cleanup_v5', 'true');
+            localStorage.setItem('zentangle_cleanup_v6', 'true');
             setEntries([]);
         } else {
             // Load entries from localStorage if already cleaned or for subsequent sessions
@@ -5204,16 +5210,17 @@ Start writing your first one!`}
             }
         }
 
-        // Initialize canvas background
+        // Initialize canvas background (transparent)
         const canvas = canvasRef.current;
         if (canvas) {
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
                 setHistory([canvas.toDataURL()]);
             }
         }
+        // Initialize background template
+        drawTemplate(selectedTemplate);
     }, []);
 
     useEffect(() => {
@@ -5242,6 +5249,17 @@ Start writing your first one!`}
         const scaleY = canvas.height / rect.height;
         const x = (clientX - rect.left) * scaleX;
         const y = (clientY - rect.top) * scaleY;
+
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        if (isEraser) {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = Math.max(lineWidth * 3, 10);
+        } else {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+        }
 
         ctx.beginPath();
         ctx.moveTo(x, y);
@@ -5280,15 +5298,34 @@ Start writing your first one!`}
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        saveStateToHistory(canvas);
+    };
+
+    const getMergedDataURL = (): string => {
+        const canvas = canvasRef.current;
+        const bgCanvas = canvasBgRef.current;
+        if (!canvas) return '';
         
-        // After clearing with white, if a template is selected, we should redraw it
-        if (selectedTemplate !== 'none') {
-            drawTemplate(selectedTemplate);
-        } else {
-            saveStateToHistory(canvas);
+        const mergedCanvas = document.createElement('canvas');
+        mergedCanvas.width = canvas.width;
+        mergedCanvas.height = canvas.height;
+        const mctx = mergedCanvas.getContext('2d');
+        if (!mctx) return canvas.toDataURL();
+
+        // 1. Fill with white background
+        mctx.fillStyle = '#ffffff';
+        mctx.fillRect(0, 0, mergedCanvas.width, mergedCanvas.height);
+
+        // 2. Draw background template
+        if (bgCanvas) {
+            mctx.drawImage(bgCanvas, 0, 0);
         }
+
+        // 3. Draw user drawings on top
+        mctx.drawImage(canvas, 0, 0);
+
+        return mergedCanvas.toDataURL('image/png');
     };
 
     const saveToWall = () => {
@@ -5300,22 +5337,49 @@ Start writing your first one!`}
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const imageData = canvas.toDataURL('image/png');
-        const newEntry: ZentangleEntry = {
-            id: Date.now().toString(),
-            author: authorName,
-            imageData: imageData,
-            date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
-            reactions: { '❤️': 0 }
-        };
+        const imageData = getMergedDataURL();
+        
+        let updated: ZentangleEntry[];
+        if (editingEntryId) {
+            // Find existing entry and update/overwrite it instead of posting multiple times!
+            updated = entries.map(e => {
+                if (e.id === editingEntryId) {
+                    return {
+                        ...e,
+                        author: authorName,
+                        imageData: imageData,
+                    };
+                }
+                return e;
+            });
+            // Fallback: If it's not found in list (e.g. cleared), add it as a new post
+            if (!updated.some(e => e.id === editingEntryId)) {
+                const newEntry: ZentangleEntry = {
+                    id: editingEntryId,
+                    author: authorName,
+                    imageData: imageData,
+                    date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+                    reactions: { '❤️': 0 }
+                };
+                updated = [newEntry, ...entries];
+            }
+            alert(showKorean ? "그림이 성공적으로 수정되어 공유되었습니다!" : "Successfully updated and shared your drawing!");
+            setEditingEntryId(null);
+        } else {
+            const newEntry: ZentangleEntry = {
+                id: Date.now().toString(),
+                author: authorName,
+                imageData: imageData,
+                date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }),
+                reactions: { '❤️': 0 }
+            };
+            updated = [newEntry, ...entries];
+            alert(showKorean ? "학급 그림장에 공유되었습니다! 학급 그림장 탭으로 이동합니다." : "Successfully shared to Our Class Drawings! Moving to Class Drawings tab.");
+        }
 
-        const updated = [newEntry, ...entries];
         setEntries(updated);
         localStorage.setItem('zentangle_wall', JSON.stringify(updated));
-        
-        // Reset name for next person or just confirmation
-        alert(showKorean ? "학급 그림장에 공유되었습니다! 학급 그림장 탭으로 이동합니다." : "Successfully shared to Our Class Drawings! Moving to Class Drawings tab.");
-        setViewMode('diary'); // Auto-switch to CLASS DRAWINGS tab so user can immediately see it!
+        setViewMode('diary'); // Auto-switch to CLASS DRAWINGS tab
     };
 
     const handleReaction = (entryId: string, emoji: string) => {
@@ -5603,21 +5667,30 @@ Start writing your first one!`}
                                 </div>
                             </div>
 
-                            <div className="bg-white p-4 shadow-inner rounded-lg ring-1 ring-slate-200 relative">
-                                <canvas 
-                                    ref={canvasRef}
-                                    width={600}
-                                    height={600}
-                                    style={{ backgroundColor: '#ffffff' }}
-                                    className="bg-white cursor-crosshair max-w-full h-auto touch-none"
-                                    onMouseDown={startDrawing}
-                                    onMouseMove={draw}
-                                    onMouseUp={stopDrawing}
-                                    onMouseLeave={stopDrawing}
-                                    onTouchStart={startDrawing}
-                                    onTouchMove={draw}
-                                    onTouchEnd={stopDrawing}
-                                />
+                            <div className="bg-white p-4 shadow-inner rounded-xl ring-1 ring-slate-200 relative w-[600px] max-w-full aspect-square flex items-center justify-center">
+                                <div className="relative w-full h-full">
+                                    {/* Background Canvas for Template */}
+                                    <canvas 
+                                        ref={canvasBgRef}
+                                        width={600}
+                                        height={600}
+                                        className="absolute inset-0 w-full h-full bg-white pointer-events-none rounded-lg"
+                                    />
+                                    {/* Main Drawing Canvas (Transparent) */}
+                                    <canvas 
+                                        ref={canvasRef}
+                                        width={600}
+                                        height={600}
+                                        className="absolute inset-0 w-full h-full bg-transparent cursor-crosshair touch-none rounded-lg"
+                                        onMouseDown={startDrawing}
+                                        onMouseMove={draw}
+                                        onMouseUp={stopDrawing}
+                                        onMouseLeave={stopDrawing}
+                                        onTouchStart={startDrawing}
+                                        onTouchMove={draw}
+                                        onTouchEnd={stopDrawing}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -5688,6 +5761,7 @@ Start writing your first one!`}
                                                         );
                                                         if (loadConfirm) {
                                                             setPendingLoadImage({
+                                                                id: entry.id,
                                                                 imageData: entry.imageData,
                                                                 author: entry.author,
                                                                 template: 'none'
