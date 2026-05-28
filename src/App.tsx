@@ -61,7 +61,9 @@ import heartTemplate from './assets/images/heart_structured_template_17790942602
 import heartExample from './assets/images/heart_zentangle_example_1779094285713.png';
 
 // --- Types ---
-type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading' | 'reading_warmup' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude' | 'zentangle';
+import { ListeningMasterView } from './components/ListeningMasterView';
+
+type Section = 'dashboard' | 'vocab' | 'vocabQuiz' | 'listening' | 'grammar_ppc' | 'grammar_so_that' | 'writing' | 'reading' | 'reading_warmup' | 'reading_p1' | 'reading_p2_jiho' | 'reading_p2_somi' | 'gratitude' | 'zentangle';
 
 interface Comment {
   id: string;
@@ -925,6 +927,12 @@ export default function App() {
             active={activeSection === 'vocab' || activeSection === 'vocabQuiz'} 
             onClick={() => { navTo('vocab'); setMobileMenuOpen(false); }} 
           />
+          <SidebarBtn 
+            icon={<Volume2 className="w-5 h-5 text-white" />} 
+            label="LISTENING MASTER" 
+            active={activeSection === 'listening'} 
+            onClick={() => { navTo('listening'); setMobileMenuOpen(false); }} 
+          />
           
           <div className="pt-4 md:pt-6 pb-1">
              <div className="flex items-center space-x-3 p-4 px-6 rounded-3xl font-black uppercase tracking-widest text-lg text-white whitespace-nowrap">
@@ -1074,6 +1082,11 @@ export default function App() {
                   />
                 )}
                 {activeSection === 'vocab' && <VocabView navTo={navTo} setVocabQuizConfig={setVocabQuizConfig} setIsFinished={setIsFinished} setScore={setScore} handleSpeak={handleSpeak} />}
+                {activeSection === 'listening' && (
+                  <ListeningMasterView 
+                    handleSpeak={handleSpeak}
+                  />
+                )}
                 {activeSection === 'vocabQuiz' && (
                   <VocabQuizView 
                     isFinished={isFinished}
@@ -5458,6 +5471,10 @@ Start writing your first one!`}
            <MenuCard 
              title="VOCABULARY" tagline="핵심 어휘 50개와 퀴즈 챌린지" variant="white" accent="purple" 
              icon={<Brain size={42} />} onClick={() => navTo('vocab')} 
+           />
+           <MenuCard 
+             title="LISTENING" tagline="듣기 원문 트레이닝과 학습지 빈칸 완성" variant="white" accent="indigo" 
+             icon={<Volume2 size={42} />} onClick={() => navTo('listening')} 
            />
            <MenuCard 
              title="GRAMMAR" tagline="PPC & So... That... 완전 정복" variant="white" accent="indigo" 
