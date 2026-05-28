@@ -482,12 +482,109 @@ export const ListeningMasterView = ({
     );
   };
 
+  // Helper to render text with continuous blanks for each index
+  const renderBlanksInText = (text: string, blanks: DialogueBlank[] | undefined) => {
+    if (!blanks || blanks.length === 0) return text;
+
+    const norm = (s: string) => s.replace(/[\u2018\u2019]/g, "'").toLowerCase();
+
+    const matches: { start: number; end: number; blank: DialogueBlank }[] = [];
+    
+    blanks.forEach(b => {
+      const escWord = b.word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&').replace(/['’]/g, "['’]");
+      const regex = new RegExp(escWord, 'i');
+      const match = text.match(regex);
+      if (match && match.index !== undefined) {
+        matches.push({
+          start: match.index,
+          end: match.index + match[0].length,
+          blank: b
+        });
+      } else {
+        const index = norm(text).indexOf(norm(b.word));
+        if (index !== -1) {
+          matches.push({
+            start: index,
+            end: index + b.word.length,
+            blank: b
+          });
+        }
+      }
+    });
+
+    matches.sort((a, b) => a.start - b.start);
+    
+    const result: React.ReactNode[] = [];
+    let lastIdx = 0;
+    
+    matches.forEach((m, idx) => {
+      if (m.start > lastIdx) {
+        result.push(text.substring(lastIdx, m.start));
+      }
+      
+      const isCorrect = blankValidation[m.blank.index] === 'correct';
+      result.push(
+        <span 
+          key={`blank-${m.blank.index}`} 
+          className={`inline-block border-b-2 px-3 py-1 select-all font-black mx-1.5 transition-all duration-300 ${
+            isCorrect 
+              ? 'bg-emerald-100 border-emerald-400 text-emerald-950 rounded-lg text-lg md:text-[20px] shadow-sm font-black' 
+              : 'bg-rose-50 border-rose-300 text-rose-500 animate-pulse rounded text-sm md:text-base border-dashed'
+          }`}
+        >
+          [{m.blank.index}] {isCorrect ? m.blank.word : '_________________'}
+        </span>
+      );
+      lastIdx = m.end;
+    });
+    
+    if (lastIdx < text.length) {
+      result.push(text.substring(lastIdx));
+    }
+    
+    return <>{result}</>;
+  };
+
   // --- Blank Validation ---
   const handleBlankCheck = (index: number, answer: string, correctWord: string) => {
     const cleanedAnswer = answer.trim().toLowerCase().replace(/[‘’.?,!‘']/g, '');
     const cleanedCorrect = correctWord.toLowerCase().replace(/[‘’.?,!‘']/g, '');
     
-    // Support contracted forms or minor mismatch like we'll vs we will
+    if (cleanedAnswer === cleanedCorrect || 
+        (cleanedCorrect === "because we'll wear" && cleanedAnswer === "because we will wear") ||
+        (cleanedCorrect === "made me focus" && cleanedAnswer === "made me to focus")) {
+      setBlankValidation(prev => ({ ...prev, [index]: 'correct' }));
+    } else {
+      setBlankValidation(prev => ({ ...prev, [index]: 'incorrect' }));
+    }
+  };
+
+  const handleBlankChange = (index: number, val: string, correctWord: string) => {
+    setBlankAnswers(prev => ({ ...prev, [index]: val }));
+    
+    const cleanedAnswer = val.trim().toLowerCase().replace(/[‘’.?,!‘']/g, '');
+    const cleanedCorrect = correctWord.toLowerCase().replace(/[‘’.?,!‘']/g, '');
+    
+    if (cleanedAnswer === cleanedCorrect || 
+        (cleanedCorrect === "because we'll wear" && cleanedAnswer === "because we will wear") ||
+        (cleanedCorrect === "made me focus" && cleanedAnswer === "made me to focus")) {
+      setBlankValidation(prev => ({ ...prev, [index]: 'correct' }));
+    } else {
+      // Typing: allow typing without preemptive failure visual noise, clear previous indicator
+      setBlankValidation(prev => ({ ...prev, [index]: null }));
+    }
+  };
+
+  const handleBlankBlur = (index: number, val: string, correctWord: string) => {
+    const trimmed = val.trim();
+    if (!trimmed) {
+      setBlankValidation(prev => ({ ...prev, [index]: null }));
+      return;
+    }
+    
+    const cleanedAnswer = trimmed.toLowerCase().replace(/[‘’.?,!‘']/g, '');
+    const cleanedCorrect = correctWord.toLowerCase().replace(/[‘’.?,!‘']/g, '');
+    
     if (cleanedAnswer === cleanedCorrect || 
         (cleanedCorrect === "because we'll wear" && cleanedAnswer === "because we will wear") ||
         (cleanedCorrect === "made me focus" && cleanedAnswer === "made me to focus")) {
@@ -499,6 +596,24 @@ export const ListeningMasterView = ({
 
   const showBlankHint = (index: number) => {
     setBlankShownHints(prev => ({ ...prev, [index]: true }));
+  };
+
+  const revealAllAnswers = () => {
+    const newAnswers: { [key: number]: string } = {};
+    const newValidation: { [key: number]: 'correct' | 'incorrect' | null } = {};
+    const newShownHints: { [key: number]: boolean } = {};
+    
+    selectedDialogue.lines.forEach(line => {
+      line.blanks?.forEach(blank => {
+        newAnswers[blank.index] = blank.word;
+        newValidation[blank.index] = 'correct';
+        newShownHints[blank.index] = true;
+      });
+    });
+    
+    setBlankAnswers(prev => ({ ...prev, ...newAnswers }));
+    setBlankValidation(prev => ({ ...prev, ...newValidation }));
+    setBlankShownHints(prev => ({ ...prev, ...newShownHints }));
   };
 
   const resetBlanks = () => {
@@ -516,15 +631,6 @@ export const ListeningMasterView = ({
     const isCorrect = optionIdx === dialogueQuizzes[currentQuizIdx].answerIndex;
     if (isCorrect) {
       setQuizScore(prev => prev + 1);
-      // Auto advance in 1.5 seconds if correct
-      autoAdvanceTimerRef.current = setTimeout(() => {
-        handleQuizNext();
-      }, 1500);
-    } else {
-      // Auto advance in 3.5 seconds if incorrect to give they time to read explanation/translation
-      autoAdvanceTimerRef.current = setTimeout(() => {
-        handleQuizNext();
-      }, 3500);
     }
   };
 
@@ -664,7 +770,7 @@ export const ListeningMasterView = ({
           {selectedDialogueId === 1 ? (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
               {/* Left Column: Chart (Sticky on desktop) */}
-              <div className="lg:col-span-5 lg:sticky lg:top-4 bg-white z-10">
+              <div className="lg:col-span-5 lg:sticky lg:top-4 bg-white z-10 animate-fadeIn">
                 {renderTeenStressChart(true)}
               </div>
               
@@ -704,10 +810,8 @@ export const ListeningMasterView = ({
                             <Volume2 size={16} />
                           </button>
                         </div>
-
-                        {/* Translation */}
                         {globalTranslation && (
-                          <p className="text-slate-500 font-bold text-xs md:text-sm pl-0.5 border-l-2 border-indigo-200 mt-0.5 md:mt-1 animate-fadeIn">
+                          <p className="text-xs font-bold text-slate-400 leading-normal animate-fadeIn">
                             {line.translation}
                           </p>
                         )}
@@ -718,7 +822,7 @@ export const ListeningMasterView = ({
               </div>
             </div>
           ) : (
-            <div className="space-y-1 md:space-y-1.5">
+            <div className="max-w-4xl mx-auto space-y-1 md:space-y-1.5">
               {selectedDialogue.lines.map((line, idx) => {
                 const isSpeaker1 = line.speaker === 'W' || line.speaker === 'G';
                 const isFocused = activeSpeakerIdx === idx;
@@ -741,7 +845,7 @@ export const ListeningMasterView = ({
                     {/* Bubble Content */}
                     <div className="flex-1 space-y-1">
                       <div className="flex items-start justify-between gap-3">
-                        <p className="font-extrabold text-slate-800 text-[16px] md:text-[18.5px] leading-relaxed tracking-wide">
+                        <p className="font-extrabold text-slate-800 text-[16px] md:text-[18.2px] leading-relaxed tracking-wide">
                           {line.text}
                         </p>
                         
@@ -753,10 +857,8 @@ export const ListeningMasterView = ({
                           <Volume2 size={16} />
                         </button>
                       </div>
-
-                      {/* Translation */}
                       {globalTranslation && (
-                        <p className="text-slate-500 font-bold text-xs md:text-sm pl-0.5 border-l-2 border-indigo-200 mt-0.5 md:mt-1 animate-fadeIn">
+                        <p className="text-xs font-bold text-slate-400 leading-normal animate-fadeIn">
                           {line.translation}
                         </p>
                       )}
@@ -769,50 +871,20 @@ export const ListeningMasterView = ({
         </div>
       )}
 
-      {/* Worksheet Blanks Filling Mode */}
+      {/* Blanks Mode */}
       {activeTab === 'blanks' && (() => {
         const blanksList = (
-          <div className="space-y-1 md:space-y-1.5 text-xs md:text-sm leading-relaxed max-h-[750px] overflow-y-auto custom-scrollbar pr-2">
+          <div className="space-y-4 max-h-[750px] overflow-y-auto custom-scrollbar pr-2 pb-6">
             {selectedDialogue.lines.map((line, idx) => {
               const hasBlanks = line.blanks && line.blanks.length > 0;
 
               return (
-                <div key={idx} className="bg-white p-2 md:p-2.5 rounded-xl border border-slate-200/80 shadow-sm space-y-2 transition-all hover:shadow">
+                <div key={idx} className="bg-white p-4 md:p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4 transition-all hover:shadow-md">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <span className="inline-block mr-2 px-1.5 py-0.5 rounded bg-indigo-50 font-black text-[#4C51BF] text-[10px] md:text-xs tracking-wide uppercase align-middle">{line.speaker}</span>
                       <p className="inline font-extrabold text-slate-700 text-[16px] md:text-[18px] leading-relaxed align-middle">
-                        {hasBlanks ? (
-                          <>
-                            {line.text.split(/(\b[\w']+\b)/g).map((chunk, cIdx) => {
-                              // Is it one of the blanked words?
-                              const matchingBlank = line.blanks?.find(b => {
-                                const chunkClean = chunk.toLowerCase().replace(/[‘’.?,!‘']/g, '');
-                                const partsOfWord = b.word.toLowerCase().replace(/[‘’.?,!‘']/g, '').split(' ');
-                                return partsOfWord.includes(chunkClean);
-                              });
-
-                              if (matchingBlank) {
-                                const isCorrect = blankValidation[matchingBlank.index] === 'correct';
-                                return (
-                                  <span 
-                                    key={cIdx} 
-                                    className={`inline-block border-b-2 border-dashed px-1 select-all font-black mx-0.5 transition-colors ${
-                                      isCorrect 
-                                        ? 'bg-emerald-50 border-emerald-300 text-emerald-700' 
-                                        : 'bg-rose-50 border-rose-100 text-rose-600'
-                                    }`}
-                                  >
-                                    [{matchingBlank.index}] {isCorrect ? matchingBlank.word : '______'}
-                                  </span>
-                                );
-                              }
-                              return chunk;
-                            })}
-                          </>
-                        ) : (
-                          line.text
-                        )}
+                        {renderBlanksInText(line.text, line.blanks)}
                       </p>
                     </div>
                     <button 
@@ -845,18 +917,19 @@ export const ListeningMasterView = ({
                               <input 
                                 type="text" 
                                 value={blankAnswers[blank.index] || ''}
-                                onChange={(e) => setBlankAnswers(prev => ({ ...prev, [blank.index]: e.target.value }))}
+                                onChange={(e) => handleBlankChange(blank.index, e.target.value, blank.word)}
+                                onBlur={(e) => handleBlankBlur(blank.index, e.target.value, blank.word)}
                                 placeholder={viewHint ? `힌트: ${blank.hint}` : `빈칸 완성 단어 입력...`}
                                 className={`flex-1 border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-black rounded-md focus:outline-none focus:ring-2 transition-all ${
                                   state === 'correct' 
-                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800 focus:ring-emerald-200' 
+                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
                                     : state === 'incorrect' 
-                                    ? 'bg-rose-50 border-rose-200 text-slate-800 focus:ring-rose-200' 
+                                    ? 'bg-rose-50 border-rose-200 text-slate-800 focus:ring-rose-250' 
                                     : 'focus:ring-indigo-150'
                                 }`}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') {
-                                    handleBlankCheck(blank.index, blankAnswers[blank.index] || '', blank.word);
+                                    handleBlankBlur(blank.index, blankAnswers[blank.index] || '', blank.word);
                                   }
                                 }}
                               />
@@ -868,31 +941,26 @@ export const ListeningMasterView = ({
                               >
                                 힌트 {viewHint ? "✓" : ""}
                               </button>
-                              <button 
-                                onClick={() => handleBlankCheck(blank.index, blankAnswers[blank.index] || '', blank.word)}
-                                className={`px-2 py-1.5 font-bold text-[11px] text-white rounded-md transition-all active:scale-95 shrink-0 ${
-                                  state === 'correct' 
-                                    ? 'bg-emerald-500 hover:bg-emerald-600' 
-                                    : 'bg-indigo-600 hover:bg-indigo-700'
-                                }`}
-                              >
-                                {state === 'correct' ? "완료" : "확인"}
-                              </button>
                             </div>
 
                             {/* Feedback */}
-                            <div className="shrink-0 flex items-center min-w-[80px] justify-end">
+                            <div className="shrink-0 flex items-center min-w-[100px] justify-end">
                               {state === 'correct' && (
-                                <span className="text-emerald-600 font-black text-xs flex items-center gap-1 animate-fadeIn">
-                                  <CheckCircle size={13} /> 정답!
+                                <span className="text-emerald-600 font-extrabold text-sm md:text-base flex items-center gap-1 animate-fadeIn">
+                                  <CheckCircle size={16} /> 정답!
                                 </span>
                               )}
                               {state === 'incorrect' && (
-                                <span className="text-rose-500 font-black text-xs flex items-center gap-1 animate-fadeIn">
-                                  <AlertCircle size={13} /> 오답
-                                </span>
+                                <div className="text-right flex flex-col justify-center items-end animate-fadeIn space-y-1">
+                                  <span className="text-rose-500 font-extrabold text-sm flex items-center gap-1">
+                                    <AlertCircle size={15} /> 오답
+                                  </span>
+                                  <span className="text-[13px] md:text-sm text-indigo-700 font-black block bg-indigo-50 border border-indigo-200 px-2 py-1 rounded leading-normal shadow-sm">
+                                    정답: {blank.word}
+                                  </span>
+                                </div>
                               )}
-                              {viewHint && state !== 'correct' && (
+                              {viewHint && state !== 'correct' && state !== 'incorrect' && (
                                 <span className="text-indigo-500 font-bold text-[9px] ml-1 bg-indigo-50 px-1.5 py-0.5 rounded">
                                   초성: {blank.hint}
                                 </span>
@@ -911,19 +979,29 @@ export const ListeningMasterView = ({
 
         return (
           <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-md border border-slate-100 space-y-8">
-            <div className="flex justify-between items-center border-b border-slate-100 pb-6">
+            <div className="flex flex-col sm:flex-row gap-4 sm:justify-between sm:items-center border-b border-slate-100 pb-6">
               <div>
                 <h2 className="text-2xl font-black text-slate-800">✍️ Worksheet Blanks Match-up</h2>
                 <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
                   1페이지의 학습지 빈칸 1번~18번을 직접 받아쓰며 암기해보세요!
                 </p>
               </div>
-              <button 
-                onClick={resetBlanks}
-                className="p-3 bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 rounded-xl font-bold text-xs flex items-center gap-2 transition-all active:scale-95"
-              >
-                <RotateCcw size={14} /> Reset
-              </button>
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <button 
+                  onClick={revealAllAnswers}
+                  className="p-3 bg-indigo-50 border border-indigo-200 text-[#4C51BF] hover:bg-indigo-100 rounded-xl font-black text-xs flex items-center gap-2 transition-all active:scale-95 shadow-sm"
+                  title="모든 빈칸의 정답을 채우고 확인합니다."
+                >
+                  <CheckCircle size={14} /> 전체 정답 확인
+                </button>
+                <button 
+                  onClick={resetBlanks}
+                  className="p-3 bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 rounded-xl font-bold text-xs flex items-center gap-2 transition-all active:scale-95"
+                  title="초기화"
+                >
+                  <RotateCcw size={14} /> Reset
+                </button>
+              </div>
             </div>
 
             {selectedDialogueId === 1 ? (
@@ -937,7 +1015,7 @@ export const ListeningMasterView = ({
                 <div className="lg:col-span-12 xl:col-span-7 space-y-4">
                   <h3 className="font-extrabold text-slate-800 border-b border-slate-200 pb-3 flex items-center gap-2">
                     <BookOpen size={16} className="text-indigo-500" />
-                    대본 확인 및 실시간 빈칸 완성하기
+                    대화 빈칸 완성하기
                   </h3>
                   {blanksList}
                 </div>
@@ -946,7 +1024,7 @@ export const ListeningMasterView = ({
               <div className="max-w-4xl mx-auto space-y-6">
                 <h3 className="font-extrabold text-slate-800 border-b border-slate-200 pb-3 flex items-center gap-2">
                   <BookOpen size={16} className="text-indigo-500" />
-                  대본 확인 및 실시간 빈칸 완성하기
+                  대화 빈칸 완성하기
                 </h3>
                 {blanksList}
               </div>
@@ -1020,12 +1098,12 @@ export const ListeningMasterView = ({
                     {selectedQuizOption === dialogueQuizzes[currentQuizIdx].answerIndex ? (
                       <>
                         <CheckCircle size={18} className="text-emerald-500 animate-pulse shrink-0" />
-                        <span>정답입니다! 🎉 잠시 후 자동으로 다음으로 넘어갑니다.</span>
+                        <span>정답입니다! 🎉 아래 해설을 읽고 다음 문제 버튼을 눌러 넘어가세요.</span>
                       </>
                     ) : (
                       <>
                         <AlertCircle size={18} className="text-rose-500 animate-pulse shrink-0" />
-                        <span>아쉽습니다, 오답입니다! 😢 해설 학습 후 자동으로 다음으로 이동합니다.</span>
+                        <span>아쉽습니다, 오답입니다! 😢 아래 해설을 읽고 다음 문제 버튼을 눌러 넘어가세요.</span>
                       </>
                     )}
                   </motion.div>
@@ -1090,15 +1168,15 @@ export const ListeningMasterView = ({
                 <div className="flex justify-between items-center pt-8 border-t border-slate-100">
                   <p className="text-xs text-slate-400 font-bold">
                     {quizSubmitted 
-                      ? "자동 다음 단계 진행 중... 바로 가려면 오른쪽 버튼을 누르세요." 
-                      : "보기를 클릭하면 즉시 정답을 판정하고 자동으로 넘어갑니다."}
+                      ? "문항 풀이 해설을 학습 완료한 후 아래 버튼을 클릭해 이동하세요." 
+                      : "가장 알맞은 정답 보기를 클릭하세요."}
                   </p>
                   {quizSubmitted && (
                     <button
                       onClick={handleQuizNext}
                       className="p-4 bg-slate-800 hover:bg-slate-900 font-black text-white px-8 rounded-2xl transition-all active:scale-95 text-xs uppercase tracking-widest flex items-center gap-2 animate-fadeIn"
                     >
-                      다음 문제 Next <ChevronRight size={16} />
+                      {currentQuizIdx === dialogueQuizzes.length - 1 ? "결과 보기 Finish" : "다음 문제 Next"} <ChevronRight size={16} />
                     </button>
                   )}
                 </div>

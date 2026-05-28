@@ -30,6 +30,10 @@ import {
   Palette,
   Eraser,
   Undo,
+  Redo,
+  Save,
+  Download,
+  Upload,
   Languages,
   Sparkles,
   Menu,
@@ -53,10 +57,10 @@ function getClientDb() {
   return firestoreInstance;
 }
 
-import dogTemplate from './assets/images/puppy_cute_zentangle_template_1779095376379.png';
-import dogExample from './assets/images/dog_zentangle_simple_example_1779094661261.png';
-import catTemplate from './assets/images/cat_cute_zentangle_template_1779095394772.png';
-import catExample from './assets/images/cat_zentangle_simple_example_v2_1779094682528.png';
+import dogTemplate from './assets/images/puppy_cute_large_template_1779955657898.png';
+import dogExample from './assets/images/dog_example_zentangle_v3_1779955492992.png';
+import catTemplate from './assets/images/custom_cat_template_1779955294350.png';
+import catExample from './assets/images/cat_example_double_1779955390679.png';
 import heartTemplate from './assets/images/heart_structured_template_1779094260287.png';
 import heartExample from './assets/images/heart_zentangle_example_1779094285713.png';
 
@@ -4920,10 +4924,133 @@ Start writing your first one!`}
     const [viewMode, setViewMode] = useState<'draw' | 'diary'>('draw');
     const [zentangleCommentInput, setZentangleCommentInput] = useState<{ [id: string]: string }>({});
 
+    // Drawing states
+    const [history, setHistory] = useState<string[]>([]);
+    const [redoHistory, setRedoHistory] = useState<string[]>([]);
+    const [isEraser, setIsEraser] = useState(false);
+    const [savedDraft, setSavedDraft] = useState<{
+        imageData: string;
+        template: string;
+        timestamp: string;
+    } | null>(null);
+    const [pendingLoadImage, setPendingLoadImage] = useState<{
+        imageData: string;
+        author: string;
+        template: string;
+    } | null>(null);
+
+    const saveStateToHistory = (customCanvas?: HTMLCanvasElement) => {
+        const canvas = customCanvas || canvasRef.current;
+        if (!canvas) return;
+        const url = canvas.toDataURL();
+        setHistory(prev => {
+            const next = [...prev, url];
+            if (next.length > 50) next.shift(); // Keep up to 50 states
+            return next;
+        });
+        setRedoHistory([]);
+    };
+
+    const undo = () => {
+        if (history.length <= 1) return;
+        
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const currentUrl = history[history.length - 1];
+        const previousUrl = history[history.length - 2];
+
+        const img = new Image();
+        img.src = previousUrl;
+        img.onload = () => {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+            
+            setRedoHistory(prev => [currentUrl, ...prev]);
+            setHistory(prev => prev.slice(0, -1));
+        };
+    };
+
+    const redo = () => {
+        if (redoHistory.length === 0) return;
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const nextUrl = redoHistory[0];
+        const img = new Image();
+        img.src = nextUrl;
+        img.onload = () => {
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+
+            setHistory(prev => [...prev, nextUrl]);
+            setRedoHistory(prev => prev.slice(1));
+        };
+    };
+
+    const saveDraft = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const draft = {
+            imageData: canvas.toDataURL('image/png'),
+            template: selectedTemplate,
+            timestamp: new Date().toLocaleString('ko-KR', {
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        };
+
+        localStorage.setItem('zentangle_drawing_draft', JSON.stringify(draft));
+        setSavedDraft(draft);
+        alert(showKorean ? "그림 작업 상황이 임시 저장되었습니다!" : "Drawing progress has been successfully saved!");
+    };
+
+    const loadDraft = () => {
+        if (!savedDraft) return;
+
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const loadConfirm = window.confirm(
+            showKorean 
+                ? `임시 저장된 그림(${savedDraft.timestamp})을 불러오시겠습니까?\n현재 그리고 있는 내용은 사라집니다.` 
+                : `Do you want to load the saved drawing progress from ${savedDraft.timestamp}?\nYour current drawing workspace will be replaced.`
+        );
+
+        if (loadConfirm) {
+            const img = new Image();
+            img.src = savedDraft.imageData;
+            img.onload = () => {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                
+                setSelectedTemplate(savedDraft.template);
+                // Reset undo history with the loaded state
+                const currentUrl = canvas.toDataURL();
+                setHistory([currentUrl]);
+                setRedoHistory([]);
+                alert(showKorean ? "저장된 그림을 성공적으로 불러왔습니다!" : "Saved drawing successfully loaded!");
+            };
+        }
+    };
+
     const imageTemplates = [
         { id: 'heart', label: 'Heart', src: heartTemplate, exampleSrc: heartExample, source: '출처: 사용자 제공 이미지' },
-        { id: 'template_dog', label: '도안 1', src: dogTemplate, exampleSrc: dogExample, source: '출처: 사용자 제공 이미지' },
-        { id: 'template_cat', label: '도안 2', src: catTemplate, exampleSrc: catExample, source: '출처: 사용자 제공 이미지' },
+        { id: 'template_dog', label: '도안 1', src: dogTemplate, exampleSrc: dogExample, source: '출처: https://www.magnific.com' },
+        { id: 'template_cat', label: '도안 2', src: catTemplate, exampleSrc: catExample, source: '출처: https://kr.123rf.com' },
     ];
 
     const drawTemplate = (templateId: string) => {
@@ -4936,7 +5063,10 @@ Start writing your first one!`}
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        if (templateId === 'none') return;
+        if (templateId === 'none') {
+            saveStateToHistory(canvas);
+            return;
+        }
 
         // Handle image templates
         const imgTemplate = imageTemplates.find(t => t.id === templateId);
@@ -4948,8 +5078,9 @@ Start writing your first one!`}
                 ctx.setLineDash([]);
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 // Restore current brush settings
-                ctx.strokeStyle = color;
-                ctx.lineWidth = lineWidth;
+                ctx.strokeStyle = isEraser ? '#ffffff' : color;
+                ctx.lineWidth = isEraser ? Math.max(lineWidth * 3, 10) : lineWidth;
+                saveStateToHistory(canvas);
             };
             return;
         }
@@ -4999,6 +5130,7 @@ Start writing your first one!`}
         }
 
         ctx.restore();
+        saveStateToHistory(canvas);
     };
 
     const handleTemplateSelect = (id: string) => {
@@ -5006,12 +5138,49 @@ Start writing your first one!`}
         drawTemplate(id);
     };
 
+    // Load from Class Drawings helper
     useEffect(() => {
-        // User requested to delete all 3 existing posts in "Our Class Zentangle Drawings"
-        // We'll perform a one-time cleanup of the zentangle_wall storage
-        if (!localStorage.getItem('zentangle_cleanup_v1')) {
+        if (pendingLoadImage) {
+            const canvas = canvasRef.current;
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    const img = new Image();
+                    img.src = pendingLoadImage.imageData;
+                    img.onload = () => {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0);
+                        
+                        setSelectedTemplate(pendingLoadImage.template);
+                        setAuthorName(pendingLoadImage.author);
+                        
+                        // Save to history
+                        const currentUrl = canvas.toDataURL();
+                        setHistory([currentUrl]);
+                        setRedoHistory([]);
+                        
+                        setPendingLoadImage(null);
+                    };
+                }
+            }
+        }
+    }, [pendingLoadImage]);
+
+    const handleDeleteEntry = (entryId: string) => {
+        if (window.confirm(showKorean ? "이 그림을 삭제하시겠습니까?" : "Are you sure you want to delete this drawing?")) {
+            const updated = entries.filter(e => e.id !== entryId);
+            setEntries(updated);
+            localStorage.setItem('zentangle_wall', JSON.stringify(updated));
+        }
+    };
+
+    useEffect(() => {
+        // User requested to delete all existing posts in "Our Class Zentangle Drawings"
+        // We do a new one-time cleanup (v5) of the zentangle_wall storage as requested
+        if (!localStorage.getItem('zentangle_cleanup_v5')) {
             localStorage.removeItem('zentangle_wall');
-            localStorage.setItem('zentangle_cleanup_v1', 'true');
+            localStorage.setItem('zentangle_cleanup_v5', 'true');
             setEntries([]);
         } else {
             // Load entries from localStorage if already cleaned or for subsequent sessions
@@ -5024,6 +5193,27 @@ Start writing your first one!`}
                 }
             }
         }
+
+        // Load saved drawing progress draft if any
+        const savedDraftStr = localStorage.getItem('zentangle_drawing_draft');
+        if (savedDraftStr) {
+            try {
+                setSavedDraft(JSON.parse(savedDraftStr));
+            } catch (e) {
+                console.error("Failed to parse saved draft", e);
+            }
+        }
+
+        // Initialize canvas background
+        const canvas = canvasRef.current;
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                setHistory([canvas.toDataURL()]);
+            }
+        }
     }, []);
 
     useEffect(() => {
@@ -5034,20 +5224,9 @@ Start writing your first one!`}
         
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lineWidth;
-    }, [color, lineWidth]);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        
-        // Initial white background
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }, []);
+        ctx.strokeStyle = isEraser ? '#ffffff' : color;
+        ctx.lineWidth = isEraser ? Math.max(lineWidth * 3, 10) : lineWidth;
+    }, [color, lineWidth, isEraser]);
 
     const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
         if (e.cancelable) e.preventDefault();
@@ -5090,7 +5269,10 @@ Start writing your first one!`}
     };
 
     const stopDrawing = () => {
-        setIsDrawing(false);
+        if (isDrawing) {
+            setIsDrawing(false);
+            saveStateToHistory();
+        }
     };
 
     const clearCanvas = () => {
@@ -5104,6 +5286,8 @@ Start writing your first one!`}
         // After clearing with white, if a template is selected, we should redraw it
         if (selectedTemplate !== 'none') {
             drawTemplate(selectedTemplate);
+        } else {
+            saveStateToHistory(canvas);
         }
     };
 
@@ -5130,7 +5314,8 @@ Start writing your first one!`}
         localStorage.setItem('zentangle_wall', JSON.stringify(updated));
         
         // Reset name for next person or just confirmation
-        alert(showKorean ? "학급 그림장에 저장되었습니다!" : "Saved to Our Class Drawings!");
+        alert(showKorean ? "학급 그림장에 공유되었습니다! 학급 그림장 탭으로 이동합니다." : "Successfully shared to Our Class Drawings! Moving to Class Drawings tab.");
+        setViewMode('diary'); // Auto-switch to CLASS DRAWINGS tab so user can immediately see it!
     };
 
     const handleReaction = (entryId: string, emoji: string) => {
@@ -5192,8 +5377,7 @@ Start writing your first one!`}
           </div>
         </div>
 
-            {viewMode === 'draw' ? (
-                <>
+            <div className={viewMode === 'draw' ? 'space-y-8 animate-in fade-in duration-300' : 'hidden'}>
                     {/* How-to moved to top */}
                     <div className="bg-white p-10 rounded-[40px] shadow-xl border border-slate-50 space-y-8">
                         <div className="flex items-center justify-between">
@@ -5243,7 +5427,7 @@ Start writing your first one!`}
                     </div>
 
                     <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
-                        <div className="p-8 bg-slate-50 border-r border-slate-100 space-y-8 w-full md:w-80">
+                        <div className="p-8 bg-white border-r border-slate-100 space-y-8 w-full md:w-80">
                              <div className="max-w-[200px]">
                                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Your Name</p>
                                 <input 
@@ -5310,16 +5494,121 @@ Start writing your first one!`}
                                 className="w-full flex items-center justify-center gap-3 bg-indigo-600 text-white px-6 py-4 rounded-3xl font-black shadow-xl hover:bg-indigo-700 transition-all active:scale-95 group"
                             >
                                 <Send size={24} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                {showKorean ? "학급 그림장에 공유" : "SHARE TO DRAWINGS"}
+                                {showKorean ? "학급 그림장에 공유" : "SHARE MY DRAWING"}
                             </button>
                         </div>
 
-                        <div className="flex-1 bg-slate-100 p-8 flex flex-col items-center justify-center overflow-hidden">
+                        <div className="flex-1 bg-white p-8 flex flex-col items-center justify-center overflow-hidden gap-6">
+                            {/* Drawing Control Toolbar */}
+                            <div className="w-full max-w-[632px] bg-white rounded-3xl shadow-sm border border-slate-200/80 p-3.5 flex flex-wrap gap-4 items-center justify-between">
+                                {/* Left group: Undo, Redo, Eraser */}
+                                <div className="flex items-center gap-1.5">
+                                    <button
+                                        onClick={undo}
+                                        disabled={history.length <= 1}
+                                        title={showKorean ? "이전 작업으로 되돌리기 (Undo)" : "Undo"}
+                                        className="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-all text-slate-700 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed"
+                                    >
+                                        <Undo size={16} />
+                                    </button>
+                                    <button
+                                        onClick={redo}
+                                        disabled={redoHistory.length === 0}
+                                        title={showKorean ? "취소한 작업 다시 적용 (Redo)" : "Redo"}
+                                        className="p-2.5 rounded-xl border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition-all text-slate-700 disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed"
+                                    >
+                                        <Redo size={16} />
+                                    </button>
+                                    <div className="w-[1px] h-6 bg-slate-200 mx-1"></div>
+                                    <button
+                                        onClick={() => setIsEraser(prev => !prev)}
+                                        title={showKorean ? "지우개 도구 켜기/끄기" : "Eraser Toggle"}
+                                        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl border font-black text-xs transition-all cursor-pointer ${isEraser ? 'bg-rose-500 text-white border-rose-500 shadow-md' : 'bg-white text-slate-600 border-slate-200 hover:border-rose-300'}`}
+                                    >
+                                        <Eraser size={14} />
+                                        <span>{showKorean ? "지우개" : "Eraser"}</span>
+                                    </button>
+                                </div>
+
+                                {/* Center group: Color Presets & Custom Color Picker */}
+                                {!isEraser && (
+                                    <div className="flex items-center gap-1.5">
+                                        {[
+                                            { hex: '#000000', name: 'Black' },
+                                            { hex: '#4A5568', name: 'Slate' },
+                                            { hex: '#E53E3E', name: 'Red' },
+                                            { hex: '#3182CE', name: 'Blue' },
+                                            { hex: '#319795', name: 'Teal' },
+                                            { hex: '#D69E2E', name: 'Gold' }
+                                        ].map(col => (
+                                            <button
+                                                key={col.hex}
+                                                onClick={() => { setColor(col.hex); setIsEraser(false); }}
+                                                title={col.name}
+                                                className={`w-6 h-6 rounded-full border transition-all cursor-pointer ${color === col.hex ? 'ring-2 ring-indigo-500 scale-110 border-white' : 'border-slate-300 hover:scale-105'}`}
+                                                style={{ backgroundColor: col.hex }}
+                                            />
+                                        ))}
+                                        <div className="relative w-6 h-6 flex items-center justify-center">
+                                            <input
+                                                type="color"
+                                                value={color}
+                                                onChange={(e) => { setColor(e.target.value); setIsEraser(false); }}
+                                                className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                                title={showKorean ? "사용자 색상 지정" : "Custom Color Picker"}
+                                            />
+                                            <div className="w-5 h-5 rounded-full border border-slate-300 bg-gradient-to-r from-red-500 via-green-500 to-blue-500 flex items-center justify-center text-[10px] text-white font-black hover:scale-110 cursor-pointer pointer-events-none">
+                                                +
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Center elements fallback for eraser spacing alignment */}
+                                {isEraser && <div className="flex-1 max-w-[120px]"></div>}
+
+                                {/* Left/Center brush-size adjuster */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">{showKorean ? "브러시 두께" : "Size"}</span>
+                                    <input
+                                        type="range"
+                                        min="1"
+                                        max="15"
+                                        value={lineWidth}
+                                        onChange={(e) => setLineWidth(Number(e.target.value))}
+                                        className="w-20 accent-indigo-600 h-1.5 bg-slate-200 rounded-lg cursor-pointer"
+                                    />
+                                    <span className="text-xs font-semibold text-slate-500 w-6 tracking-tighter text-right">{lineWidth}px</span>
+                                </div>
+
+                                {/* Right group: Save & Load Progress Draft */}
+                                <div className="flex items-center gap-1.5 ml-auto">
+                                    <button
+                                        onClick={saveDraft}
+                                        title={showKorean ? "그림을 임시 보관함에 보존하기" : "Save Draft"}
+                                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-indigo-50 border border-indigo-100/80 hover:bg-indigo-100 transition-all text-indigo-700 font-extrabold text-[11px] cursor-pointer"
+                                    >
+                                        <Save size={13} />
+                                        <span>{showKorean ? "임시저장" : "Draft Save"}</span>
+                                    </button>
+                                    <button
+                                        onClick={loadDraft}
+                                        disabled={!savedDraft}
+                                        title={savedDraft ? (showKorean ? `임시 저장된 그림 불러오기\n(${savedDraft.timestamp})` : `Reload backup from ${savedDraft.timestamp}`) : (showKorean ? '불러올 수 있는 보관 파일이 존재하지 않습니다' : 'No draft available')}
+                                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 disabled:opacity-40 disabled:hover:bg-slate-50 text-slate-700 transition-all font-extrabold text-[11px] cursor-pointer disabled:cursor-not-allowed"
+                                    >
+                                        <Upload size={13} />
+                                        <span>{showKorean ? "가져오기" : "Draft Load"}</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div className="bg-white p-4 shadow-inner rounded-lg ring-1 ring-slate-200 relative">
                                 <canvas 
                                     ref={canvasRef}
                                     width={600}
                                     height={600}
+                                    style={{ backgroundColor: '#ffffff' }}
                                     className="bg-white cursor-crosshair max-w-full h-auto touch-none"
                                     onMouseDown={startDrawing}
                                     onMouseMove={draw}
@@ -5332,8 +5621,9 @@ Start writing your first one!`}
                             </div>
                         </div>
                     </div>
-                </>
-            ) : (
+            </div>
+
+            <div className={viewMode === 'diary' ? 'block' : 'hidden'}>
                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="border-b border-slate-200 pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
                         <div className="space-y-2">
@@ -5386,6 +5676,32 @@ Start writing your first one!`}
                                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{entry.date}</p>
                                                 </div>
                                             </div>
+
+                                            <div className="flex items-center gap-1.5">
+                                                {/* Edit Button */}
+                                                <button
+                                                    onClick={() => {
+                                                        const loadConfirm = window.confirm(
+                                                            showKorean 
+                                                                ? "이 그림을 작업 도구창으로 불러와서 수정하시겠습니까?\n현재 그리고 계시는 내용은 사라집니다." 
+                                                                : "Do you want to load this drawing into the canvas workspace for editing?\nYour current drawing will be replaced."
+                                                        );
+                                                        if (loadConfirm) {
+                                                            setPendingLoadImage({
+                                                                imageData: entry.imageData,
+                                                                author: entry.author,
+                                                                template: 'none'
+                                                            });
+                                                            setViewMode('draw');
+                                                        }
+                                                    }}
+                                                    className="p-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl transition-all active:scale-95 flex items-center gap-1 font-black text-[10px] uppercase tracking-wider"
+                                                    title={showKorean ? "그림 불러와서 수정하기" : "Load and edit this drawing"}
+                                                >
+                                                    <Edit size={11} />
+                                                    <span>{showKorean ? "수정" : "Edit"}</span>
+                                                </button>
+                                            </div>
                                         </div>
                                         
                                         {/* Reactions */}
@@ -5436,7 +5752,7 @@ Start writing your first one!`}
                         </div>
                     )}
                 </div>
-            )}
+            </div>
         </div>
     );
 };
