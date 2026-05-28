@@ -14,9 +14,13 @@ import {
   BookOpen, 
   ListTodo,
   Check,
-  AlertCircle
+  AlertCircle,
+  Users,
+  Heart,
+  Smile
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import teenStressChart from '../assets/images/teen_stress_chart_final_v2_1779947206607.png';
 
 // --- Types ---
 interface DialogueBlank {
@@ -462,6 +466,22 @@ export const ListeningMasterView = ({
     handleSpeak(fullText);
   };
 
+  const renderTeenStressChart = (isSidebar: boolean = false) => {
+    if (selectedDialogueId !== 1) return null;
+    return (
+      <div className={`bg-slate-50 border border-slate-100 p-3 md:p-4 rounded-[24px] flex flex-col items-center justify-center max-w-full mx-auto shadow-sm my-2 animate-fadeIn ${isSidebar ? 'w-full' : 'max-w-xl'}`}>
+        <div className="relative overflow-hidden group w-full flex justify-center">
+          <img 
+            src={teenStressChart} 
+            alt="Causes of Teen Stress" 
+            referrerPolicy="no-referrer"
+            className={`${isSidebar ? 'max-h-[320px] md:max-h-[380px] lg:max-h-[460px]' : 'max-h-[320px] md:max-h-[380px]'} w-auto max-w-full rounded-xl object-contain border border-slate-200 bg-white p-1 hover:shadow-indigo-50/50 shadow-sm transition-transform duration-300 group-hover:scale-[1.01]`}
+          />
+        </div>
+      </div>
+    );
+  };
+
   // --- Blank Validation ---
   const handleBlankCheck = (index: number, answer: string, correctWord: string) => {
     const cleanedAnswer = answer.trim().toLowerCase().replace(/[‘’.?,!‘']/g, '');
@@ -641,242 +661,305 @@ export const ListeningMasterView = ({
             </div>
           </div>
 
-          <div className="space-y-6">
-            {selectedDialogue.lines.map((line, idx) => {
-              const isSpeaker1 = line.speaker === 'W' || line.speaker === 'G';
-              const isFocused = activeSpeakerIdx === idx;
+          {selectedDialogueId === 1 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+              {/* Left Column: Chart (Sticky on desktop) */}
+              <div className="lg:col-span-5 lg:sticky lg:top-4 bg-white z-10">
+                {renderTeenStressChart(true)}
+              </div>
               
-              return (
-                <div 
-                  key={idx} 
-                  className={`flex gap-4 p-5 rounded-3xl transition-all border ${isFocused ? 'bg-indigo-50/50 border-indigo-200 shadow-inner' : 'bg-slate-50/20 border-transparent hover:bg-slate-50/50'}`}
-                >
-                  {/* Speaker Label Avatar */}
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm ${
-                    line.speaker === 'W' ? 'bg-rose-100 text-rose-700' : 
-                    line.speaker === 'B' ? 'bg-cyan-100 text-cyan-700' : 
-                    line.speaker === 'G' ? 'bg-violet-100 text-violet-700' : 
-                    line.speaker === 'B1' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
-                  }`}>
-                    {line.speaker}
-                  </div>
+              {/* Right Column: Scripts */}
+              <div className="lg:col-span-7 space-y-1 md:space-y-1.5">
+                {selectedDialogue.lines.map((line, idx) => {
+                  const isSpeaker1 = line.speaker === 'W' || line.speaker === 'G';
+                  const isFocused = activeSpeakerIdx === idx;
+                  
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`flex gap-2.5 md:gap-3 p-1.5 md:p-2 rounded-xl transition-all border ${isFocused ? 'bg-indigo-50/50 border-indigo-200 shadow-inner' : 'bg-slate-50/20 border-transparent hover:bg-slate-50/50'}`}
+                    >
+                      {/* Speaker Label Avatar */}
+                      <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm ${
+                        line.speaker === 'W' ? 'bg-rose-100 text-rose-700' : 
+                        line.speaker === 'B' ? 'bg-cyan-100 text-cyan-700' : 
+                        line.speaker === 'G' ? 'bg-violet-100 text-violet-700' : 
+                        line.speaker === 'B1' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                      }`}>
+                        {line.speaker}
+                      </div>
 
-                  {/* Bubble Content */}
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-start justify-between gap-4">
-                      <p className="font-extrabold text-slate-800 text-sm md:text-base leading-relaxed tracking-wide">
-                        {/* Highlight words with worksheet blanks index tags if blanks are defined */}
-                        {line.text}
-                      </p>
-                      
-                      <button 
-                        onClick={() => handleSpeakLine(line.text, idx)}
-                        className={`p-2 rounded-lg hover:bg-slate-200 transition-colors shrink-0 text-slate-400 hover:text-indigo-600 ${isFocused ? 'animate-pulse text-indigo-600 bg-indigo-150' : ''}`}
-                        title="Read aloud"
-                      >
-                        <Volume2 size={16} />
-                      </button>
+                      {/* Bubble Content */}
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-start justify-between gap-3">
+                          <p className="font-extrabold text-slate-800 text-[16px] md:text-[18.2px] leading-relaxed tracking-wide">
+                            {line.text}
+                          </p>
+                          
+                          <button 
+                            onClick={() => handleSpeakLine(line.text, idx)}
+                            className={`p-1.5 rounded-lg hover:bg-slate-200 transition-colors shrink-0 text-slate-400 hover:text-indigo-600 ${isFocused ? 'animate-pulse text-indigo-600 bg-indigo-150' : ''}`}
+                            title="Read aloud"
+                          >
+                            <Volume2 size={16} />
+                          </button>
+                        </div>
+
+                        {/* Translation */}
+                        {globalTranslation && (
+                          <p className="text-slate-500 font-bold text-xs md:text-sm pl-0.5 border-l-2 border-indigo-200 mt-0.5 md:mt-1 animate-fadeIn">
+                            {line.translation}
+                          </p>
+                        )}
+                      </div>
                     </div>
-
-                    {/* Translation */}
-                    {globalTranslation && (
-                      <p className="text-slate-500 font-bold text-xs md:text-sm pl-0.5 border-l-2 border-indigo-200 mt-1 md:mt-2 animate-fadeIn">
-                        {line.translation}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Worksheet Blanks Filling Mode */}
-      {activeTab === 'blanks' && (
-        <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-md border border-slate-100 space-y-8">
-          <div className="flex justify-between items-center border-b border-slate-100 pb-6">
-            <div>
-              <h2 className="text-2xl font-black text-slate-800">✍️ Worksheet Blanks Match-up</h2>
-              <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
-                1페이지의 학습지 빈칸 1번~18번을 직접 받아쓰며 암기해보세요!
-              </p>
+                  );
+                })}
+              </div>
             </div>
-            <button 
-              onClick={resetBlanks}
-              className="p-3 bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 rounded-xl font-bold text-xs flex items-center gap-2 transition-all active:scale-95"
-            >
-              <RotateCcw size={14} /> Reset
-            </button>
-          </div>
-
-          <div className="max-w-4xl mx-auto space-y-6">
-            <h3 className="font-extrabold text-slate-800 border-b border-slate-200 pb-3 flex items-center gap-2">
-              <BookOpen size={16} className="text-indigo-500" />
-              대본 확인 및 실시간 빈칸 완성하기
-            </h3>
-            
-            <div className="space-y-6 text-xs md:text-sm leading-relaxed max-h-[750px] overflow-y-auto custom-scrollbar pr-2">
+          ) : (
+            <div className="space-y-1 md:space-y-1.5">
               {selectedDialogue.lines.map((line, idx) => {
-                const hasBlanks = line.blanks && line.blanks.length > 0;
-
+                const isSpeaker1 = line.speaker === 'W' || line.speaker === 'G';
+                const isFocused = activeSpeakerIdx === idx;
+                
                 return (
-                  <div key={idx} className="bg-white p-5 md:p-6 rounded-3xl border border-slate-200/80 shadow-sm space-y-4 transition-all hover:shadow">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <span className="font-extrabold text-[#4C51BF] mr-2 block text-[10px] tracking-wide uppercase opacity-75">{line.speaker}</span>
-                        <p className="font-semibold text-slate-700 text-sm md:text-base leading-relaxed">
-                          {hasBlanks ? (
-                            <>
-                              {line.text.split(/(\b[\w']+\b)/g).map((chunk, cIdx) => {
-                                // Is it one of the blanked words?
-                                const matchingBlank = line.blanks?.find(b => {
-                                  const chunkClean = chunk.toLowerCase().replace(/[‘’.?,!‘']/g, '');
-                                  const partsOfWord = b.word.toLowerCase().replace(/[‘’.?,!‘']/g, '').split(' ');
-                                  return partsOfWord.includes(chunkClean);
-                                });
-
-                                if (matchingBlank) {
-                                  const isCorrect = blankValidation[matchingBlank.index] === 'correct';
-                                  return (
-                                    <span 
-                                      key={cIdx} 
-                                      className={`inline-block border-b-2 border-dashed px-1 select-all font-black mx-0.5 transition-colors ${
-                                        isCorrect 
-                                          ? 'bg-emerald-50 border-emerald-300 text-emerald-700' 
-                                          : 'bg-rose-50 border-rose-100 text-rose-600'
-                                      }`}
-                                    >
-                                      [{matchingBlank.index}] {isCorrect ? matchingBlank.word : '______'}
-                                    </span>
-                                  );
-                                }
-                                return chunk;
-                              })}
-                            </>
-                          ) : (
-                            line.text
-                          )}
-                        </p>
-                      </div>
-                      <button 
-                        onClick={() => handleSpeak(line.text)}
-                        className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 transition-colors shrink-0 flex items-center justify-center"
-                        title="이 문장 듣기"
-                      >
-                        <Volume2 size={16} />
-                      </button>
+                  <div 
+                    key={idx} 
+                    className={`flex gap-2.5 md:gap-3 p-1.5 md:p-2 rounded-xl transition-all border ${isFocused ? 'bg-indigo-50/50 border-indigo-200 shadow-inner' : 'bg-slate-50/20 border-transparent hover:bg-slate-50/50'}`}
+                  >
+                    {/* Speaker Label Avatar */}
+                    <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0 shadow-sm ${
+                      line.speaker === 'W' ? 'bg-rose-100 text-rose-700' : 
+                      line.speaker === 'B' ? 'bg-cyan-100 text-cyan-700' : 
+                      line.speaker === 'G' ? 'bg-violet-100 text-violet-700' : 
+                      line.speaker === 'B1' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                    }`}>
+                      {line.speaker}
                     </div>
 
-                    {/* Integrated inputs for blanks under the sentence */}
-                    {hasBlanks && (
-                      <div className="bg-slate-50/50 p-4 rounded-2xl border border-slate-100 space-y-3">
-                        {line.blanks?.map((blank) => {
-                          const state = blankValidation[blank.index];
-                          const viewHint = blankShownHints[blank.index];
-                          return (
-                            <div key={blank.index} className="flex flex-col sm:flex-row sm:items-center gap-3 bg-white p-3 rounded-xl border border-slate-100">
-                              {/* Label indicating the blank index */}
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="bg-[#4C51BF] text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black leading-none">
-                                  {blank.index}
-                                </span>
-                                <span className="text-xs font-bold text-slate-500">번 빈칸:</span>
-                              </div>
-
-                              {/* Input field and actions */}
-                              <div className="flex-1 flex gap-2">
-                                <input 
-                                  type="text" 
-                                  value={blankAnswers[blank.index] || ''}
-                                  onChange={(e) => setBlankAnswers(prev => ({ ...prev, [blank.index]: e.target.value }))}
-                                  placeholder={viewHint ? `힌트: ${blank.hint}` : `빈칸 완성 단어 입력...`}
-                                  className={`flex-1 border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black rounded-lg focus:outline-none focus:ring-2 transition-all ${
-                                    state === 'correct' 
-                                      ? 'bg-emerald-50 border-emerald-200 text-emerald-800 focus:ring-emerald-200' 
-                                      : state === 'incorrect' 
-                                      ? 'bg-rose-50 border-rose-200 text-slate-800 focus:ring-rose-200' 
-                                      : 'focus:ring-indigo-150'
-                                  }`}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                      handleBlankCheck(blank.index, blankAnswers[blank.index] || '', blank.word);
-                                    }
-                                  }}
-                                />
-                                {/* Show Hint btn */}
-                                <button 
-                                  onClick={() => showBlankHint(blank.index)}
-                                  className="px-2.5 py-2 text-[10px] bg-slate-100 text-slate-600 font-extrabold rounded-lg hover:bg-slate-200 transition-colors shrink-0"
-                                  title="초성 힌트 보기"
-                                >
-                                  힌트 {viewHint ? "✓" : ""}
-                                </button>
-                                <button 
-                                  onClick={() => handleBlankCheck(blank.index, blankAnswers[blank.index] || '', blank.word)}
-                                  className={`px-3 py-2 font-bold text-xs text-white rounded-lg transition-all active:scale-95 shrink-0 ${
-                                    state === 'correct' 
-                                      ? 'bg-emerald-500 hover:bg-emerald-600' 
-                                      : 'bg-indigo-600 hover:bg-indigo-700'
-                                  }`}
-                                >
-                                  {state === 'correct' ? "완료" : "확인"}
-                                </button>
-                              </div>
-
-                              {/* Feedback */}
-                              <div className="shrink-0 flex items-center min-w-[100px] justify-end">
-                                {state === 'correct' && (
-                                  <span className="text-emerald-600 font-black text-xs flex items-center gap-1 animate-fadeIn">
-                                    <CheckCircle size={14} /> 정답!
-                                  </span>
-                                )}
-                                {state === 'incorrect' && (
-                                  <span className="text-rose-500 font-black text-xs flex items-center gap-1 animate-fadeIn">
-                                    <AlertCircle size={14} /> 오답
-                                  </span>
-                                )}
-                                {viewHint && state !== 'correct' && (
-                                  <span className="text-indigo-500 font-bold text-[10px] ml-1 bg-indigo-50 px-2 py-0.5 rounded-md">
-                                    초성: {blank.hint}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
+                    {/* Bubble Content */}
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-extrabold text-slate-800 text-[16px] md:text-[18.5px] leading-relaxed tracking-wide">
+                          {line.text}
+                        </p>
+                        
+                        <button 
+                          onClick={() => handleSpeakLine(line.text, idx)}
+                          className={`p-1.5 rounded-lg hover:bg-slate-200 transition-colors shrink-0 text-slate-400 hover:text-indigo-600 ${isFocused ? 'animate-pulse text-indigo-600 bg-indigo-150' : ''}`}
+                          title="Read aloud"
+                        >
+                          <Volume2 size={16} />
+                        </button>
                       </div>
-                    )}
+
+                      {/* Translation */}
+                      {globalTranslation && (
+                        <p className="text-slate-500 font-bold text-xs md:text-sm pl-0.5 border-l-2 border-indigo-200 mt-0.5 md:mt-1 animate-fadeIn">
+                          {line.translation}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 );
               })}
             </div>
-          </div>
+          )}
         </div>
       )}
+
+      {/* Worksheet Blanks Filling Mode */}
+      {activeTab === 'blanks' && (() => {
+        const blanksList = (
+          <div className="space-y-1 md:space-y-1.5 text-xs md:text-sm leading-relaxed max-h-[750px] overflow-y-auto custom-scrollbar pr-2">
+            {selectedDialogue.lines.map((line, idx) => {
+              const hasBlanks = line.blanks && line.blanks.length > 0;
+
+              return (
+                <div key={idx} className="bg-white p-2 md:p-2.5 rounded-xl border border-slate-200/80 shadow-sm space-y-2 transition-all hover:shadow">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <span className="inline-block mr-2 px-1.5 py-0.5 rounded bg-indigo-50 font-black text-[#4C51BF] text-[10px] md:text-xs tracking-wide uppercase align-middle">{line.speaker}</span>
+                      <p className="inline font-extrabold text-slate-700 text-[16px] md:text-[18px] leading-relaxed align-middle">
+                        {hasBlanks ? (
+                          <>
+                            {line.text.split(/(\b[\w']+\b)/g).map((chunk, cIdx) => {
+                              // Is it one of the blanked words?
+                              const matchingBlank = line.blanks?.find(b => {
+                                const chunkClean = chunk.toLowerCase().replace(/[‘’.?,!‘']/g, '');
+                                const partsOfWord = b.word.toLowerCase().replace(/[‘’.?,!‘']/g, '').split(' ');
+                                return partsOfWord.includes(chunkClean);
+                              });
+
+                              if (matchingBlank) {
+                                const isCorrect = blankValidation[matchingBlank.index] === 'correct';
+                                return (
+                                  <span 
+                                    key={cIdx} 
+                                    className={`inline-block border-b-2 border-dashed px-1 select-all font-black mx-0.5 transition-colors ${
+                                      isCorrect 
+                                        ? 'bg-emerald-50 border-emerald-300 text-emerald-700' 
+                                        : 'bg-rose-50 border-rose-100 text-rose-600'
+                                    }`}
+                                  >
+                                    [{matchingBlank.index}] {isCorrect ? matchingBlank.word : '______'}
+                                  </span>
+                                );
+                              }
+                              return chunk;
+                            })}
+                          </>
+                        ) : (
+                          line.text
+                        )}
+                      </p>
+                    </div>
+                    <button 
+                      onClick={() => handleSpeak(line.text)}
+                      className="p-1 rounded-md bg-slate-50 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 transition-colors shrink-0 flex items-center justify-center"
+                      title="이 문장 듣기"
+                    >
+                      <Volume2 size={16} />
+                    </button>
+                  </div>
+
+                  {/* Integrated inputs for blanks under the sentence */}
+                  {hasBlanks && (
+                    <div className="bg-slate-50/50 p-2 rounded-xl border border-slate-100 space-y-1.5">
+                      {line.blanks?.map((blank) => {
+                        const state = blankValidation[blank.index];
+                        const viewHint = blankShownHints[blank.index];
+                        return (
+                          <div key={blank.index} className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 bg-white p-1.5 sm:p-2 rounded-lg border border-slate-100">
+                            {/* Label indicating the blank index */}
+                            <div className="flex items-center gap-1 shrink-0">
+                              <span className="bg-[#4C51BF] text-white w-4.5 h-4.5 rounded-full flex items-center justify-center text-[9px] font-black leading-none">
+                                {blank.index}
+                              </span>
+                              <span className="text-[11px] font-bold text-slate-500">번 빈칸:</span>
+                            </div>
+
+                            {/* Input field and actions */}
+                            <div className="flex-1 flex gap-1.5">
+                              <input 
+                                type="text" 
+                                value={blankAnswers[blank.index] || ''}
+                                onChange={(e) => setBlankAnswers(prev => ({ ...prev, [blank.index]: e.target.value }))}
+                                placeholder={viewHint ? `힌트: ${blank.hint}` : `빈칸 완성 단어 입력...`}
+                                className={`flex-1 border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-black rounded-md focus:outline-none focus:ring-2 transition-all ${
+                                  state === 'correct' 
+                                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800 focus:ring-emerald-200' 
+                                    : state === 'incorrect' 
+                                    ? 'bg-rose-50 border-rose-200 text-slate-800 focus:ring-rose-200' 
+                                    : 'focus:ring-indigo-150'
+                                }`}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') {
+                                    handleBlankCheck(blank.index, blankAnswers[blank.index] || '', blank.word);
+                                  }
+                                }}
+                              />
+                              {/* Show Hint btn */}
+                              <button 
+                                onClick={() => showBlankHint(blank.index)}
+                                className="px-2 py-1.5 text-[9px] bg-slate-100 text-slate-600 font-extrabold rounded-md hover:bg-slate-200 transition-colors shrink-0"
+                                title="초성 힌트 보기"
+                              >
+                                힌트 {viewHint ? "✓" : ""}
+                              </button>
+                              <button 
+                                onClick={() => handleBlankCheck(blank.index, blankAnswers[blank.index] || '', blank.word)}
+                                className={`px-2 py-1.5 font-bold text-[11px] text-white rounded-md transition-all active:scale-95 shrink-0 ${
+                                  state === 'correct' 
+                                    ? 'bg-emerald-500 hover:bg-emerald-600' 
+                                    : 'bg-indigo-600 hover:bg-indigo-700'
+                                }`}
+                              >
+                                {state === 'correct' ? "완료" : "확인"}
+                              </button>
+                            </div>
+
+                            {/* Feedback */}
+                            <div className="shrink-0 flex items-center min-w-[80px] justify-end">
+                              {state === 'correct' && (
+                                <span className="text-emerald-600 font-black text-xs flex items-center gap-1 animate-fadeIn">
+                                  <CheckCircle size={13} /> 정답!
+                                </span>
+                              )}
+                              {state === 'incorrect' && (
+                                <span className="text-rose-500 font-black text-xs flex items-center gap-1 animate-fadeIn">
+                                  <AlertCircle size={13} /> 오답
+                                </span>
+                              )}
+                              {viewHint && state !== 'correct' && (
+                                <span className="text-indigo-500 font-bold text-[9px] ml-1 bg-indigo-50 px-1.5 py-0.5 rounded">
+                                  초성: {blank.hint}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        );
+
+        return (
+          <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-md border border-slate-100 space-y-8">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-6">
+              <div>
+                <h2 className="text-2xl font-black text-slate-800">✍️ Worksheet Blanks Match-up</h2>
+                <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+                  1페이지의 학습지 빈칸 1번~18번을 직접 받아쓰며 암기해보세요!
+                </p>
+              </div>
+              <button 
+                onClick={resetBlanks}
+                className="p-3 bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 rounded-xl font-bold text-xs flex items-center gap-2 transition-all active:scale-95"
+              >
+                <RotateCcw size={14} /> Reset
+              </button>
+            </div>
+
+            {selectedDialogueId === 1 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                {/* Left Column: Chart (Sticky on desktop) */}
+                <div className="lg:col-span-12 xl:col-span-5 lg:sticky lg:top-4 bg-white z-10 w-full">
+                  {renderTeenStressChart(true)}
+                </div>
+                
+                {/* Right Column Blanks List */}
+                <div className="lg:col-span-12 xl:col-span-7 space-y-4">
+                  <h3 className="font-extrabold text-slate-800 border-b border-slate-200 pb-3 flex items-center gap-2">
+                    <BookOpen size={16} className="text-indigo-500" />
+                    대본 확인 및 실시간 빈칸 완성하기
+                  </h3>
+                  {blanksList}
+                </div>
+              </div>
+            ) : (
+              <div className="max-w-4xl mx-auto space-y-6">
+                <h3 className="font-extrabold text-slate-800 border-b border-slate-200 pb-3 flex items-center gap-2">
+                  <BookOpen size={16} className="text-indigo-500" />
+                  대본 확인 및 실시간 빈칸 완성하기
+                </h3>
+                {blanksList}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Comprehension & Dialogue Quizzes */}
       {activeTab === 'quiz' && (
         <div className="bg-white rounded-[40px] p-8 md:p-12 shadow-md border border-slate-100">
-          {!quizFinished ? (
-            <div className="space-y-8">
-              {/* Header progress info */}
-              <div className="flex justify-between items-center text-sm font-black text-slate-400">
-                <span className="bg-indigo-50 text-[#4C51BF] px-3.5 py-1.5 rounded-full uppercase tracking-widest text-[10px]">
-                  Dialogue {selectedDialogueId} Comprehension
-                </span>
-                <span>Question {currentQuizIdx + 1} of {dialogueQuizzes.length}</span>
-              </div>
-
-              {/* Progress bar */}
-              <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div 
-                  className="bg-indigo-500 h-full transition-all duration-300"
-                  style={{ width: `${((currentQuizIdx + 1) / dialogueQuizzes.length) * 100}%` }}
-                ></div>
-              </div>
-
-              {/* Quiz Item layout */}
+          {!quizFinished ? (() => {
+            const quizItemWithFeedback = (
               <div className="space-y-6">
                 <div className="space-y-2">
                   <h3 className="text-xl md:text-2xl font-black text-slate-800 leading-tight">
@@ -947,46 +1030,81 @@ export const ListeningMasterView = ({
                     )}
                   </motion.div>
                 )}
-              </div>
 
-              {/* Action area */}
-              <div className="flex justify-between items-center pt-8 border-t border-slate-100">
-                <p className="text-xs text-slate-400 font-bold">
-                  {quizSubmitted 
-                    ? "자동 다음 단계 진행 중... 바로 가려면 오른쪽 버튼을 누르세요." 
-                    : "보기를 클릭하면 즉시 정답을 판정하고 자동으로 넘어갑니다."}
-                </p>
+                {/* In-depth Explanation if submitted */}
                 {quizSubmitted && (
-                  <button
-                    onClick={handleQuizNext}
-                    className="p-4 bg-slate-800 hover:bg-slate-900 font-black text-white px-8 rounded-2xl transition-all active:scale-95 text-xs uppercase tracking-widest flex items-center gap-2 animate-fadeIn"
+                  <motion.div 
+                    initial={{ opacity: 0, y: 15 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    className={`p-6 rounded-3xl border ${selectedQuizOption === dialogueQuizzes[currentQuizIdx].answerIndex ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900' : 'bg-rose-50/30 border-rose-200 text-slate-700'} space-y-2`}
                   >
-                    다음 문제 Next <ChevronRight size={16} />
-                  </button>
+                    <h4 className="font-extrabold text-xs tracking-wider uppercase flex items-center gap-1">
+                      <HelpCircle size={14} className="text-indigo-500" />
+                      문항 풀이 해설 Explanation
+                    </h4>
+                    <p className="text-xs leading-relaxed font-bold">
+                      {dialogueQuizzes[currentQuizIdx].explanation}
+                    </p>
+                    <p className="text-[11px] leading-relaxed text-slate-500 font-bold border-t border-slate-200/50 pt-2">
+                      💡 한글 해설: {dialogueQuizzes[currentQuizIdx].explanationKo}
+                    </p>
+                  </motion.div>
                 )}
               </div>
+            );
 
-              {/* In-depth Explanation if submitted */}
-              {quizSubmitted && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 15 }} 
-                  animate={{ opacity: 1, y: 0 }} 
-                  className={`p-6 rounded-3xl border ${selectedQuizOption === dialogueQuizzes[currentQuizIdx].answerIndex ? 'bg-emerald-50/50 border-emerald-200 text-emerald-900' : 'bg-rose-50/30 border-rose-200 text-slate-700'} space-y-2`}
-                >
-                  <h4 className="font-extrabold text-xs tracking-wider uppercase flex items-center gap-1">
-                    <HelpCircle size={14} className="text-indigo-500" />
-                    문항 풀이 해설 Explanation
-                  </h4>
-                  <p className="text-xs leading-relaxed font-bold">
-                    {dialogueQuizzes[currentQuizIdx].explanation}
+            return (
+              <div className="space-y-8">
+                {/* Header progress info */}
+                <div className="flex justify-between items-center text-sm font-black text-slate-400">
+                  <span className="bg-indigo-50 text-[#4C51BF] px-3.5 py-1.5 rounded-full uppercase tracking-widest text-[10px]">
+                    Dialogue {selectedDialogueId} Comprehension
+                  </span>
+                  <span>Question {currentQuizIdx + 1} of {dialogueQuizzes.length}</span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-indigo-500 h-full transition-all duration-300"
+                    style={{ width: `${((currentQuizIdx + 1) / dialogueQuizzes.length) * 100}%` }}
+                  ></div>
+                </div>
+
+                {selectedDialogueId === 1 ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                    {/* Left Column: Chart (Sticky on desktop) */}
+                    <div className="lg:col-span-12 xl:col-span-5 lg:sticky lg:top-4 bg-white z-10 w-full">
+                      {renderTeenStressChart(true)}
+                    </div>
+                    {/* Right Column: Quiz Content */}
+                    <div className="lg:col-span-12 xl:col-span-7">
+                      {quizItemWithFeedback}
+                    </div>
+                  </div>
+                ) : (
+                  quizItemWithFeedback
+                )}
+
+                {/* Action area */}
+                <div className="flex justify-between items-center pt-8 border-t border-slate-100">
+                  <p className="text-xs text-slate-400 font-bold">
+                    {quizSubmitted 
+                      ? "자동 다음 단계 진행 중... 바로 가려면 오른쪽 버튼을 누르세요." 
+                      : "보기를 클릭하면 즉시 정답을 판정하고 자동으로 넘어갑니다."}
                   </p>
-                  <p className="text-[11px] leading-relaxed text-slate-500 font-bold border-t border-slate-200/50 pt-2">
-                    💡 한글 해설: {dialogueQuizzes[currentQuizIdx].explanationKo}
-                  </p>
-                </motion.div>
-              )}
-            </div>
-          ) : (
+                  {quizSubmitted && (
+                    <button
+                      onClick={handleQuizNext}
+                      className="p-4 bg-slate-800 hover:bg-slate-900 font-black text-white px-8 rounded-2xl transition-all active:scale-95 text-xs uppercase tracking-widest flex items-center gap-2 animate-fadeIn"
+                    >
+                      다음 문제 Next <ChevronRight size={16} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })() : (
             // Finished Results Card
             <div className="text-center py-12 max-w-lg mx-auto space-y-8">
               <div className="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center mx-auto text-yellow-500 animate-bounce">
