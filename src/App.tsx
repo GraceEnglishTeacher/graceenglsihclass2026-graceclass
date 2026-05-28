@@ -4966,7 +4966,6 @@ Start writing your first one!`}
         const previousUrl = history[history.length - 2];
 
         const img = new Image();
-        img.src = previousUrl;
         img.onload = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0);
@@ -4974,6 +4973,7 @@ Start writing your first one!`}
             setRedoHistory(prev => [currentUrl, ...prev]);
             setHistory(prev => prev.slice(0, -1));
         };
+        img.src = previousUrl;
     };
 
     const redo = () => {
@@ -4986,7 +4986,6 @@ Start writing your first one!`}
 
         const nextUrl = redoHistory[0];
         const img = new Image();
-        img.src = nextUrl;
         img.onload = () => {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.drawImage(img, 0, 0);
@@ -4994,6 +4993,7 @@ Start writing your first one!`}
             setHistory(prev => [...prev, nextUrl]);
             setRedoHistory(prev => prev.slice(1));
         };
+        img.src = nextUrl;
     };
 
     const saveDraft = () => {
@@ -5032,7 +5032,6 @@ Start writing your first one!`}
 
         if (loadConfirm) {
             const img = new Image();
-            img.src = savedDraft.imageData;
             img.onload = () => {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0);
@@ -5046,6 +5045,7 @@ Start writing your first one!`}
                 setEditingEntryId(null);
                 alert(showKorean ? "저장된 그림을 성공적으로 불러왔습니다!" : "Saved drawing successfully loaded!");
             };
+            img.src = savedDraft.imageData;
         }
     };
 
@@ -5073,11 +5073,11 @@ Start writing your first one!`}
         const imgTemplate = imageTemplates.find(t => t.id === templateId);
         if (imgTemplate) {
             const img = new Image();
-            img.src = imgTemplate.src;
             img.onload = () => {
                 bgCtx.setLineDash([]);
                 bgCtx.drawImage(img, 0, 0, bgCanvas.width, bgCanvas.height);
             };
+            img.src = imgTemplate.src;
             return;
         }
 
@@ -5151,7 +5151,6 @@ Start writing your first one!`}
                 const ctx = canvas.getContext('2d');
                 if (ctx) {
                     const img = new Image();
-                    img.src = pendingLoadImage.imageData;
                     img.onload = () => {
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
                         ctx.drawImage(img, 0, 0);
@@ -5168,10 +5167,11 @@ Start writing your first one!`}
                         
                         setPendingLoadImage(null);
                     };
+                    img.src = pendingLoadImage.imageData;
                 }
             }
         }
-    }, [pendingLoadImage]);
+    }, [pendingLoadImage, viewMode]);
 
     const handleDeleteEntry = (entryId: string) => {
         if (window.confirm(showKorean ? "이 그림을 삭제하시겠습니까?" : "Are you sure you want to delete this drawing?")) {
